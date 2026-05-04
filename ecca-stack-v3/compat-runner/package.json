@@ -1,8 +1,0 @@
-{
-  "name": "@ecca/compat-runner",
-  "version": "3.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": { "compat": "node dist/run.js || echo 'no v2 vectors mounted; skipping'" },
-  "devDependencies": { "typescript": "^5.5.4" }
-}
