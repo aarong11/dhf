@@ -1,0 +1,7 @@
+packages:
+  - "packages/*"
+  - "services/*"
+  - "workers/*"
+  - "contracts"
+  - "tests"
+  - "compat-runner"

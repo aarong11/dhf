@@ -1,0 +1,23 @@
+{
+  "name": "@ecca/chain",
+  "version": "3.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "viem": "^2.21.1",
+    "undici": "^6.19.5",
+    "@ecca/proto": "workspace:*",
+    "@ecca/crypto": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "rimraf": "^6.0.1",
+    "@types/node": "^20.14.10"
+  }
+}

@@ -1,0 +1,15 @@
+node_modules
+dist
+build
+.turbo
+.git
+.env
+.env.local
+**/node_modules
+**/dist
+**/build
+**/.turbo
+coverage
+*.log
+data
+volumes

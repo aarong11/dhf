@@ -1,0 +1,98 @@
+// Cortical Registry DB schema — the substantia nigra of ECCA.
+// Persists stack identity, sleeve roster, anchors, residue events, audit log.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Stack {
+  id           String   @id          // 'stack:human:1:abc123…'
+  tokenId      Int      @unique      // mirrors ERC-721 tokenId on cortex-evm
+  name         String
+  kind         String                // human | ai
+  pubKey       String                // ed25519 hex
+  epoch        Int      @default(0)
+  cpv          Json                  // CoherenceProfileVector
+  binding      Json                  // EpochBindingCurve
+  createdAt    DateTime @default(now())
+  sleeves      Sleeve[]
+  anchors      Anchor[]
+  episodicHead String?               // CID of latest episodic memory
+  @@index([epoch])
+}
+
+model Sleeve {
+  id              String   @id
+  stackId         String
+  embodimentType  String                // human | ai | mining | memory
+  alive           Boolean  @default(true)
+  drift           Float    @default(0)
+  syncEpoch       Int      @default(0)
+  lastSync        DateTime @default(now())
+  tokens          Json                  // per-sleeve allocation slice
+  hostname        String?
+  createdAt       DateTime @default(now())
+  stack           Stack    @relation(fields: [stackId], references: [id])
+  @@index([stackId])
+  @@index([alive])
+  @@index([drift])
+}
+
+model Anchor {
+  id           Int      @id @default(autoincrement())
+  stackId      String
+  merkleRoot   String                  // 0x… 64 hex
+  epoch        Int
+  signature    String
+  fromSleeve   String?
+  toSleeve     String?
+  txHash       String?                 // medulla-pow tx hash
+  evmTxHash    String?                 // cortex-evm tx hash (NeedlecastRouter)
+  ts           DateTime @default(now())
+  stack        Stack    @relation(fields: [stackId], references: [id])
+  @@index([stackId, epoch])
+  @@index([epoch])
+}
+
+model Residue {
+  id           String   @id            // CRE-<hash>
+  kind         String                  // ResidueKind (proto/events.ts)
+  stackId      String?
+  evidence     Json
+  bountyEst    Float
+  status       String   @default("open") // open | claimed | resolved
+  resolverStack String?
+  proofTxHash  String?
+  payout       Float?
+  detectedAt   DateTime @default(now())
+  resolvedAt   DateTime?
+  @@index([status])
+  @@index([detectedAt])
+}
+
+model Epoch {
+  number       Int      @id
+  blockHash    String
+  crossRoot    String
+  evmRoot      String
+  ipfsRoot     String
+  sleevesRoot  String
+  difficulty   Int
+  ts           DateTime @default(now())
+}
+
+model AuditLog {
+  id           Int      @id @default(autoincrement())
+  actor        String
+  action       String
+  target       String?
+  payload      Json?
+  ts           DateTime @default(now())
+  @@index([ts])
+  @@index([actor])
+}

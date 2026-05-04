@@ -1,0 +1,27 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'synapse-api'
+    metrics_path: /metrics
+    static_configs: [{ targets: ['synapse-api:7070'] }]
+  - job_name: 'thalamus-router'
+    static_configs: [{ targets: ['thalamus-router:7072'] }]
+  - job_name: 'dhf-compositor'
+    static_configs: [{ targets: ['dhf-compositor:7073'] }]
+  - job_name: 'needlecast-router-svc'
+    static_configs: [{ targets: ['needlecast-router-svc:7071'] }]
+  - job_name: 'quellist-treasury-svc'
+    static_configs: [{ targets: ['quellist-treasury-svc:7074'] }]
+  - job_name: 'bandwidth-faucet'
+    static_configs: [{ targets: ['bandwidth-faucet:7075'] }]
+  - job_name: 'medulla-pow'
+    metrics_path: /health
+    static_configs: [{ targets: ['medulla-pow:8332'] }]
+  - job_name: 'hippocampus-dag'
+    metrics_path: /health
+    static_configs: [{ targets: ['hippocampus-dag:5001'] }]
+  - job_name: 'cortex-evm'
+    metrics_path: /
+    static_configs: [{ targets: ['cortex-evm:8545'] }]

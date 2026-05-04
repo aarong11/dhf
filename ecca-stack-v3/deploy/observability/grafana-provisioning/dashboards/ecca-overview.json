@@ -1,0 +1,28 @@
+{
+  "title": "ECCA Stack v3 — Coherence Overview",
+  "uid": "ecca-overview",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "type": "stat", "title": "Current Epoch",
+      "targets": [{ "expr": "max(ecca_current_epoch)" }],
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 }
+    },
+    {
+      "type": "stat", "title": "Active Sleeves",
+      "targets": [{ "expr": "sum(ecca_sleeves_alive)" }],
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 }
+    },
+    {
+      "type": "timeseries", "title": "Drift Distribution",
+      "targets": [{ "expr": "histogram_quantile(0.95, rate(ecca_sleeve_drift_bucket[5m]))" }],
+      "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 }
+    },
+    {
+      "type": "timeseries", "title": "Open Residues by Kind",
+      "targets": [{ "expr": "sum by (kind) (ecca_residue_open_total)" }],
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 12 }
+    }
+  ]
+}

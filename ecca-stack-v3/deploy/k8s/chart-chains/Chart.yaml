@@ -1,0 +1,6 @@
+apiVersion: v2
+name: ecca-chains
+description: ECCA Stack v3 — canonical chain forks (medulla-pow, hippocampus-dag, cortex-evm)
+type: application
+version: 3.0.0
+appVersion: "3.0.0"

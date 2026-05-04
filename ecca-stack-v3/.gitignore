@@ -1,0 +1,22 @@
+node_modules/
+dist/
+build/
+.turbo/
+.env
+.env.local
+*.log
+coverage/
+.DS_Store
+.next/
+artifacts/
+cache/
+typechain-types/
+# Go
+forks/**/bin/
+forks/**/data/
+# Chain data volumes
+data/
+volumes/
+# IDE
+.vscode/
+.idea/

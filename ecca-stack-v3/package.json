@@ -1,0 +1,32 @@
+{
+  "name": "ecca-stack-v3",
+  "version": "3.0.0",
+  "private": true,
+  "description": "ECCA Stack v3 — Production distributed cognitive OS. DHF-compatible identity persistence across cryptographic substrates.",
+  "packageManager": "pnpm@9.7.0",
+  "engines": {
+    "node": ">=20.10.0"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean && rimraf node_modules",
+    "compose:up": "docker compose up -d --build",
+    "compose:down": "docker compose down -v",
+    "compose:logs": "docker compose logs -f --tail=200",
+    "compose:dist": "docker stack deploy -c docker-compose.distributed.yml ecca",
+    "contracts:deploy": "pnpm --filter @ecca/contracts run deploy:local",
+    "demo": "pnpm --filter @ecca/tests run demo:e2e",
+    "compat": "pnpm --filter @ecca/compat-runner run replay"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.14",
+    "typescript": "^5.5.4",
+    "rimraf": "^6.0.1",
+    "prettier": "^3.3.3",
+    "@types/node": "^20.14.10"
+  }
+}
