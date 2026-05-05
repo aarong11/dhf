@@ -514,4 +514,4 @@ WS     /ws                          # Real-time bus events
 
 ## License
 
-Research-grade. Not for production use without a comprehensive security review.
+Licensed under the [Apache License, Version 2.0](LICENSE).
