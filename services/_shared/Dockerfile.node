@@ -1,10 +1,25 @@
 # Shared multi-stage Dockerfile for all TypeScript services + workers.
 # The compose file's `command:` selects which compiled entrypoint to run.
 
+# Build OpenSSL 3.0 from source for Prisma compatibility
+FROM node:20-alpine AS openssl-builder
+RUN apk add --no-cache perl make gcc musl-dev linux-headers
+ARG OPENSSL_VERSION=3.0.15
+RUN wget https://github.com/openssl/openssl/releases/download/openssl-${OPENSSL_VERSION}/openssl-${OPENSSL_VERSION}.tar.gz \
+    && tar xzf openssl-${OPENSSL_VERSION}.tar.gz \
+    && cd openssl-${OPENSSL_VERSION} \
+    && ./Configure linux-generic64 --prefix=/usr/local/openssl --openssldir=/usr/local/openssl shared no-tests \
+    && make -j$(nproc) \
+    && make install_sw
+
 FROM node:20-alpine AS deps
 WORKDIR /app
 RUN apk add --no-cache python3 make g++ git
+COPY --from=openssl-builder /usr/local/openssl /usr/local/openssl
+ENV LD_LIBRARY_PATH="/usr/local/openssl/lib64:/usr/local/openssl/lib:${LD_LIBRARY_PATH}"
+ENV PATH="/usr/local/openssl/bin:${PATH}"
 RUN corepack enable && corepack prepare pnpm@9.7.0 --activate
+ENV PRISMA_CLI_BINARY_TARGETS="linux-musl-openssl-3.0.x"
 COPY pnpm-workspace.yaml package.json tsconfig.base.json turbo.json ./
 COPY packages ./packages
 COPY services ./services
@@ -14,13 +29,21 @@ RUN pnpm install --no-frozen-lockfile
 
 FROM deps AS build
 COPY . .
+RUN cd packages/db && npx prisma generate
 RUN pnpm build
 
 FROM node:20-alpine AS runtime
 WORKDIR /app
 RUN apk add --no-cache wget curl tini
+COPY --from=openssl-builder /usr/local/openssl /usr/local/openssl
+ENV LD_LIBRARY_PATH="/usr/local/openssl/lib64:/usr/local/openssl/lib:${LD_LIBRARY_PATH}"
+ENV PATH="/usr/local/openssl/bin:${PATH}"
 RUN corepack enable && corepack prepare pnpm@9.7.0 --activate
 ENV NODE_ENV=production
 COPY --from=build /app /app
-ENTRYPOINT ["/sbin/tini", "--"]
+
+# Create entrypoint that runs prisma db push before starting the service
+RUN printf '#!/bin/sh\nset -e\nif [ -f packages/db/prisma/schema.prisma ]; then\n  echo "[init] Running prisma db push..."\n  cd packages/db && npx prisma db push --skip-generate 2>&1 || echo "[init] prisma db push failed (may be expected)"\n  cd /app\nfi\nexec "$@"\n' > /app/entrypoint.sh && chmod +x /app/entrypoint.sh
+
+ENTRYPOINT ["/sbin/tini", "--", "/app/entrypoint.sh"]
 CMD ["node", "--version"]

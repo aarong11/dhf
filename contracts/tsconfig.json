@@ -5,7 +5,8 @@
     "rootDir": ".",
     "noEmit": false,
     "module": "CommonJS",
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "noUncheckedIndexedAccess": false
   },
   "include": ["scripts", "hardhat.config.ts"]
 }

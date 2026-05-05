@@ -1,0 +1,22 @@
+# Consistent build environment for the ECCA monorepo.
+# Usage: docker compose -f docker-compose.build.yml run --rm builder
+#        docker compose -f docker-compose.build.yml run --rm builder make test
+version: "3.9"
+
+services:
+  builder:
+    build:
+      context: .
+      dockerfile: Dockerfile.builder
+    volumes:
+      - .:/app
+      - builder-node-modules:/app/node_modules
+      - builder-pnpm-store:/root/.local/share/pnpm/store
+    working_dir: /app
+    command: ["make", "build"]
+    environment:
+      NODE_ENV: development
+
+volumes:
+  builder-node-modules:
+  builder-pnpm-store:

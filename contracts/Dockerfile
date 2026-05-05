@@ -6,6 +6,6 @@ COPY pnpm-workspace.yaml package.json tsconfig.base.json turbo.json ./
 COPY packages ./packages
 COPY contracts ./contracts
 RUN pnpm install --no-frozen-lockfile
-RUN cd contracts && pnpm hardhat compile
+RUN cd contracts && rm -rf cache artifacts && pnpm hardhat compile
 WORKDIR /app/contracts
 CMD ["pnpm", "run", "deploy:local"]

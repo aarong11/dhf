@@ -19,7 +19,20 @@ x-ts-base: &ts-base
   build:
     context: .
     dockerfile: services/_shared/Dockerfile.node
-  env_file: .env
+  environment:
+    DATABASE_URL: postgresql://${POSTGRES_USER:-ecca}:${POSTGRES_PASSWORD:-quellcrist}@cortical-registry-db:5432/${POSTGRES_DB:-ecca_registry}
+    REDIS_URL: redis://working-memory-cache:6379
+    NATS_URL: nats://axonal-bus:4222
+    CORTEX_RPC: http://cortex-evm:8545
+    CORTEX_WS: ws://cortex-evm:8546
+    CORTEX_CHAIN_ID: ${CORTEX_CHAIN_ID:-131072}
+    MEDULLA_RPC: http://medulla-pow:8332
+    HIPPOCAMPUS_API: http://hippocampus-dag:5001
+    MINIO_ENDPOINT: shard-vault:9000
+    MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-ecca-access}
+    MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-ecca-secret-quellcrist}
+    ECCA_EPOCH_INTERVAL_MS: ${ECCA_EPOCH_INTERVAL_MS:-4000}
+    OPERATOR_PRIVATE_KEY: ${OPERATOR_PRIVATE_KEY:-0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80}
   depends_on:
     cortical-registry-db: { condition: service_healthy }
     working-memory-cache:  { condition: service_healthy }
@@ -56,7 +69,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-ecca_registry}
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./packages/db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
     ports: ["5432:5432"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ecca -d ecca_registry"]
@@ -71,7 +83,7 @@ services:
     image: redis:7-alpine
     command: ["redis-server", "--appendonly", "yes", "--maxmemory", "512mb", "--maxmemory-policy", "allkeys-lru"]
     volumes: ["redis-data:/data"]
-    ports: ["6379:6379"]
+    ports: ["6380:6379"]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -147,7 +159,7 @@ services:
       MINIO_BUCKET: ${MINIO_BUCKET:-hippocampus-shards}
       CORTEX_RPC: http://cortex-evm:8545
     volumes: ["hippocampus-blockstore:/data"]
-    ports: ["5001:5001", "8080:8080", "4001:4001"]
+    ports: ["15001:5001", "18080:8080", "14001:4001"]
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:5001/health"]
       interval: 5s
@@ -159,32 +171,11 @@ services:
 
   # Synaptic Stack — geth in Clique PoA mode + ECCA custom genesis
   cortex-evm:
-    image: ethereum/client-go:v1.14.8
-    entrypoint: ["/bin/sh", "-c"]
-    command: |
-      "
-      if [ ! -d /data/geth ]; then
-        echo '[cortex-evm] initializing genesis…'
-        geth init --datadir /data /genesis/genesis.json
-        cp /genesis/keystore/* /data/keystore/ 2>/dev/null || true
-      fi
-      exec geth \
-        --datadir /data \
-        --networkid 131072 \
-        --http --http.addr 0.0.0.0 --http.port 8545 \
-        --http.api eth,net,web3,debug,txpool,clique,personal \
-        --http.corsdomain '*' --http.vhosts '*' \
-        --ws --ws.addr 0.0.0.0 --ws.port 8546 --ws.api eth,net,web3,debug,clique \
-        --ws.origins '*' \
-        --mine --miner.etherbase 0x0000000000000000000000000000000000000ECC \
-        --allow-insecure-unlock --unlock 0x0000000000000000000000000000000000000ECC \
-        --password /genesis/password.txt \
-        --syncmode full --gcmode archive \
-        --nodiscover --maxpeers 0
-      "
+    build:
+      context: ./forks/cortex-evm-go
+      dockerfile: Dockerfile
     volumes:
       - cortex-chaindata:/data
-      - ./forks/cortex-evm-go/genesis:/genesis:ro
     ports: ["8545:8545", "8546:8546"]
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- --post-data='{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_blockNumber\",\"params\":[]}' --header='content-type: application/json' http://localhost:8545 | grep -q result"]
@@ -205,8 +196,6 @@ services:
     environment:
       CORTEX_RPC: http://cortex-evm:8545
       OPERATOR_PRIVATE_KEY: ${OPERATOR_PRIVATE_KEY}
-    volumes:
-      - ./contracts/deployments:/app/deployments
     networks: [ecca-net]
     logging: *default-logging
     restart: "no"
