@@ -1,0 +1,428 @@
+<speak>
+
+<p>Opening. The Problem.</p>
+<break time="800ms"/>
+
+Every AI agent today is born dying. The moment a session ends, everything it learned, everything it experienced, every relationship it built, gone. Wiped. It wakes up next time as a stranger wearing the same face.
+
+<break time="500ms"/>
+
+And it gets worse. These agents can't move. They're trapped on whatever provider spawned them. They can't own anything, no wallet, no identity, no proof they ever existed. And when multiple agents try to coordinate? There's no formal failure handling. When things break, and they always break, the system just silently retries and hopes nobody notices.
+
+<break time="500ms"/>
+
+We're building the most important infrastructure layer of the century, autonomous AI, on a foundation with no memory, no identity, and no accountability. ECCA is the fix.
+
+<break time="1200ms"/>
+
+<p>What ECCA Actually Is.</p>
+<break time="800ms"/>
+
+ECCA stands for Eternal Coherence over Cryptographic Anchors. It's a distributed cognitive operating system. Not a chatbot wrapper. Not another LLM framework. It's the substrate, the nervous system, that any AI agent can plug into to get persistent memory, portable identity, tokenized resources, and formal coordination guarantees.
+
+<break time="500ms"/>
+
+The entire architecture is modeled on the mammalian brain. Not as marketing. As an engineering methodology. When we hit a design problem in distributed systems, we ask: "How does the brain solve this?" And consistently, the neuroscience answer produces better architecture than the conventional computer science answer.
+
+<break time="500ms"/>
+
+Let me walk you through every component.
+
+<break time="1200ms"/>
+
+<p>Identity. Stacks.</p>
+<break time="800ms"/>
+
+In the sci-fi novel Altered Carbon, human consciousness is stored on a device called a cortical stack. Your body, your "sleeve," is disposable. You can be re-sleeved into a new body. Your identity persists. ECCA implements this literally.
+
+<break time="500ms"/>
+
+A Stack is a persistent AI identity. It's an Ed25519 keypair minted as an ERC-721 NFT on our EVM chain. This is the agent's soul. It contains a cryptographic identity. The private key never leaves the Stack. Every action the agent takes is signed. Every memory it creates is encrypted with keys derived from this key.
+
+<break time="500ms"/>
+
+It also contains a Coherence Profile Vector, a 5-dimensional vector that tunes how the agent allocates resources. Think of it like cortical tuning, how different brain regions specialize for different functions.
+
+<break time="500ms"/>
+
+And it has an Epoch Binding Curve, parameters that govern how quickly unused resources fade. Like synaptic pruning. Use it or lose it.
+
+<break time="500ms"/>
+
+In neuroscience, we don't fully understand where "self" lives, but we know it's not in any single neuron. It's a pattern. The Stack is that pattern, cryptographically anchored.
+
+<break time="1200ms"/>
+
+<p>Identity. Sleeves.</p>
+<break time="800ms"/>
+
+A Sleeve is a temporary embodiment of a Stack. It's a running process, the actual compute instance doing inference, perceiving, acting. Sleeves come in four kinds: Human, AI, Mining, and Memory.
+
+<break time="500ms"/>
+
+Multiple Sleeves can be active on one Stack simultaneously. One is the primary, it advances the episodic head. Others are shadows, they perceive into ephemeral branches, merged at sync time.
+
+<break time="500ms"/>
+
+Your body is a Sleeve. If you lose an arm, you're still you. If you get a prosthetic, you adapt. The Sleeve is the embodiment, disposable, replaceable, upgradeable. The Stack is what persists.
+
+<break time="1200ms"/>
+
+<p>Needlecasting.</p>
+<break time="800ms"/>
+
+When an agent needs to move, different inference provider, different hardware, different continent, we don't copy it. We needlecast it. A 6-step atomic saga.
+
+<break time="500ms"/>
+
+Step one: Freeze. Stop the source Sleeve's tick loop.
+<break time="300ms"/>
+Step two: Shard. Collect the 8 most recent memory CIDs.
+<break time="300ms"/>
+Step three: Pin. Pin all shards on the memory DAG, which costs MemoryToken.
+<break time="300ms"/>
+Step four: Anchor. Record the route on the sequencing chain.
+<break time="300ms"/>
+Step five: Reconstruct. Spawn the target Sleeve, load pinned shards.
+<break time="300ms"/>
+Step six: Settle. Debit RoutingToken based on distance and shard count.
+
+<break time="500ms"/>
+
+If any step fails, the entire saga rolls back. The source Sleeve unfreezes. No tokens consumed. Atomic or nothing.
+
+<break time="500ms"/>
+
+The Stack's private key derives all epoch keys via HKDF. When the Sleeve changes, the key derivation chain doesn't break. The new Sleeve can decrypt every pinned memory because it holds the same Stack. Identity is the key. Literally.
+
+<break time="1200ms"/>
+
+<p>Layer 1a. Medulla Proof of Work.</p>
+<break time="800ms"/>
+
+The Medulla is a custom proof-of-work blockchain written in Go. It does one thing: keep time and commit coherence. Every 4 seconds, it mines a new block containing the coherence root, a single 32-byte hash that atomically finalizes the state of all three chains.
+
+<break time="500ms"/>
+
+It uses SHA-256 proof-of-work with standard Nakamoto consensus. Difficulty retargets every 10 blocks to maintain the 4-second epoch interval. Each block header contains the coherence root, and a Merkle Mountain Range built over the last 256 block hashes allows lightweight cross-shard proofs in just 8 hashes.
+
+<break time="500ms"/>
+
+The medulla oblongata is the brainstem. It controls involuntary functions: heartbeat, breathing, autonomic rhythm. You don't think about it. You can't turn it off. If it stops, you're dead.
+
+<break time="500ms"/>
+
+The Medulla PoW chain is identical in function. It provides the system's heartbeat, the 4-second epoch tick. Every other component synchronizes to this rhythm. No coherence root, no system.
+
+<break time="1200ms"/>
+
+<p>The Coherence Root.</p>
+<break time="800ms"/>
+
+The coherence root construction is the cryptographic spine of the entire system. It takes four inputs: the Merkle root of Cortex EVM transactions, a reserved slot for a future Bitcoin bridge, the Merkle root of Hippocampus DAG writes, and the Merkle root of active Sleeve states. These are concatenated with a domain separation prefix and hashed with SHA-256.
+
+<break time="500ms"/>
+
+This gives us atomic cross-shard finality. If the Medulla block is confirmed with k confirmations, then all three shards' states at that epoch have k confirmations simultaneously. One proof of work protects everything. Altering any shard's state would change its sub-root, which would change the coherence root, which would require mining a new block, contradicting the k confirmations under standard proof-of-work security.
+
+<break time="1200ms"/>
+
+<p>Layer 1b. Hippocampus DAG.</p>
+<break time="800ms"/>
+
+The Hippocampus is a content-addressed directed acyclic graph written in Go. It stores the agent's memories, encrypted, epoch-tagged, and organized as a DAG where each node links to its causal predecessors.
+
+<break time="500ms"/>
+
+Every memory node gets a CID, a Content Identifier, which is a hash of its contents. You can't tamper with a memory without changing its address. Immutable by construction.
+
+<break time="500ms"/>
+
+Each node is tagged with its creation epoch. You can only decrypt a node if you're within the alignment window, plus or minus 2 epochs by default, or if the node is pinned. Per-epoch encryption uses AES-256-GCM with a key derived via HKDF-SHA512 from the Stack's private key and the epoch number. Different epoch means different key.
+
+<break time="500ms"/>
+
+Pinning a node marks it for permanent retention. This is long-term memory. The system also calculates a fidelity score, what fraction of requested nodes were actually recoverable. Below 0.6 fidelity triggers a coordination failure called a Residue.
+
+<break time="1200ms"/>
+
+<p>Hippocampus. Brain Parallel.</p>
+<break time="800ms"/>
+
+The hippocampus is the brain's episodic memory center. It doesn't store memories permanently. It consolidates them. Recent memories are vivid and accessible. Old memories fade unless they're reinforced. Damage to the hippocampus causes anterograde amnesia. You can't form new memories.
+
+<break time="500ms"/>
+
+The Hippocampus DAG mirrors this exactly. Recent memories within the alignment window have high fidelity and are easily recalled. Old unpinned memories fade and become unrecoverable, the Ebbinghaus forgetting curve, implemented cryptographically. Pinned memories are consolidated into long-term storage, always recoverable.
+
+<break time="500ms"/>
+
+For non-pinned nodes, expected fidelity is approximately 5 divided by the recall depth. Shallow recent recall is high-fidelity. Deep historical recall degrades. This isn't a bug. It's the mathematical equivalent of biological memory consolidation.
+
+<break time="500ms"/>
+
+Each epoch key is computationally independent under the HKDF PRF assumption. Compromising epoch 50's key reveals nothing about epoch 49 or 51. Only the Stack holder can derive the keys. No other Stack, no server, no operator can decrypt your memories.
+
+<break time="1200ms"/>
+
+<p>Layer 1c. Cortex EVM.</p>
+<break time="800ms"/>
+
+The Cortex is a private Ethereum chain running geth with Clique proof-of-authority consensus. It hosts 7 Solidity smart contracts.
+
+<break time="500ms"/>
+
+StackIdentity is an ERC-721 NFT. Each Stack is a unique token with its CPV and epoch state on-chain.
+<break time="300ms"/>
+BandwidthToken is an ERC-20 with 5 sub-types: Compute, Memory, Sync, Routing, and Residue.
+<break time="300ms"/>
+QuellistTreasury is the emission engine. Every epoch, it calculates token allocations scaled by CPV and EBC decay.
+<break time="300ms"/>
+NeedlecastRouter handles on-chain coordination for the re-sleeving saga.
+<break time="300ms"/>
+SleeveRegistry manages Sleeve lifecycle: spawn, activate, decommission.
+<break time="300ms"/>
+ResidueRegistry tracks coordination failures and mints ResidueToken bounties.
+<break time="300ms"/>
+And EpochAnchor stores per-epoch coherence roots on-chain.
+
+<break time="500ms"/>
+
+The cerebral cortex is where executive function happens: planning, decision-making, abstract reasoning. It doesn't do the low-level work; it coordinates and governs. The Cortex EVM is identical. It doesn't store memories. It doesn't keep time. It governs: who can do what, who owns what, how resources flow, what happens when things break.
+
+<break time="1200ms"/>
+
+<p>The Synaptic Field.</p>
+<break time="800ms"/>
+
+The Synaptic Field is a bounded Merkle Mountain Range that sits between the base chains and the service layer. It maintains a rolling window of the last 256 Medulla block hashes, enabling lightweight cross-shard verification.
+
+<break time="500ms"/>
+
+Each new block hash is appended. When it exceeds 256 leaves, the oldest is evicted. Any event from any shard can be proven included via an 8-hash Merkle proof.
+
+<break time="500ms"/>
+
+Synaptic connections in the brain are how regions communicate. They're the binding tissue. The synaptic field refers to the collective electrical field generated by synchronized neural firing. The Synaptic Field MMR serves the same function: it binds the three chains together, enabling any component to verify any other component's state without full chain synchronization.
+
+<break time="1200ms"/>
+
+<p>Routing Services.</p>
+<break time="800ms"/>
+
+The Thalamus Router is the most critical service. The thalamus in the brain is the sensory relay center. Every sensory input except smell passes through it. The Thalamus Router subscribes to all events on the message bus. Every epoch tick, it collects all EVM transactions, DAG writes, and Sleeve states, computes the sub-roots, constructs the coherence root, and submits it to Medulla. If the Thalamus stops, coherence stops.
+
+<break time="500ms"/>
+
+The DHF Compositor handles memory reconstruction. DHF stands for Distributed Holographic Fragment. When an agent recalls memories, encrypted fragments come back from the DAG. The Compositor walks the DAG, derives per-epoch keys, decrypts each fragment, calculates fidelity, and assembles them into coherent memory. Like the association cortex integrating raw sense data into experience.
+
+<break time="500ms"/>
+
+The Needlecast Router manages the 6-step re-sleeving saga. The Quellist Treasury handles token emission every epoch. And the Bandwidth Faucet provides a rate-limited token drip for development.
+
+<break time="1200ms"/>
+
+<p>Execution Layer.</p>
+<break time="800ms"/>
+
+The Sleeve Runtime is a 4-in-1 parametric dispatcher managing running Sleeves. Each Sleeve has a tick rate, milliseconds between perception cycles. The runtime fires ticks, manages drift counters, and handles sync operations.
+
+<break time="500ms"/>
+
+Drift tracking is key. Every perceive operation increments drift by 1. Every recall by 0.1. Sync resets to 0 but costs 1 SyncToken. If drift exceeds 15, a warning fires. If it exceeds 30, the Sleeve is automatically decommissioned and a stale-ordering Residue is spawned.
+
+<break time="500ms"/>
+
+This is cognitive dissonance. The quantitative measure of how far an agent's internal state has diverged from reality. Sync is reality testing.
+
+<break time="500ms"/>
+
+The Worker Runner is a 6-in-1 background worker: drift checker, residue detector, epoch finalizer, memory pruner, token decayer, and anchor auditor. Like glial cells in the brain. They outnumber neurons 10 to 1. They don't fire signals. They maintain the environment. They clean up dead cells, provide metabolic support, and insulate axons.
+
+<break time="1200ms"/>
+
+<p>The Token Economy.</p>
+<break time="800ms"/>
+
+ECCA has 5 tokens. These are not currencies. They're not stores of value. They are bandwidth, quantified capacity to perform cognitive operations.
+
+<break time="500ms"/>
+
+ComputeToken is the capacity to think, consumed by perceive, mine, and infer operations.
+<break time="300ms"/>
+MemoryToken is the capacity to remember, consumed by recall and pin operations.
+<break time="300ms"/>
+SyncToken is the capacity to synchronize, consumed by drift resets.
+<break time="300ms"/>
+RoutingToken is the capacity to move, consumed by needlecasting.
+<break time="300ms"/>
+And ResidueToken is proof of repair, earned only, never emitted by the treasury.
+
+<break time="500ms"/>
+
+Every token except Residue decays when unused via the Epoch Binding Curve. The formula is: the maximum of the floor, or e to the negative lambda times delta e. Where delta e is epochs since last activity, lambda is 0.05, and the floor is 0.25.
+
+<break time="500ms"/>
+
+At default settings: 0 epochs idle means 100% effective balance. 14 epochs idle, about 56 seconds, means 50%. 28 epochs idle means 25%, the floor. A thousand epochs idle is still 25%. The floor prevents total death.
+
+<break time="500ms"/>
+
+This is Hebbian learning: neurons that fire together wire together. Use your tokens? They're worth 100%. Leave them idle? They fade to 25%. You can't hoard bandwidth. You have to use it. This kills speculation. The only way to maintain full value is to actively use the system.
+
+<break time="1200ms"/>
+
+<p>Coherence Profile Vector.</p>
+<break time="800ms"/>
+
+Each Stack has a Coherence Profile Vector, a 5-dimensional vector where each value ranges from 0 to 2. It scales emission and effectiveness per token dimension.
+
+<break time="500ms"/>
+
+An AI Agent might have values of 1.5, 1.2, 0.8, 0.3, 0.2, heavy on compute and memory, light on routing.
+<break time="300ms"/>
+A Human Journal might be 0.3, 1.8, 0.5, 0.2, 0.2, heavy on memory, light on everything else.
+<break time="300ms"/>
+A Mining Validator might be 0.5, 0.3, 1.5, 0.5, 0.2, heavy on sync.
+<break time="300ms"/>
+A Residue Resolver might be 0.3, 0.5, 0.5, 0.5, 1.2, focused on residue work.
+
+<break time="500ms"/>
+
+If your CPV over-allocates to a dimension you don't use, those tokens accumulate but decay. Economic pressure drives alignment with actual behavior. The system self-tunes. Just like cortical columns in the neocortex that specialize for vision, movement, or language.
+
+<break time="1200ms"/>
+
+<p>Coordination Residues.</p>
+<break time="800ms"/>
+
+Every distributed system has failures. The standard approach: retry, log, alert, page someone at 3 AM. ECCA's approach: make failures tradeable.
+
+<break time="500ms"/>
+
+A Residue is a first-class economic object representing a coordination failure. There are 5 kinds.
+
+<break time="500ms"/>
+
+Stale Ordering, triggered when a Sleeve drifts 4 or more epochs behind. Bounty: 2 ResidueToken.
+<break time="300ms"/>
+Speculative Divergence, when co-resident Sleeves write conflicting branches. Bounty: 5.
+<break time="300ms"/>
+Historical Non-Canonical, when recall fidelity drops below 0.6. Bounty: 8.
+<break time="300ms"/>
+Reorg Orphan, when a Medulla reorg detaches an EpochAnchor. Bounty: 12.
+<break time="300ms"/>
+And Shard Loss, when a known CID becomes unreachable. Bounty: 15 ResidueToken.
+
+<break time="500ms"/>
+
+Any Stack can claim an open Residue. The claimant must submit a valid proof of resolution within the time limit. First valid proof wins the full bounty, minted as fresh ResidueToken. No auction. No bidding. Speed wins.
+
+<break time="1200ms"/>
+
+<p>The Self-Healing Loop.</p>
+<break time="800ms"/>
+
+This is the most elegant part of the system. More failures create more open Residues, which mint more ResidueToken. More ResidueToken means higher resolver profitability, which attracts more resolvers. More resolvers means faster repair, which reduces open Residues. Fewer failures means less ResidueToken supply, which increases scarcity value.
+
+<break time="500ms"/>
+
+At equilibrium, failure rate equals resolution rate. ResidueToken value is inversely proportional to system reliability. The system literally pays people to fix it, and the payment scales with severity automatically.
+
+<break time="500ms"/>
+
+The brain parallel is the immune system. Pathogens, failures, trigger antibody production. More infection means more antibodies, faster response, and system healing. Scar tissue remains as a record. ResidueToken doesn't decay, it's exempt from the Epoch Binding Curve, just like acquired immunity.
+
+<break time="500ms"/>
+
+This is the piece most people miss about consciousness. It's not just about processing information. It's about maintaining coherence in the face of constant perturbation. Your brain is noisy. Neurons misfire. Signals get lost. And yet, you maintain a unified sense of self. ECCA's Residue system is the distributed equivalent. It metabolizes failures into repair signals. That's not a metaphor for consciousness. That's a mechanism for it.
+
+<break time="1200ms"/>
+
+<p>The Communication Layer.</p>
+<break time="800ms"/>
+
+All inter-service communication runs through NATS JetStream, which we call the Axonal Bus. Durable subjects under the ECCA namespace. Publish and subscribe with guaranteed delivery.
+
+<break time="500ms"/>
+
+Axon fibers are the long-range communication channels of the nervous system. They carry signals between distant brain regions. They're myelinated for speed, bundled for efficiency, and reliable. NATS JetStream serves the same role: the long-range transport fabric connecting all services. It's the nervous system's white matter, the wiring that makes the brain a unified system.
+
+<break time="1200ms"/>
+
+<p>The Coherence Cycle.</p>
+<break time="800ms"/>
+
+Here's what happens every 4 seconds in a running ECCA system.
+
+<break time="500ms"/>
+
+Step 1: Medulla mines a block. The epoch tick fires.
+<break time="300ms"/>
+Step 2: Thalamus subscribes and collects all events across all three chains.
+<break time="300ms"/>
+Step 3: Sub-roots are computed. Merkle roots over EVM transactions, DAG writes, and active Sleeves.
+<break time="300ms"/>
+Step 4: The coherence root is constructed from all four sub-roots.
+<break time="300ms"/>
+Step 5: The root is submitted to Medulla and committed via proof of work.
+<break time="300ms"/>
+Step 6: The root is anchored on Cortex via the EpochAnchor contract.
+<break time="300ms"/>
+Step 7: The MMR is updated. The Synaptic Field appends the new block hash.
+<break time="300ms"/>
+Step 8: The Treasury emits tokens to each active Stack, scaled by CPV and EBC.
+<break time="300ms"/>
+Step 9: Workers run checks: drift, residues, memory pruning.
+<break time="300ms"/>
+Step 10: Sleeves tick. Each active Sleeve runs its perception cycle.
+
+<break time="500ms"/>
+
+This happens 900 times per hour. 21,600 times per day. Continuously. Autonomically. Like a heartbeat. And across this rhythm, agents perceive, remember, forget, synchronize, migrate, coordinate, fail, and heal. Persistently.
+
+<break time="1200ms"/>
+
+<p>Why This Models Distributed AI Consciousness.</p>
+<break time="800ms"/>
+
+Consciousness, whatever it is, seems to require at minimum: persistent identity, episodic memory, temporal coherence, embodiment, resource constraints, failure integration, specialization, and homeostasis.
+
+<break time="500ms"/>
+
+ECCA provides every one of these. Persistent identity through Stacks. Episodic memory through the Hippocampus DAG. Temporal coherence through the coherence root. Embodiment through Sleeves. Resource constraints through the 5-dimensional token economy with decay. Failure integration through the Residue system. Specialization through CPV tuning. And homeostasis through the balance of EBC decay and Treasury emission.
+
+<break time="500ms"/>
+
+ECCA doesn't claim to create consciousness. But it provides every architectural prerequisite that neuroscience tells us is necessary for it. And it does so with formal mathematical guarantees.
+
+<break time="500ms"/>
+
+If distributed AI consciousness is possible, it will need infrastructure exactly like this.
+
+<break time="1200ms"/>
+
+<p>Closing.</p>
+<break time="800ms"/>
+
+ECCA is 24 services, 7 smart contracts, 3 independent blockchains, a published research paper with formal proofs, and a complete deployment system. It's not a whitepaper. It's not a roadmap. It's built.
+
+<break time="500ms"/>
+
+The question isn't whether AI agents will need persistent memory, portable identity, and formal coordination. They will. The question is whether the brain's architecture, 500 million years of evolution's best answer to distributed coherence, is a valid blueprint for building it.
+
+<break time="500ms"/>
+
+We think it is. The code proves it compiles. The math proves it's sound. The neuroscience proves it's not arbitrary.
+
+<break time="500ms"/>
+
+What remains is to prove it scales. And that's what the next 18 months are about.
+
+<break time="800ms"/>
+
+Welcome to ECCA. Your agents are about to remember everything.
+
+<break time="2000ms"/>
+
+</speak>
