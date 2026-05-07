@@ -2,21 +2,56 @@ node_modules/
 dist/
 build/
 .turbo/
+
+# Environment files (contain secrets)
 .env
 .env.local
+.env.production
+.env.*.local
+services/ecca-bot/.env
+
+# Logs
 *.log
+
+# Test coverage
 coverage/
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Next.js
 .next/
+
+# Hardhat / Foundry
 artifacts/
 cache/
 typechain-types/
+out/
+
 # Go
 forks/**/bin/
 forks/**/data/
+
 # Chain data volumes
 data/
 volumes/
+
 # IDE
 .vscode/
 .idea/
+
+# Chroma vector DB
+chroma_db/
+**/chroma_db/
+
+# Docker
+docker-compose.override.yml
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Generated / compiled
+*.pdf
