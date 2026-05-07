@@ -23,10 +23,11 @@
     "compat": "pnpm --filter @ecca/compat-runner run replay"
   },
   "devDependencies": {
-    "turbo": "^2.0.14",
-    "typescript": "^5.5.4",
-    "rimraf": "^6.0.1",
+    "@types/node": "^20.14.10",
+    "node-latex-compiler": "^1.0.5",
     "prettier": "^3.3.3",
-    "@types/node": "^20.14.10"
+    "rimraf": "^6.0.1",
+    "turbo": "^2.0.14",
+    "typescript": "^5.5.4"
   }
 }
