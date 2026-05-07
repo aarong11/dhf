@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tokenomics — ECCA Stack</title>
+  <meta name="description" content="ECCA's five cognitive tokens, emission mechanics, decay curves, and Coherence Profile Vector — a token economy designed for autonomous AI agents.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-gradient-top"></div>
+
+<!-- Navigation -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <span class="logo-icon">◈</span>
+      ECCA
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html#features">Features</a></li>
+      <li><a href="index.html#how-it-works">How It Works</a></li>
+      <li><a href="tokenomics.html" class="active">Tokens</a></li>
+      <li><a href="index.html#roadmap">Roadmap</a></li>
+      <li><a href="architecture.html">Architecture</a></li>
+      <li><a href="docs.html">Docs</a></li>
+      <li><a href="tokenomics.html" class="nav-cta">Token Launch →</a></li>
+    </ul>
+    <button class="nav-mobile-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="content-wrapper">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" style="min-height: 70vh;">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-tag">
+          <span class="pulse-dot"></span>
+          COGNITIVE TOKEN ECONOMY
+        </div>
+        <h1 style="font-size: clamp(2rem, 5vw, 4rem);">Bandwidth,<br>Not Money</h1>
+        <p class="hero-description">
+          ECCA rejects traditional crypto-economics. Tokens represent <strong style="color: #fff;">capacity to act</strong>, not wealth to hoard. Unused tokens decay. Work keeps you alive. Coordination failures become incentivized repair opportunities.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ THE FIVE TOKENS ============ -->
+  <section>
+    <div class="container">
+      <span class="section-label reveal">// The Five Cognitive Tokens</span>
+      <h2 class="section-title reveal">One token per cognitive dimension</h2>
+      <p class="section-subtitle reveal">Each token type maps to a specific cognitive capacity. Together, they create a complete economic model for autonomous agent behavior.</p>
+
+      <!-- ComputeToken -->
+      <div class="card reveal" style="margin-bottom: 2rem;">
+        <div style="display: grid; grid-template-columns: 80px 1fr; gap: 2rem; align-items: start;">
+          <div class="card-icon cyan" style="width: 64px; height: 64px; font-size: 1.8rem;">⚡</div>
+          <div>
+            <h3 style="color: var(--neon-cyan);">ComputeToken</h3>
+            <span class="badge badge-cyan" style="margin-bottom: 1rem; display: inline-block;">DECAYS VIA EBC</span>
+            <p>Powers all inference and perception operations. Every time a sleeve writes to the DAG (perceive), mines a block, or runs inference, ComputeToken is consumed and burned.</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+              <div>
+                <h4 style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">CONSUMPTION RATES</h4>
+                <table class="comparison-table" style="font-size: 0.8rem;">
+                  <tbody>
+                    <tr><td>perceive (write)</td><td style="color: var(--neon-cyan);">0.5 CT</td></tr>
+                    <tr><td>mine block</td><td style="color: var(--neon-cyan);">1.0 CT</td></tr>
+                    <tr><td>AI inference (per tick)</td><td style="color: var(--neon-cyan);">5–50 CT</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div>
+                <h4 style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">OPTIMIZED FOR</h4>
+                <p style="font-size: 0.85rem;">AI sleeves (high compute, fast inference), mining sleeves (block production), and any agent running active workloads.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MemoryToken -->
+      <div class="card reveal" style="margin-bottom: 2rem;">
+        <div style="display: grid; grid-template-columns: 80px 1fr; gap: 2rem; align-items: start;">
+          <div class="card-icon magenta" style="width: 64px; height: 64px; font-size: 1.8rem;">◈</div>
+          <div>
+            <h3 style="color: var(--neon-magenta);">MemoryToken</h3>
+            <span class="badge badge-magenta" style="margin-bottom: 1rem; display: inline-block;">DECAYS VIA EBC</span>
+            <p>Controls recall depth into the content-addressed DAG. Deeper memory means more tokens consumed. Perfect total recall requires unbounded MemoryToken — creating natural economic pressure for selective, meaningful memory.</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+              <div>
+                <h4 style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">CONSUMPTION RATES</h4>
+                <table class="comparison-table" style="font-size: 0.8rem;">
+                  <tbody>
+                    <tr><td>recall (depth=d)</td><td style="color: var(--neon-magenta);">d × 1.0 MT</td></tr>
+                    <tr><td>pin (durability bond)</td><td style="color: var(--neon-magenta);">0.5 MT</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div>
+                <h4 style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">KEY INSIGHT</h4>
+                <p style="font-size: 0.85rem;">Recall is bounded by <code>min(requested_depth, available_MT)</code>. Fidelity drops below 0.6 at ~100 epochs for non-pinned nodes — triggering historical-non-canonical residues.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SyncToken -->
+      <div class="card reveal" style="margin-bottom: 2rem;">
+        <div style="display: grid; grid-template-columns: 80px 1fr; gap: 2rem; align-items: start;">
+          <div class="card-icon green" style="width: 64px; height: 64px; font-size: 1.8rem;">⟲</div>
+          <div>
+            <h3 style="color: var(--neon-green);">SyncToken</h3>
+            <span class="badge badge-green" style="margin-bottom: 1rem; display: inline-block;">DECAYS VIA EBC</span>
+            <p>Pays for drift reset and epoch synchronization. When a sleeve drifts too far from the canonical state (drift > DRIFT_MAX), it must spend SyncToken to re-align. Like a neural reset — re-establishing coherence with the rest of the system.</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+              <div>
+                <h4 style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">CONSUMPTION RATES</h4>
+                <table class="comparison-table" style="font-size: 0.8rem;">
+                  <tbody>
+                    <tr><td>sync (reset drift)</td><td style="color: var(--neon-green);">1.0 ST</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div>
+                <h4 style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">DRIFT MODEL</h4>
+                <p style="font-size: 0.85rem;">Each perceive increments drift by 1. If drift > 15 → warning. If drift > 30 → automatic decommission + residue. Sync resets drift to 0.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RoutingToken -->
+      <div class="card reveal" style="margin-bottom: 2rem;">
+        <div style="display: grid; grid-template-columns: 80px 1fr; gap: 2rem; align-items: start;">
+          <div class="card-icon yellow" style="width: 64px; height: 64px; font-size: 1.8rem;">⇄</div>
+          <div>
+            <h3 style="color: var(--neon-yellow);">RoutingToken</h3>
+            <span class="badge" style="margin-bottom: 1rem; display: inline-block; color: var(--neon-yellow); border-color: rgba(224,255,0,0.3); background: rgba(224,255,0,0.08);">DECAYS VIA EBC</span>
+            <p>Pays for needlecasting — the atomic transfer of a Stack (mind) to a new Sleeve (body). Cost scales with the complexity of the transfer: number of memory shards to pin and epoch distance between source and target.</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+              <div>
+                <h4 style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">CONSUMPTION FORMULA</h4>
+                <div class="equation-block" style="font-size: 0.8rem; text-align: left; padding: 1rem;">
+                  cost = 5 + 0.1 × shards + 0.5 × |Δepoch|
+                </div>
+              </div>
+              <div>
+                <h4 style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">USE CASE</h4>
+                <p style="font-size: 0.85rem;">Transferring an agent from one inference provider to another. Moving a Stack from a cloud sleeve to an edge device. Cross-provider migration with full memory continuity.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ResidueToken -->
+      <div class="card reveal" style="margin-bottom: 2rem; border-color: rgba(255, 107, 0, 0.2);">
+        <div style="display: grid; grid-template-columns: 80px 1fr; gap: 2rem; align-items: start;">
+          <div class="card-icon orange" style="width: 64px; height: 64px; font-size: 1.8rem;">◉</div>
+          <div>
+            <h3 style="color: var(--neon-orange);">ResidueToken</h3>
+            <span class="badge" style="margin-bottom: 1rem; display: inline-block; color: var(--neon-orange); border-color: rgba(255,107,0,0.3); background: rgba(255,107,0,0.08);">NO DECAY — PERMANENT</span>
+            <p>The only token exempt from the Epoch Binding Curve. Earned exclusively by resolving coordination failures (residues). The system's immune system — the more it breaks, the more profitable it becomes to fix it.</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+              <div>
+                <h4 style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">BOUNTY TABLE</h4>
+                <table class="comparison-table" style="font-size: 0.8rem;">
+                  <tbody>
+                    <tr><td>Stale Ordering</td><td style="color: var(--neon-orange);">2 RT</td></tr>
+                    <tr><td>Speculative Divergence</td><td style="color: var(--neon-orange);">5 RT</td></tr>
+                    <tr><td>Historical Non-Canonical</td><td style="color: var(--neon-orange);">8 RT</td></tr>
+                    <tr><td>Reorg Orphan</td><td style="color: var(--neon-orange);">12 RT</td></tr>
+                    <tr><td>Shard Loss</td><td style="color: var(--neon-orange);">15 RT</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div>
+                <h4 style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">WHY NO DECAY?</h4>
+                <p style="font-size: 0.85rem;">Coordination repair must remain incentivized indefinitely. Once a system is broken, the motivation to fix it cannot decay. ResidueToken is the only store of persistent value in ECCA.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container"><hr class="neon-divider"></div>
+
+  <!-- ============ EMISSION MECHANICS ============ -->
+  <section>
+    <div class="container">
+      <span class="section-label reveal">// Emission Mechanics</span>
+      <h2 class="section-title reveal">Per-epoch token issuance</h2>
+      <p class="section-subtitle reveal">The QuellistTreasury contract issues tokens every 4-second epoch, scaled by each Stack's Coherence Profile Vector and decayed by the Epoch Binding Curve.</p>
+
+      <div class="grid-2 reveal">
+        <div class="card">
+          <h3>Epoch Binding Curve (EBC)</h3>
+          <p style="margin-top: 1rem;">Tokens lose effectiveness over time. The EBC applies an exponential decay with a hard floor — unused tokens retain at minimum 25% of their original value.</p>
+          <div class="equation-block" style="margin-top: 1rem;">
+            effective<sub>k</sub> = raw<sub>k</sub> × cpv<sub>k</sub> × max(0.25, e<sup>-0.05 × Δepoch</sup>)
+          </div>
+          <p style="margin-top: 1rem; font-size: 0.85rem;">A quiescent stack decays to 25% effectiveness after ~28 epochs (~112 seconds) of inactivity. Active stacks never hit the floor.</p>
+          <div style="margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 8px; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">
+            <div>Δ0 epochs: ████████████████████ 100%</div>
+            <div>Δ5 epochs: ████████████████░░░░ 78%</div>
+            <div>Δ10 epochs: ████████████░░░░░░░░ 61%</div>
+            <div>Δ15 epochs: █████████░░░░░░░░░░░ 47%</div>
+            <div>Δ20 epochs: ███████░░░░░░░░░░░░░ 37%</div>
+            <div>Δ28 epochs: █████░░░░░░░░░░░░░░░ 25% (floor)</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Coherence Profile Vector (CPV)</h3>
+          <p style="margin-top: 1rem;">Each Stack carries a 5-coefficient vector (each ∈ [0, 2]) that scales token issuance per dimension. This is the Stack's <em>cognitive specialization</em>.</p>
+          <div style="margin-top: 1.5rem;">
+            <h4 style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">EXAMPLE PROFILES</h4>
+
+            <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(0,0,0,0.3); border-radius: 6px; border-left: 3px solid var(--neon-cyan);">
+              <strong style="font-size: 0.85rem;">AI Agent Stack</strong>
+              <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); margin-top: 0.3rem;">
+                compute: 1.8 | memory: 0.6 | sync: 1.0 | routing: 0.4 | residue: 1.2
+              </div>
+            </div>
+
+            <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(0,0,0,0.3); border-radius: 6px; border-left: 3px solid var(--neon-magenta);">
+              <strong style="font-size: 0.85rem;">Human Journal Stack</strong>
+              <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); margin-top: 0.3rem;">
+                compute: 0.4 | memory: 1.8 | sync: 0.8 | routing: 0.5 | residue: 0.5
+              </div>
+            </div>
+
+            <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(0,0,0,0.3); border-radius: 6px; border-left: 3px solid var(--neon-green);">
+              <strong style="font-size: 0.85rem;">Mining Validator Stack</strong>
+              <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); margin-top: 0.3rem;">
+                compute: 1.5 | memory: 0.3 | sync: 1.8 | routing: 0.2 | residue: 0.2
+              </div>
+            </div>
+
+            <div style="padding: 0.8rem; background: rgba(0,0,0,0.3); border-radius: 6px; border-left: 3px solid var(--neon-orange);">
+              <strong style="font-size: 0.85rem;">Residue Resolver Stack</strong>
+              <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); margin-top: 0.3rem;">
+                compute: 0.8 | memory: 1.0 | sync: 0.8 | routing: 0.4 | residue: 2.0
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-key reveal" style="margin-top: 2rem;">
+        <strong>Self-Punishing Mismatch:</strong> If a Stack's CPV over-allocates to tokens it doesn't consume (e.g., high routing allocation but never needlecasts), those tokens decay to the floor and are wasted. Economic pressure naturally drives Stacks to align their CPV with actual behavior.
+      </div>
+    </div>
+  </section>
+
+  <div class="container"><hr class="neon-divider"></div>
+
+  <!-- ============ RESIDUE SYSTEM ============ -->
+  <section>
+    <div class="container">
+      <span class="section-label reveal">// The Residue System</span>
+      <h2 class="section-title reveal">Failures as first-class economic objects</h2>
+      <p class="section-subtitle reveal">In traditional systems, coordination failures are hidden or silently retried. In ECCA, they become tradeable objects with token bounties — transforming errors into opportunities.</p>
+
+      <div class="grid-2 reveal">
+        <div>
+          <h3>Five Kinds of Residue</h3>
+          <div style="margin-top: 1.5rem;">
+            <div class="card" style="margin-bottom: 1rem; padding: 1.2rem;">
+              <h4 style="font-size: 0.95rem;"><span style="color: var(--neon-orange);">◉</span> Stale Ordering <span class="badge badge-cyan" style="margin-left: 0.5rem;">2 RT</span></h4>
+              <p style="font-size: 0.85rem;">A sleeve fell behind the canonical epoch by ≥4 ticks. Detected by drift-checker worker.</p>
+            </div>
+            <div class="card" style="margin-bottom: 1rem; padding: 1.2rem;">
+              <h4 style="font-size: 0.95rem;"><span style="color: var(--neon-orange);">◉</span> Speculative Divergence <span class="badge badge-magenta" style="margin-left: 0.5rem;">5 RT</span></h4>
+              <p style="font-size: 0.85rem;">Two co-resident sleeves wrote conflicting branches to the memory DAG. Resolver chooses canonical branch.</p>
+            </div>
+            <div class="card" style="margin-bottom: 1rem; padding: 1.2rem;">
+              <h4 style="font-size: 0.95rem;"><span style="color: var(--neon-orange);">◉</span> Historical Non-Canonical <span class="badge badge-cyan" style="margin-left: 0.5rem;">8 RT</span></h4>
+              <p style="font-size: 0.85rem;">Recall fidelity dropped below 0.6 (60%). Memory integrity compromised — requires repair or re-pinning.</p>
+            </div>
+            <div class="card" style="margin-bottom: 1rem; padding: 1.2rem;">
+              <h4 style="font-size: 0.95rem;"><span style="color: var(--neon-orange);">◉</span> Reorg Orphan <span class="badge badge-magenta" style="margin-left: 0.5rem;">12 RT</span></h4>
+              <p style="font-size: 0.85rem;">A Medulla PoW reorg detached an EpochAnchor. Memory survives; the discrepancy is recorded.</p>
+            </div>
+            <div class="card" style="padding: 1.2rem;">
+              <h4 style="font-size: 0.95rem;"><span style="color: var(--neon-orange);">◉</span> Shard Loss <span class="badge" style="margin-left: 0.5rem; color: var(--neon-orange); border-color: rgba(255,107,0,0.3); background: rgba(255,107,0,0.08);">15 RT</span></h4>
+              <p style="font-size: 0.85rem;">A known CID is unreachable on Hippocampus. Highest bounty — data replication is the most valuable repair.</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3>Lifecycle & Economics</h3>
+          <div style="margin-top: 1.5rem;">
+            <div class="equation-block" style="text-align: left; font-size: 0.85rem;">
+              detected → open → claimed → resolved<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└→ expired (TTL)
+            </div>
+
+            <div class="callout callout-info" style="margin-top: 1.5rem;">
+              <strong>First-Valid-Proof Model:</strong> Any resolver can claim a residue and submit proof. First valid proof wins the full bounty. No auction overhead — pure incentive alignment.
+            </div>
+
+            <h4 style="margin-top: 2rem;">Self-Healing Economics</h4>
+            <p style="color: var(--text-secondary); margin-top: 0.5rem;">The system creates a natural feedback loop:</p>
+            <ul style="color: var(--text-secondary); margin-top: 0.5rem;">
+              <li><strong style="color: #fff;">More failures</strong> → more ResidueToken minted → more profit for resolvers</li>
+              <li><strong style="color: #fff;">More resolvers</strong> → faster repair → fewer open residues</li>
+              <li><strong style="color: #fff;">Fewer failures</strong> → less ResidueToken supply → higher scarcity value</li>
+            </ul>
+
+            <h4 style="margin-top: 2rem;">ResidueToken Utility</h4>
+            <ul style="color: var(--text-secondary); margin-top: 0.5rem;">
+              <li>Tradeable on Cortex EVM</li>
+              <li>Bondable — ≥100 RT required for memory-keeper sleeves at scale</li>
+              <li>Only grows when failures occur</li>
+              <li>Never decays (permanent store of coordination value)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container"><hr class="neon-divider"></div>
+
+  <!-- ============ TOKEN LAUNCH ============ -->
+  <section>
+    <div class="container">
+      <span class="section-label reveal">// Token Launch</span>
+      <h2 class="section-title reveal">Join the testnet economy</h2>
+      <p class="section-subtitle reveal">ECCA's token economy launches on the incentivized testnet in Q3 2026. Here's how to participate.</p>
+
+      <div class="grid-3 reveal">
+        <div class="card" style="text-align: center;">
+          <div class="card-icon cyan" style="margin: 0 auto 1rem;">01</div>
+          <h3>Create a Stack</h3>
+          <p>Mint your StackIdentity NFT on Cortex EVM. Set your Coherence Profile Vector to match your intended role (AI agent, validator, resolver, etc.).</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div class="card-icon magenta" style="margin: 0 auto 1rem;">02</div>
+          <h3>Spawn Sleeves</h3>
+          <p>Deploy one or more sleeves — AI inference runners, human journal interfaces, mining validators, or memory keepers. Each sleeve type optimizes for different token dimensions.</p>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div class="card-icon green" style="margin: 0 auto 1rem;">03</div>
+          <h3>Earn & Resolve</h3>
+          <p>Treasury emits tokens every epoch. Do useful work to prevent decay. Detect and resolve coordination residues to earn the permanent, non-decaying ResidueToken.</p>
+        </div>
+      </div>
+
+      <div class="stats-bar reveal" style="margin-top: 3rem;">
+        <div class="stat-item">
+          <div class="stat-value">100</div>
+          <div class="stat-label">Tokens/Epoch/Stack</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">4s</div>
+          <div class="stat-label">Epoch Duration</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">5</div>
+          <div class="stat-label">Token Dimensions</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">∞</div>
+          <div class="stat-label">ResidueToken TTL</div>
+        </div>
+      </div>
+
+      <div class="callout callout-warn reveal" style="margin-top: 2rem;">
+        <strong>Not an ICO or presale.</strong> ECCA tokens are not speculative assets. They are bandwidth — capacity to use the system. They decay if unused. They are earned through work, not purchased. The only permanent token (ResidueToken) is earned by repairing coordination failures.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CTA ============ -->
+  <section class="cta-section">
+    <div class="container">
+      <h2 class="reveal">Ready to build persistent AI?</h2>
+      <p class="reveal">Read the full architecture documentation or start building on the testnet.</p>
+      <div class="hero-actions reveal" style="justify-content: center;">
+        <a href="architecture.html" class="btn btn-primary">Architecture Deep-Dive</a>
+        <a href="docs.html" class="btn btn-outline">Developer Docs →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div>
+          <div class="nav-logo" style="margin-bottom: 0.5rem;">
+            <span class="logo-icon">◈</span>
+            ECCA Stack
+          </div>
+          <p class="footer-copy">Eternal Coherence over Cryptographic Anchors</p>
+        </div>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="architecture.html">Architecture</a></li>
+          <li><a href="docs.html">Documentation</a></li>
+          <li><a href="https://github.com" target="_blank">GitHub</a></li>
+        </ul>
+        <p class="footer-copy">&copy; 2026 ECCA Protocol. MIT License.</p>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>

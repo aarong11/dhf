@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation — ECCA Stack</title>
+  <meta name="description" content="Complete developer documentation for ECCA Stack — API reference, component guides, deployment, security model, and glossary.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-gradient-top"></div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <span class="logo-icon">◈</span>
+      ECCA
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html#features">Features</a></li>
+      <li><a href="index.html#how-it-works">How It Works</a></li>
+      <li><a href="tokenomics.html">Tokens</a></li>
+      <li><a href="index.html#roadmap">Roadmap</a></li>
+      <li><a href="architecture.html">Architecture</a></li>
+      <li><a href="docs.html" class="active">Docs</a></li>
+      <li><a href="tokenomics.html" class="nav-cta">Token Launch →</a></li>
+    </ul>
+    <button class="nav-mobile-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="content-wrapper">
+
+  <div class="container">
+    <div class="docs-layout">
+
+      <!-- Sidebar -->
+      <aside class="docs-sidebar">
+        <div class="docs-sidebar-section">
+          <h4>Getting Started</h4>
+          <ul>
+            <li><a href="#overview" class="active">Overview</a></li>
+            <li><a href="#quickstart">Quickstart</a></li>
+            <li><a href="#prerequisites">Prerequisites</a></li>
+          </ul>
+        </div>
+        <div class="docs-sidebar-section">
+          <h4>API Reference</h4>
+          <ul>
+            <li><a href="#api-stacks">Stack Management</a></li>
+            <li><a href="#api-sleeves">Sleeve Lifecycle</a></li>
+            <li><a href="#api-perceive">Perceive & Recall</a></li>
+            <li><a href="#api-needlecast">Needlecasting</a></li>
+            <li><a href="#api-tokens">Token Balances</a></li>
+          </ul>
+        </div>
+        <div class="docs-sidebar-section">
+          <h4>Components</h4>
+          <ul>
+            <li><a href="#comp-synapse">Synapse API</a></li>
+            <li><a href="#comp-thalamus">Thalamus Router</a></li>
+            <li><a href="#comp-dhf">DHF Compositor</a></li>
+            <li><a href="#comp-needlecast">Needlecast Router</a></li>
+            <li><a href="#comp-treasury">Quellist Treasury</a></li>
+            <li><a href="#comp-sleeve">Sleeve Runtime</a></li>
+            <li><a href="#comp-worker">Worker Runner</a></li>
+          </ul>
+        </div>
+        <div class="docs-sidebar-section">
+          <h4>Chains</h4>
+          <ul>
+            <li><a href="#chain-medulla">Medulla PoW</a></li>
+            <li><a href="#chain-hippocampus">Hippocampus DAG</a></li>
+            <li><a href="#chain-cortex">Cortex EVM</a></li>
+          </ul>
+        </div>
+        <div class="docs-sidebar-section">
+          <h4>Concepts</h4>
+          <ul>
+            <li><a href="#concept-coherence">Coherence Root</a></li>
+            <li><a href="#concept-drift">Drift & Sync</a></li>
+            <li><a href="#concept-residue">Residue System</a></li>
+            <li><a href="#concept-memory">Memory Model</a></li>
+            <li><a href="#concept-cpv">CPV & EBC</a></li>
+          </ul>
+        </div>
+        <div class="docs-sidebar-section">
+          <h4>Advanced</h4>
+          <ul>
+            <li><a href="#security">Security Model</a></li>
+            <li><a href="#deployment">Deployment</a></li>
+            <li><a href="#glossary">Glossary</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="docs-content">
+
+        <!-- OVERVIEW -->
+        <h2 id="overview">Overview</h2>
+        <p>ECCA Stack v3 (Eternal Coherence over Cryptographic Anchors) is a distributed cognitive operating system for autonomous AI agents. It provides persistent memory, portable identity, cross-chain coherence, and a tokenized bandwidth economy.</p>
+
+        <div class="callout callout-info">
+          <strong>Core Thesis:</strong> Digital identity is not location-dependent or device-dependent — it is coherence-dependent. A mind (Stack) persists across embodiments (Sleeves), memory is content-addressed and cryptographically gated, and coordination failures are first-class economic objects.
+        </div>
+
+        <h3>Key Components</h3>
+        <table>
+          <thead>
+            <tr><th>Component</th><th>Role</th><th>Language</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Medulla PoW</td><td>Sequencing & coherence anchoring</td><td>Go</td></tr>
+            <tr><td>Hippocampus DAG</td><td>Content-addressed memory storage</td><td>Go</td></tr>
+            <tr><td>Cortex EVM</td><td>Identity, tokens, contracts</td><td>Solidity/geth</td></tr>
+            <tr><td>Synapse API</td><td>REST/WS gateway</td><td>TypeScript</td></tr>
+            <tr><td>Thalamus Router</td><td>Cross-shard coherence folding</td><td>TypeScript</td></tr>
+            <tr><td>DHF Compositor</td><td>Memory reconstruction</td><td>TypeScript</td></tr>
+            <tr><td>Needlecast Router</td><td>Re-sleeving orchestration</td><td>TypeScript</td></tr>
+            <tr><td>Quellist Treasury</td><td>Per-epoch token emission</td><td>TypeScript</td></tr>
+            <tr><td>Sleeve Runtime</td><td>4-in-1 process dispatcher</td><td>TypeScript</td></tr>
+            <tr><td>Worker Runner</td><td>6-in-1 background worker</td><td>TypeScript</td></tr>
+          </tbody>
+        </table>
+
+        <!-- QUICKSTART -->
+        <h2 id="quickstart">Quickstart</h2>
+        <h3>Local Development Setup</h3>
+        <pre><code># Clone the repository
+git clone https://github.com/your-org/ecca-stack.git
+cd ecca-stack
+
+# Install dependencies
+pnpm install
+
+# Generate Prisma client
+cd packages/db && npx prisma generate && cd ../..
+
+# Build all packages (respects dependency order via turborepo)
+pnpm build
+
+# Copy environment config
+cp .env.example .env
+
+# Start all 24 services
+docker compose up -d
+
+# Deploy smart contracts
+pnpm contracts:deploy
+
+# Run the demo (create → perceive → recall → needlecast → epoch)
+pnpm demo
+
+# Run tests
+pnpm test</code></pre>
+
+        <h2 id="prerequisites">Prerequisites</h2>
+        <ul>
+          <li><strong>Node.js</strong> ≥ 20.10</li>
+          <li><strong>pnpm</strong> 9.7.0+</li>
+          <li><strong>Go</strong> 1.22+</li>
+          <li><strong>Docker</strong> with Compose v2</li>
+          <li><strong>Hardhat</strong> (via npx, installed by pnpm install)</li>
+        </ul>
+
+        <hr class="neon-divider">
+
+        <!-- API REFERENCE -->
+        <h2 id="api-stacks">API: Stack Management</h2>
+        <p>Stacks are the persistent identities in ECCA. Each Stack is an NFT on Cortex EVM with an ed25519 keypair, Coherence Profile Vector, and epoch counter.</p>
+
+        <h3>Create a Stack</h3>
+        <pre><code>POST /v1/stacks
+Content-Type: application/json
+
+{
+  "pubkey": "ed25519-public-key-hex",
+  "cpv": {
+    "computeCoeff": 1.0,
+    "memoryCoeff": 1.0,
+    "syncCoeff": 1.0,
+    "routingCoeff": 1.0,
+    "residueCoeff": 1.0
+  }
+}
+
+// Response
+{
+  "id": "stack:0x...",
+  "pubkey": "...",
+  "cpv": { ... },
+  "epoch": 0,
+  "episodicHead": null,
+  "createdAt": "2026-05-07T..."
+}</code></pre>
+
+        <h3>Get Stack Info</h3>
+        <pre><code>GET /v1/stacks/:stackId
+
+// Response
+{
+  "id": "stack:0x...",
+  "pubkey": "...",
+  "cpv": { ... },
+  "epoch": 42,
+  "episodicHead": "ecca://abc123@42",
+  "sleeves": [ ... ],
+  "balances": {
+    "compute": 847.5,
+    "memory": 1200.0,
+    "sync": 450.0,
+    "routing": 280.0,
+    "residue": 15.0
+  }
+}</code></pre>
+
+        <h2 id="api-sleeves">API: Sleeve Lifecycle</h2>
+
+        <h3>Spawn a Sleeve</h3>
+        <pre><code>POST /v1/sleeves/:stackId
+Content-Type: application/json
+
+{
+  "kind": "ai",          // "human" | "ai" | "mining" | "memory"
+  "tickRate": 2000       // ms between ticks
+}
+
+// Response
+{
+  "id": "sleeve:0x...",
+  "stackId": "stack:0x...",
+  "kind": "ai",
+  "tickRate": 2000,
+  "drift": 0,
+  "alive": true
+}</code></pre>
+
+        <h3>Decommission a Sleeve</h3>
+        <pre><code>DELETE /v1/sleeves/:id
+
+// Sleeve is marked alive=false
+// Per-epoch HKDF lease evaporates
+// Pinned memory shards remain accessible
+// Stack's episodicHead is unchanged</code></pre>
+
+        <h2 id="api-perceive">API: Perceive & Recall</h2>
+
+        <h3>Perceive (Write to Memory)</h3>
+        <pre><code>POST /v1/perceive
+Content-Type: application/json
+
+{
+  "stackId": "stack:0x...",
+  "sleeveId": "sleeve:0x...",
+  "text": "Inference output: market analysis shows..."
+}
+
+// Response
+{
+  "cid": "ecca://def456@43",
+  "epoch": 43,
+  "cost": { "compute": 0.5 }
+}
+
+// Side effects:
+// - Encrypted with epochKey(stackId, 43)
+// - Written to Hippocampus DAG
+// - Drift incremented by 1
+// - PerceiveEvent emitted on NATS (ecca.perceive.*)</code></pre>
+
+        <h3>Recall (Read from Memory)</h3>
+        <pre><code>POST /v1/recall
+Content-Type: application/json
+
+{
+  "stackId": "stack:0x...",
+  "depth": 16
+}
+
+// Response
+{
+  "fragments": [
+    { "cid": "ecca://...", "text": "decrypted content", "epoch": 43 },
+    { "cid": "ecca://...", "text": "decrypted content", "epoch": 42 },
+    // ... up to min(depth, memoryToken) nodes
+  ],
+  "fidelity": 0.87,
+  "cost": { "memory": 16.0 },
+  "broken": 2    // nodes that couldn't be decrypted
+}</code></pre>
+
+        <h2 id="api-needlecast">API: Needlecasting</h2>
+        <pre><code>POST /v1/needlecast
+Content-Type: application/json
+
+{
+  "stackId": "stack:0x...",
+  "fromSleeveId": "sleeve:old...",
+  "toSleeveKind": "ai",
+  "toTickRate": 2000
+}
+
+// Triggers 6-step saga:
+// 1. Freeze source sleeve
+// 2. Shard episodicHead (collect 8 CIDs)
+// 3. Pin shards for durability
+// 4. Anchor route on medulla
+// 5. Reconstruct target sleeve (drift = 0)
+// 6. Settle with RoutingToken
+
+// Response
+{
+  "saga": "needlecast:0x...",
+  "status": "completed",
+  "from": "sleeve:old...",
+  "to": "sleeve:new...",
+  "cost": { "routing": 5.8 },
+  "shardsTransferred": 8
+}</code></pre>
+
+        <h2 id="api-tokens">API: Token Balances</h2>
+        <pre><code>GET /v1/stacks/:stackId/balances
+
+{
+  "raw": {
+    "compute": 1000.0,
+    "memory": 1500.0,
+    "sync": 500.0,
+    "routing": 300.0,
+    "residue": 15.0
+  },
+  "effective": {
+    "compute": 847.5,    // raw × cpv × EBC
+    "memory": 1200.0,
+    "sync": 450.0,
+    "routing": 280.0,
+    "residue": 15.0      // no decay
+  },
+  "cpv": { ... },
+  "lastActiveEpoch": 40,
+  "currentEpoch": 42,
+  "ebcFactor": 0.905     // e^(-0.05 × 2)
+}</code></pre>
+
+        <hr class="neon-divider">
+
+        <!-- COMPONENTS -->
+        <h2 id="comp-synapse">Component: Synapse API</h2>
+        <p>The Synapse API is the external gateway — the synaptic junction between clients and the cognitive system. Built on Fastify with TypeScript.</p>
+        <table>
+          <thead><tr><th>Property</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Port</td><td>7070</td></tr>
+            <tr><td>Protocol</td><td>REST + WebSocket</td></tr>
+            <tr><td>Framework</td><td>Fastify</td></tr>
+            <tr><td>Dependencies</td><td>@ecca/proto, @ecca/crypto, @ecca/bus, @ecca/db, @ecca/chain, @ecca/service-base</td></tr>
+          </tbody>
+        </table>
+        <p>Handles: Stack CRUD, sleeve lifecycle, perceive/recall, needlecast initiation, balance queries, health checks, and real-time event streaming over WebSocket.</p>
+
+        <h2 id="comp-thalamus">Component: Thalamus Router</h2>
+        <p>The sensory relay of the ECCA system. Runs every epoch (4s), collecting all events across chains, computing per-shard Merkle roots, and folding them into the coherence root.</p>
+        <table>
+          <thead><tr><th>Property</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Port</td><td>7072</td></tr>
+            <tr><td>Tick Rate</td><td>EPOCH_INTERVAL_MS (4000ms)</td></tr>
+            <tr><td>Key Operation</td><td>coherenceRoot = sha256("ecca-coh-v1" ‖ evmRoot ‖ btcRoot ‖ ipfsRoot ‖ sleevesRoot)</td></tr>
+            <tr><td>Output</td><td>Submits crossRoot to Medulla PoW via RPC</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="comp-dhf">Component: DHF Compositor</h2>
+        <p>Digital Human Freight — the memory reconstruction engine. Walks the Hippocampus DAG breadth-first, decrypting nodes with per-epoch HKDF keys, and scoring fidelity.</p>
+        <table>
+          <thead><tr><th>Property</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Port</td><td>7073</td></tr>
+            <tr><td>Key Input</td><td>stackId, requested depth</td></tr>
+            <tr><td>Key Output</td><td>Decrypted fragments + fidelity score</td></tr>
+            <tr><td>Threshold</td><td>fidelity &lt; 0.6 → spawn historical-non-canonical residue</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="comp-needlecast">Component: Needlecast Router</h2>
+        <p>Orchestrates the atomic 6-step re-sleeving saga. Coordinates between Hippocampus (shard pinning), Cortex (contract settlement), and Medulla (route anchoring).</p>
+        <table>
+          <thead><tr><th>Property</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Port</td><td>7071</td></tr>
+            <tr><td>Steps</td><td>Freeze → Shard → Pin → Anchor → Reconstruct → Settle</td></tr>
+            <tr><td>Cost</td><td>5 + 0.1 × shards + 0.5 × |Δepoch| RoutingToken</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="comp-treasury">Component: Quellist Treasury</h2>
+        <p>The economic engine. Issues 100 units of each core token per stack per epoch, scaled by CPV and decayed by EBC. Tokens are burned on consumption.</p>
+
+        <h2 id="comp-sleeve">Component: Sleeve Runtime</h2>
+        <p>4-in-1 parametric process dispatcher. Each sleeve kind has different behavior:</p>
+        <table>
+          <thead><tr><th>Kind</th><th>Tick Rate</th><th>Primary Token</th><th>Role</th></tr></thead>
+          <tbody>
+            <tr><td>human</td><td>8s</td><td>Memory</td><td>Narrative perception, journaling</td></tr>
+            <tr><td>ai</td><td>2s</td><td>Compute</td><td>LLM inference, pattern matching</td></tr>
+            <tr><td>mining</td><td>event</td><td>Sync</td><td>PoW participation, block production</td></tr>
+            <tr><td>memory</td><td>epoch</td><td>Memory + Routing</td><td>DAG pin maintenance, reconciliation</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="comp-worker">Component: Worker Runner</h2>
+        <p>6-in-1 background worker dispatcher running continuous passes:</p>
+        <table>
+          <thead><tr><th>Worker</th><th>Function</th></tr></thead>
+          <tbody>
+            <tr><td>drift-checker</td><td>Flags sleeves with drift &gt; DRIFT_MAX, emits desync events if &gt; 2×</td></tr>
+            <tr><td>epoch-anchor</td><td>Commits per-epoch anchors to Cortex EVM EpochAnchor contract</td></tr>
+            <tr><td>residue-collector</td><td>Detects coordination failures, opens residue bounties</td></tr>
+            <tr><td>memory-reconciler</td><td>Merges shadow-mode branches from co-resident sleeves</td></tr>
+            <tr><td>treasury-emitter</td><td>Triggers per-stack token issuance via QuellistTreasury</td></tr>
+            <tr><td>sleeve-watchdog</td><td>Decommissions sleeves that have desynced</td></tr>
+          </tbody>
+        </table>
+
+        <hr class="neon-divider">
+
+        <!-- CHAINS -->
+        <h2 id="chain-medulla">Chain: Medulla PoW</h2>
+        <p>Custom Proof-of-Work blockchain written in Go. Provides the fundamental timing and sequencing layer — the autonomic rhythm of the system.</p>
+        <h3>RPC Methods</h3>
+        <table>
+          <thead><tr><th>Method</th><th>Params</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>getinfo</code></td><td>none</td><td>Returns chain height, latest block hash, difficulty, epoch</td></tr>
+            <tr><td><code>getblock</code></td><td>[height]</td><td>Returns block at given height with coherence tuple</td></tr>
+            <tr><td><code>submitcoherenceroot</code></td><td>[epoch, cross, evm, ipfs, sleeves]</td><td>Submits coherence root for PoW mining</td></tr>
+          </tbody>
+        </table>
+        <h3>Synaptic Field MMR</h3>
+        <p>A Merkle Mountain Range built over the last 256 block hashes. When a new block is mined, its hash is appended to the MMR. Old entries beyond the window are evicted. This provides O(log 256) = 8-hash cross-shard inclusion proofs.</p>
+
+        <h2 id="chain-hippocampus">Chain: Hippocampus DAG</h2>
+        <p>Content-addressed directed acyclic graph written in Go. Stores encrypted memory nodes with epoch gating and pin semantics.</p>
+        <h3>HTTP API</h3>
+        <table>
+          <thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>PUT</td><td><code>/dag</code></td><td>Store a new DAG node</td></tr>
+            <tr><td>GET</td><td><code>/dag/:cid</code></td><td>Retrieve a node (epoch-gated)</td></tr>
+            <tr><td>POST</td><td><code>/dag/:cid/pin</code></td><td>Pin a node for durability</td></tr>
+            <tr><td>POST</td><td><code>/recall</code></td><td>Depth-bounded DAG walk</td></tr>
+            <tr><td>GET</td><td><code>/health</code></td><td>Health check</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="chain-cortex">Chain: Cortex EVM</h2>
+        <p>Private Ethereum chain (geth, Clique PoA, chain ID 131072) hosting 7 Solidity contracts for identity, tokens, treasury, and coordination.</p>
+        <h3>Contract Suite</h3>
+        <table>
+          <thead><tr><th>Contract</th><th>Standard</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td>StackIdentity</td><td>ERC-721</td><td>Stack identity NFT with CPV and epoch state</td></tr>
+            <tr><td>BandwidthToken</td><td>ERC-20 × 5</td><td>Five cognitive token types</td></tr>
+            <tr><td>QuellistTreasury</td><td>Custom</td><td>Per-epoch emission engine</td></tr>
+            <tr><td>NeedlecastRouter</td><td>Custom</td><td>Re-sleeving coordination</td></tr>
+            <tr><td>SleeveRegistry</td><td>Custom</td><td>Sleeve lifecycle management</td></tr>
+            <tr><td>ResidueRegistry</td><td>Custom</td><td>Failure tracking and bounty distribution</td></tr>
+            <tr><td>EpochAnchor</td><td>Custom</td><td>Per-epoch coherence commitment</td></tr>
+          </tbody>
+        </table>
+
+        <hr class="neon-divider">
+
+        <!-- CONCEPTS -->
+        <h2 id="concept-coherence">Concept: Coherence Root</h2>
+        <p>The central innovation — a single 32-byte hash binding three independent chains every 4 seconds.</p>
+        <div class="equation-block" style="text-align: left;">
+          crossRoot = SHA256("ecca-coh-v1" ‖ evmRoot ‖ btcRoot ‖ ipfsRoot ‖ sleevesRoot)
+        </div>
+        <p>One PoW confirmation atomically finalizes state across all three shards. Cross-shard verification via Merkle proof against the appropriate sub-root. Domain separation prefix prevents collision between coherence versions.</p>
+
+        <h2 id="concept-drift">Concept: Drift & Sync</h2>
+        <p>Every sleeve has an instantaneous drift counter (δ) measuring divergence from canonical state:</p>
+        <ul>
+          <li><code>perceive()</code> → δ += 1</li>
+          <li><code>recall()</code> → δ += 0.1</li>
+          <li><code>sync()</code> → δ = 0 (costs 1 SyncToken)</li>
+          <li>δ &gt; 15 (DRIFT_MAX) → warning flagged by drift-checker</li>
+          <li>δ &gt; 30 (2× DRIFT_MAX) → automatic desync → sleeve decommissioned → residue spawned</li>
+        </ul>
+        <p>Drift is cognitive dissonance made measurable. A bit of divergence is normal; unbounded divergence means the sleeve is no longer coherent.</p>
+
+        <h2 id="concept-residue">Concept: Residue System</h2>
+        <p>Coordination failures are first-class economic objects. Five kinds, each with a specific bounty in non-decaying ResidueToken:</p>
+        <table>
+          <thead><tr><th>Kind</th><th>Trigger</th><th>Bounty</th></tr></thead>
+          <tbody>
+            <tr><td>stale-ordering</td><td>Sleeve drift ≥ 4 epochs behind</td><td>2 RT</td></tr>
+            <tr><td>speculative-divergence</td><td>Co-resident sleeves write conflicting branches</td><td>5 RT</td></tr>
+            <tr><td>historical-non-canonical</td><td>Recall fidelity &lt; 0.6</td><td>8 RT</td></tr>
+            <tr><td>reorg-orphan</td><td>Medulla reorg detaches EpochAnchor</td><td>12 RT</td></tr>
+            <tr><td>shard-loss</td><td>Known CID unreachable on Hippocampus</td><td>15 RT</td></tr>
+          </tbody>
+        </table>
+        <p>Lifecycle: <code>detected → open → claimed → resolved</code> (or expired). First valid proof wins the full bounty. Resolution model: first-valid-proof.</p>
+
+        <h2 id="concept-memory">Concept: Memory Model</h2>
+        <p>Memory is a capability-bounded walk over a content-addressed, encrypted DAG:</p>
+        <ul>
+          <li><strong>Encoding:</strong> AES-256-GCM with per-epoch HKDF-SHA512 key derived from Stack's master secret</li>
+          <li><strong>Addressing:</strong> CID format <code>ecca://&lt;sha256&gt;@&lt;epoch&gt;</code></li>
+          <li><strong>Epoch gating:</strong> Node readable within ±2 epochs unless pinned</li>
+          <li><strong>Token bounding:</strong> Recall depth ≤ min(requested, MemoryToken balance)</li>
+          <li><strong>Fidelity:</strong> Scored as ratio of decryptable to total fragments</li>
+          <li><strong>Pinning:</strong> Makes nodes permanent (exempt from epoch gating and pruning)</li>
+          <li><strong>Pruning:</strong> Non-pinned nodes beyond retention window are forgotten by design</li>
+        </ul>
+
+        <h2 id="concept-cpv">Concept: CPV & EBC</h2>
+        <h3>Coherence Profile Vector (CPV)</h3>
+        <p>A 5-coefficient vector per Stack, each coefficient ∈ [0, 2]. Scales token issuance per dimension. Represents the Stack's cognitive specialization — like cortical column tuning in neuroscience.</p>
+
+        <h3>Epoch Binding Curve (EBC)</h3>
+        <p>Exponential token decay with a hard floor:</p>
+        <div class="equation-block" style="text-align: left;">
+          effective = raw × cpv × max(0.25, e<sup>-0.05 × Δepoch</sup>)<br>
+          // Exception: ResidueToken has no decay (effective = raw × cpv)
+        </div>
+        <p>Default parameters: decay = 0.05/epoch, floor = 0.25. A quiescent Stack decays to 25% after ~28 epochs (~112s) of inactivity.</p>
+
+        <hr class="neon-divider">
+
+        <!-- SECURITY -->
+        <h2 id="security">Security Model</h2>
+        <h3>Cryptographic Primitives</h3>
+        <table>
+          <thead><tr><th>Primitive</th><th>Standard</th><th>Usage</th></tr></thead>
+          <tbody>
+            <tr><td>Ed25519</td><td>RFC 8032</td><td>Stack identity keypairs</td></tr>
+            <tr><td>HKDF-SHA512</td><td>RFC 5869</td><td>Per-epoch capability key derivation</td></tr>
+            <tr><td>AES-256-GCM</td><td>NIST SP 800-38D</td><td>DAG node payload encryption</td></tr>
+            <tr><td>SHA-256</td><td>FIPS 180-4</td><td>Merkle trees, coherence root, content addressing</td></tr>
+            <tr><td>Merkle Tree</td><td>RFC 6962</td><td>Domain-separated Merkle construction</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Threat Model</h3>
+        <ul>
+          <li><strong>Shard isolation:</strong> Each chain can be compromised independently. The coherence root detects cross-shard inconsistency via residues.</li>
+          <li><strong>Memory privacy:</strong> DAG nodes are encrypted with per-epoch keys. Without the Stack's master secret, content is unreadable.</li>
+          <li><strong>Equivocation detection:</strong> Duplicate coherence roots for the same epoch → automatic residue + slash.</li>
+          <li><strong>Drift-based decommission:</strong> Runaway sleeves are automatically killed at 2× DRIFT_MAX.</li>
+          <li><strong>Token decay as DoS mitigation:</strong> Unused tokens decay — preventing resource hoarding.</li>
+        </ul>
+
+        <!-- DEPLOYMENT -->
+        <h2 id="deployment">Deployment</h2>
+        <h3>Docker Compose (Development)</h3>
+        <p>The full stack runs as 24 services via Docker Compose. All services are configured with health checks, networking, and volume mounts.</p>
+        <pre><code># Start all services
+docker compose up -d
+
+# Check service health
+docker compose ps
+
+# View logs
+docker compose logs -f synapse-api
+
+# Health endpoints
+curl http://localhost:7070/healthz    # synapse-api
+curl http://localhost:8332/health     # medulla-pow
+curl http://localhost:5001/health     # hippocampus-dag</code></pre>
+
+        <h3>Kubernetes (Production)</h3>
+        <p>Helm charts are provided under <code>deploy/k8s/</code> for production deployment. Six chart groups: chains, data, orchestration, sleeves, workers, and observability.</p>
+
+        <h3>Observability</h3>
+        <p>Built-in Prometheus metrics, Loki log aggregation, and Grafana dashboards under <code>deploy/observability/</code>.</p>
+
+        <hr class="neon-divider">
+
+        <!-- GLOSSARY -->
+        <h2 id="glossary">Glossary</h2>
+        <table>
+          <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Stack</strong></td><td>A persistent identity — an NFT-bound ed25519 keypair with CPV, EBC, and epoch counter. The "mind."</td></tr>
+            <tr><td><strong>Sleeve</strong></td><td>A temporary embodiment of a Stack. A process bound to a Stack for a finite duration. The "body."</td></tr>
+            <tr><td><strong>Epoch</strong></td><td>A 4-second coherence cycle. The fundamental time unit of the system.</td></tr>
+            <tr><td><strong>Coherence Root</strong></td><td>A 32-byte hash binding three chain states into a single PoW commitment.</td></tr>
+            <tr><td><strong>DHF</strong></td><td>Digital Human Freight — the capability-bounded reconstruction of a Stack's memory.</td></tr>
+            <tr><td><strong>Needlecast</strong></td><td>The atomic transfer of a Stack from one Sleeve to another (from Altered Carbon).</td></tr>
+            <tr><td><strong>CPV</strong></td><td>Coherence Profile Vector — 5-coefficient vector scaling token issuance per dimension.</td></tr>
+            <tr><td><strong>EBC</strong></td><td>Epoch Binding Curve — exponential decay with floor applied to token effectiveness.</td></tr>
+            <tr><td><strong>Drift</strong></td><td>Per-sleeve counter measuring divergence from canonical state. Cognitive dissonance.</td></tr>
+            <tr><td><strong>Residue</strong></td><td>A first-class coordination failure object with a token bounty for repair.</td></tr>
+            <tr><td><strong>Fidelity</strong></td><td>Score (0-1) measuring recall quality: decryptable fragments / total fragments.</td></tr>
+            <tr><td><strong>Synaptic Field</strong></td><td>MMR over Medulla block hashes. Cross-shard proof structure.</td></tr>
+            <tr><td><strong>AxonalBus</strong></td><td>NATS JetStream wrapper. The message transport layer (named after neural axons).</td></tr>
+            <tr><td><strong>Thalamus</strong></td><td>The coherence folding service. Named after the brain's sensory relay.</td></tr>
+            <tr><td><strong>Medulla</strong></td><td>The PoW chain. Named after the brainstem (autonomic rhythm).</td></tr>
+            <tr><td><strong>Hippocampus</strong></td><td>The memory DAG. Named after the brain's episodic memory center.</td></tr>
+            <tr><td><strong>Cortex</strong></td><td>The EVM chain. Named after the cerebral cortex (executive control).</td></tr>
+            <tr><td><strong>Quellist</strong></td><td>The treasury. Named after the political faction in Altered Carbon.</td></tr>
+          </tbody>
+        </table>
+
+      </main>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div>
+          <div class="nav-logo" style="margin-bottom: 0.5rem;">
+            <span class="logo-icon">◈</span>
+            ECCA Stack
+          </div>
+          <p class="footer-copy">Eternal Coherence over Cryptographic Anchors</p>
+        </div>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="architecture.html">Architecture</a></li>
+          <li><a href="tokenomics.html">Tokenomics</a></li>
+          <li><a href="https://github.com" target="_blank">GitHub</a></li>
+        </ul>
+        <p class="footer-copy">&copy; 2026 ECCA Protocol. MIT License.</p>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<script src="js/main.js"></script>
+<script>
+  // Docs sidebar active state
+  const sidebarLinks = document.querySelectorAll('.docs-sidebar a');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        sidebarLinks.forEach(l => l.classList.remove('active'));
+        const link = document.querySelector(`.docs-sidebar a[href="#${entry.target.id}"]`);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  document.querySelectorAll('.docs-content h2[id]').forEach(h => observer.observe(h));
+</script>
+</body>
+</html>

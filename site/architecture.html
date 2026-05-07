@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Architecture — ECCA Stack</title>
+  <meta name="description" content="Deep-dive into ECCA's tri-chain architecture: Medulla PoW, Hippocampus DAG, and Cortex EVM — bound by a coherence root every 4 seconds.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-gradient-top"></div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <span class="logo-icon">◈</span>
+      ECCA
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html#features">Features</a></li>
+      <li><a href="index.html#how-it-works">How It Works</a></li>
+      <li><a href="tokenomics.html">Tokens</a></li>
+      <li><a href="index.html#roadmap">Roadmap</a></li>
+      <li><a href="architecture.html" class="active">Architecture</a></li>
+      <li><a href="docs.html">Docs</a></li>
+      <li><a href="tokenomics.html" class="nav-cta">Token Launch →</a></li>
+    </ul>
+    <button class="nav-mobile-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="content-wrapper">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" style="min-height: 60vh;">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-tag">
+          <span class="pulse-dot"></span>
+          SYSTEM ARCHITECTURE
+        </div>
+        <h1 style="font-size: clamp(2rem, 5vw, 3.5rem);">Three Chains.<br>One Coherence.</h1>
+        <p class="hero-description">
+          A neuroscience-inspired layered architecture where each component maps to a brain structure — from brainstem rhythm (Medulla) to episodic memory (Hippocampus) to executive control (Cortex).
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SYSTEM OVERVIEW ============ -->
+  <section>
+    <div class="container">
+      <span class="section-label reveal">// System Overview</span>
+      <h2 class="section-title reveal">The four-layer cognitive stack</h2>
+
+      <div class="arch-layers reveal">
+        <div class="arch-layer">
+          <span class="arch-layer-label">L3 — API</span>
+          <div class="arch-layer-content">
+            <h4>Synapse API Gateway</h4>
+            <p>REST + WebSocket endpoint for all external interactions. Handles stack creation, perceive/recall operations, sleeve management, needlecasting, and real-time event streaming. The single entry point to the cognitive system. Port 7070.</p>
+          </div>
+        </div>
+        <div class="arch-layer">
+          <span class="arch-layer-label">L2.5 — Route</span>
+          <div class="arch-layer-content">
+            <h4>Routing Layer</h4>
+            <p>Five specialized services: <strong>Thalamus Router</strong> (coherence folding), <strong>DHF Compositor</strong> (memory reconstruction), <strong>Needlecast Router</strong> (re-sleeving saga), <strong>Quellist Treasury</strong> (token emission), and <strong>Bandwidth Faucet</strong> (development token drip).</p>
+          </div>
+        </div>
+        <div class="arch-layer">
+          <span class="arch-layer-label">L2 — Exec</span>
+          <div class="arch-layer-content">
+            <h4>Execution Layer</h4>
+            <p><strong>Sleeve Runtime</strong>: 4-in-1 parametric process dispatcher for human, AI, mining, and memory sleeves. <strong>Worker Runner</strong>: 6-in-1 background worker handling drift checks, epoch anchoring, residue collection, memory reconciliation, treasury emission, and sleeve watchdog.</p>
+          </div>
+        </div>
+        <div class="arch-layer">
+          <span class="arch-layer-label">L1.5</span>
+          <div class="arch-layer-content">
+            <h4>Synaptic Field (MMR)</h4>
+            <p>Merkle Mountain Range built over Medulla block hashes. Rolling window of 256 leaves provides O(log 256) = 8-hash cross-shard proofs. The binding layer between independent chains.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-chains reveal" style="margin-top: 1rem;">
+        <div class="arch-chain medulla">
+          <h5>◆ L1a: Medulla PoW</h5>
+          <p>Go • Custom PoW chain • Sequencing + coherence anchoring • Epoch timing • Difficulty retarget • Port 8332</p>
+        </div>
+        <div class="arch-chain hippocampus">
+          <h5>◆ L1b: Hippocampus DAG</h5>
+          <p>Go • Content-addressed memory • Epoch-gated recall • Pin semantics • Fidelity scoring • Port 5001</p>
+        </div>
+        <div class="arch-chain cortex">
+          <h5>◆ L1c: Cortex EVM</h5>
+          <p>geth • StackIdentity NFT • BandwidthToken × 5 • Treasury • ResidueRegistry • NeedlecastRouter • Port 8545</p>
+        </div>
+      </div>
+
+      <div class="card reveal" style="margin-top: 1.5rem; padding: 1.5rem;">
+        <h4 style="margin-bottom: 1rem;">Infrastructure Services</h4>
+        <div class="grid-4" style="font-size: 0.85rem; color: var(--text-secondary);">
+          <div><strong style="color: var(--neon-cyan);">PostgreSQL</strong><br>Port 5432 — Persistent state (stacks, sleeves, anchors, residues, epochs, audit logs)</div>
+          <div><strong style="color: var(--neon-magenta);">Redis</strong><br>Port 6379 — Hot reads, rate limiting, queue management</div>
+          <div><strong style="color: var(--neon-green);">NATS JetStream</strong><br>Port 4222 — AxonalBus message bus with durable subjects (ecca.*)</div>
+          <div><strong style="color: var(--neon-yellow);">MinIO</strong><br>Port 9000 — DAG node durability backing for Hippocampus</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container"><hr class="neon-divider"></div>
+
+  <!-- ============ COHERENCE ROOT ============ -->
+  <section>
+    <div class="container">
+      <span class="section-label reveal">// Core Innovation</span>
+      <h2 class="section-title reveal">The Coherence Root</h2>
+      <p class="section-subtitle reveal">One 32-byte hash that cryptographically binds three independent chains, committed to Proof-of-Work every 4 seconds.</p>
+
+      <div class="grid-2 reveal">
+        <div>
+          <h3>Construction</h3>
+          <pre style="margin-top: 1rem;"><code>// Step 1: Compute per-shard Merkle roots
+evmRoot = merkleRoot([
+  txHash for tx ∈ cortex-evm
+  where contract ∈ ECCA_CONTRACTS
+])
+
+ipfsRoot = merkleRoot([
+  sha256(cid) for write ∈ hippocampus-dag
+])
+
+sleevesRoot = merkleRoot([
+  sha256(type ‖ id) for sleeve ∈ active_sleeves
+])
+
+btcRoot = 0x00...00  // reserved for v3.1
+
+// Step 2: Fold into coherence root
+crossRoot = sha256(
+  "ecca-coh-v1" ‖
+  evmRoot ‖ btcRoot ‖
+  ipfsRoot ‖ sleevesRoot
+)
+
+// Step 3: Commit via PoW
+medulla.submitCoherenceRoot(
+  epoch, crossRoot,
+  evmRoot, ipfsRoot, sleevesRoot
+)</code></pre>
+        </div>
+
+        <div>
+          <h3>Properties</h3>
+          <div style="margin-top: 1rem;">
+            <div class="callout callout-key">
+              <strong>Atomic Finality:</strong> One PoW confirmation = three shard confirmations. A verifier with (blockHash, epoch, crossRoot) can prove inclusion of any EVM tx, DAG write, or sleeve event via Merkle proof against the appropriate sub-root.
+            </div>
+
+            <h4 style="margin-top: 1.5rem;">Causality Guarantees</h4>
+            <ul style="color: var(--text-secondary); margin-top: 0.5rem;">
+              <li><strong style="color: #fff;">Within a chain:</strong> Normal linear causality (cortex, medulla) or partial order (hippocampus by epoch)</li>
+              <li><strong style="color: #fff;">Across chains:</strong> Causality asserted only between events sharing an epoch</li>
+              <li><strong style="color: #fff;">On reorg:</strong> If medulla reorgs, cortex and hippocampus do NOT roll back. Discrepancies become reorg-orphan residues.</li>
+            </ul>
+
+            <h4 style="margin-top: 1.5rem;">Anti-Equivocation</h4>
+            <p style="color: var(--text-secondary); margin-top: 0.5rem;">If the same thalamus operator submits two distinct coherence tuples for the same epoch → automatic routing-equivocation residue with operator slash via QuellistTreasury.</p>
+
+            <h4 style="margin-top: 1.5rem;">Resilience</h4>
+            <p style="color: var(--text-secondary); margin-top: 0.5rem;">Memory survives partial chain death. If hippocampus wedges, cortex keeps running, medulla keeps mining. Discrepancies become residues — the system degrades gracefully, never catastrophically.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container"><hr class="neon-divider"></div>
+
+  <!-- ============ THE THREE CHAINS ============ -->
+  <section>
+    <div class="container">
+      <span class="section-label reveal">// The Three Chains</span>
+      <h2 class="section-title reveal">Independent chains, unified coherence</h2>
+
+      <!-- Medulla -->
+      <div class="card reveal" style="margin-bottom: 2rem; border-left: 3px solid var(--neon-green);">
+        <h3 style="color: var(--neon-green);">◆ Medulla PoW — The Brainstem</h3>
+        <span class="badge badge-green" style="margin-bottom: 1rem; display: inline-block;">GO • PORT 8332 • CUSTOM CHAIN</span>
+        <div class="grid-2" style="margin-top: 1rem;">
+          <div>
+            <p>The autonomic rhythm of the ECCA system. Like the medulla oblongata controls heartbeat and breathing, this chain provides the fundamental timing and sequencing layer.</p>
+            <h4 style="margin-top: 1.5rem;">Key Functions</h4>
+            <ul style="color: var(--text-secondary); margin-top: 0.5rem;">
+              <li>Proof-of-Work block production (SHA-256 based)</li>
+              <li>Coherence root commitment (crossRoot in block header)</li>
+              <li>Epoch sequencing and timing</li>
+              <li>Difficulty retarget (every 10 blocks)</li>
+              <li>Synaptic Field MMR maintenance</li>
+            </ul>
+          </div>
+          <div>
+            <h4>RPC Interface</h4>
+            <pre style="margin-top: 0.5rem;"><code>// Submit coherence root
+POST /rpc
+{
+  "method": "submitcoherenceroot",
+  "params": [epoch, crossRoot,
+    evmRoot, ipfsRoot, sleevesRoot]
+}
+
+// Get chain info
+POST /rpc { "method": "getinfo" }
+
+// Get block by height
+POST /rpc
+{ "method": "getblock",
+  "params": [height] }
+
+// Health check
+GET /health</code></pre>
+          </div>
+        </div>
+        <div class="callout callout-info" style="margin-top: 1.5rem;">
+          <strong>Synaptic Field MMR:</strong> A Merkle Mountain Range built over the last 256 block hashes. Provides O(log 256) = 8-hash inclusion proofs. Rolls forward with each new block — old entries are evicted, keeping the proof structure bounded.
+        </div>
+      </div>
+
+      <!-- Hippocampus -->
+      <div class="card reveal" style="margin-bottom: 2rem; border-left: 3px solid var(--neon-magenta);">
+        <h3 style="color: var(--neon-magenta);">◆ Hippocampus DAG — Episodic Memory</h3>
+        <span class="badge badge-magenta" style="margin-bottom: 1rem; display: inline-block;">GO • PORT 5001 • CONTENT-ADDRESSED</span>
+        <div class="grid-2" style="margin-top: 1rem;">
+          <div>
+            <p>The hippocampus is responsible for forming and consolidating episodic memories. In ECCA, this is a content-addressed DAG where every node is encrypted, epoch-tagged, and token-gated.</p>
+            <h4 style="margin-top: 1.5rem;">Key Properties</h4>
+            <ul style="color: var(--text-secondary); margin-top: 0.5rem;">
+              <li><strong style="color: #fff;">Content-addressed:</strong> CID = <code>ecca://&lt;sha256&gt;@&lt;epoch&gt;</code></li>
+              <li><strong style="color: #fff;">Encrypted:</strong> AES-256-GCM with per-epoch HKDF key</li>
+              <li><strong style="color: #fff;">Epoch-gated:</strong> Node readable only within ±2 epochs unless pinned</li>
+              <li><strong style="color: #fff;">Token-bounded:</strong> Recall depth ≤ available MemoryToken</li>
+              <li><strong style="color: #fff;">Prunable:</strong> Non-pinned nodes beyond retention window are forgotten</li>
+            </ul>
+          </div>
+          <div>
+            <h4>HTTP API</h4>
+            <pre style="margin-top: 0.5rem;"><code>// Store a DAG node
+PUT /dag
+{
+  "cid": "ecca://abc123@42",
+  "data": "encrypted-payload",
+  "links": ["parent-cid-1"],
+  "epoch": 42, "stackId": "stack:..."
+}
+
+// Retrieve a node (epoch-gated)
+GET /dag/:cid?epoch=44
+
+// Pin for durability
+POST /dag/:cid/pin
+
+// Recall (depth-bounded walk)
+POST /recall
+{ "root": "cid", "depth": 16,
+  "epoch": 44 }
+
+// Health check
+GET /health</code></pre>
+          </div>
+        </div>
+        <div class="callout callout-key" style="margin-top: 1.5rem;">
+          <strong>Fidelity Scoring:</strong> When reconstructing memory, the DHF Compositor scores each recall: <code>fidelity = |decryptable_fragments| / (|decryptable| + |broken|)</code>. If fidelity drops below 0.6, a historical-non-canonical residue is spawned — the system flags degraded memory integrity.
+        </div>
+      </div>
+
+      <!-- Cortex -->
+      <div class="card reveal" style="border-left: 3px solid var(--neon-cyan);">
+        <h3 style="color: var(--neon-cyan);">◆ Cortex EVM — Executive Control</h3>
+        <span class="badge badge-cyan" style="margin-bottom: 1rem; display: inline-block;">GETH • PORT 8545 • CHAIN ID 131072</span>
+        <div class="grid-2" style="margin-top: 1rem;">
+          <div>
+            <p>The cerebral cortex handles executive decisions — identity, ownership, economic logic, and coordination contracts. Built on a private geth instance with Clique PoA consensus.</p>
+            <h4 style="margin-top: 1.5rem;">Smart Contracts</h4>
+            <table class="comparison-table" style="margin-top: 0.5rem; font-size: 0.82rem;">
+              <tbody>
+                <tr><td><code>StackIdentity.sol</code></td><td>ERC-721 NFT — Stack identity with CPV, epoch counter, episodicHead</td></tr>
+                <tr><td><code>BandwidthToken.sol</code></td><td>ERC-20 × 5 — Cognitive token minting, burning, stack-scoped balances</td></tr>
+                <tr><td><code>QuellistTreasury.sol</code></td><td>Per-epoch emission engine with CPV scaling and EBC decay</td></tr>
+                <tr><td><code>NeedlecastRouter.sol</code></td><td>On-chain coordination for atomic re-sleeving sagas</td></tr>
+                <tr><td><code>SleeveRegistry.sol</code></td><td>Sleeve lifecycle: spawn, authorize, decommission</td></tr>
+                <tr><td><code>ResidueRegistry.sol</code></td><td>Failure detection, bounty tracking, proof submission, ResidueToken minting</td></tr>
+                <tr><td><code>EpochAnchor.sol</code></td><td>Per-epoch coherence root commitment and verification</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <h4>Key Design Choices</h4>
+            <ul style="color: var(--text-secondary); margin-top: 0.5rem;">
+              <li><strong style="color: #fff;">Private chain:</strong> Chain ID 131072 — intentionally non-standard, no public gas market</li>
+              <li><strong style="color: #fff;">Clique PoA:</strong> Fast block times, deterministic finality for contract state</li>
+              <li><strong style="color: #fff;">Token = Identity:</strong> All token balances are scoped to StackIdentity NFT tokenId, not wallet addresses</li>
+              <li><strong style="color: #fff;">Future bridge:</strong> Phase 4 includes an Ethereum L1 bridge for external settlement</li>
+            </ul>
+
+            <h4 style="margin-top: 1.5rem;">Why Not Just Use Ethereum?</h4>
+            <p style="color: var(--text-secondary); margin-top: 0.5rem;">ECCA needs sub-5-second epoch cycles with guaranteed inclusion. Public Ethereum can't provide this. The Cortex chain is purpose-built for cognitive coordination — identity, tokens, and residues — while Medulla provides PoW finality and Hippocampus provides memory.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container"><hr class="neon-divider"></div>
+
+  <!-- ============ SERVICES ============ -->
+  <section>
+    <div class="container">
+      <span class="section-label reveal">// Service Architecture</span>
+      <h2 class="section-title reveal">Routing, execution, and background workers</h2>
+
+      <div class="grid-2">
+        <!-- Thalamus Router -->
+        <div class="card reveal">
+          <h3><span style="color: var(--neon-cyan);">⧫</span> Thalamus Router</h3>
+          <span class="badge badge-cyan" style="display: inline-block; margin: 0.5rem 0;">PORT 7072</span>
+          <p>The thalamus is the brain's sensory relay — filtering and routing information. In ECCA, this service collects all epoch events across all three chains, computes per-shard Merkle roots, folds them into the coherence root, and submits to Medulla for PoW finality.</p>
+          <p style="margin-top: 0.5rem;"><strong style="color: var(--neon-cyan);">Runs every epoch (4s).</strong> The heartbeat of the coherence loop.</p>
+        </div>
+
+        <!-- DHF Compositor -->
+        <div class="card reveal">
+          <h3><span style="color: var(--neon-magenta);">◈</span> DHF Compositor</h3>
+          <span class="badge badge-magenta" style="display: inline-block; margin: 0.5rem 0;">PORT 7073</span>
+          <p>Digital Human Freight — the reconstructable mind. This service walks the Hippocampus DAG breadth-first, decrypting nodes with per-epoch HKDF keys, scoring fidelity, and returning the reconstructed memory to the requesting sleeve.</p>
+          <p style="margin-top: 0.5rem;">Recall depth bounded by <code>min(requested, memoryToken_balance)</code>.</p>
+        </div>
+
+        <!-- Needlecast Router -->
+        <div class="card reveal">
+          <h3><span style="color: var(--neon-green);">⇄</span> Needlecast Router</h3>
+          <span class="badge badge-green" style="display: inline-block; margin: 0.5rem 0;">PORT 7071</span>
+          <p>Orchestrates the atomic 6-step re-sleeving saga: freeze source → shard episodicHead → pin critical shards → anchor route on medulla → reconstruct target → settle with RoutingToken. Like downloading consciousness into a new body.</p>
+        </div>
+
+        <!-- Quellist Treasury -->
+        <div class="card reveal">
+          <h3><span style="color: var(--neon-yellow);">△</span> Quellist Treasury</h3>
+          <span class="badge" style="display: inline-block; margin: 0.5rem 0; color: var(--neon-yellow); border-color: rgba(224,255,0,0.3); background: rgba(224,255,0,0.08);">PORT 7074</span>
+          <p>Per-epoch token emission engine. Issues 100 units of each core token per stack, scaled by the Stack's Coherence Profile Vector and decayed by the Epoch Binding Curve. The economic heartbeat of the system.</p>
+        </div>
+
+        <!-- Sleeve Runtime -->
+        <div class="card reveal">
+          <h3><span style="color: var(--neon-purple);">◎</span> Sleeve Runtime</h3>
+          <span class="badge" style="display: inline-block; margin: 0.5rem 0; color: var(--neon-purple); border-color: rgba(168,85,247,0.3); background: rgba(168,85,247,0.08);">INTERNAL</span>
+          <p>4-in-1 parametric sleeve dispatcher. Each sleeve kind (human, AI, mining, memory) has different tick rates, token preferences, and behavior patterns. Sleeves are the embodiments of Stacks — temporary bodies for persistent minds.</p>
+        </div>
+
+        <!-- Worker Runner -->
+        <div class="card reveal">
+          <h3><span style="color: var(--neon-orange);">⟁</span> Worker Runner</h3>
+          <span class="badge" style="display: inline-block; margin: 0.5rem 0; color: var(--neon-orange); border-color: rgba(255,107,0,0.3); background: rgba(255,107,0,0.08);">INTERNAL • 6-IN-1</span>
+          <p>Background worker dispatcher running six continuous passes: drift-checker, epoch-anchor, residue-collector, memory-reconciler, treasury-emitter, and sleeve-watchdog. The maintenance system that keeps coherence intact.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container"><hr class="neon-divider"></div>
+
+  <!-- ============ DISTRIBUTED MEMORY ============ -->
+  <section>
+    <div class="container">
+      <span class="section-label reveal">// Distributed Memory</span>
+      <h2 class="section-title reveal">How an AI remembers forever</h2>
+      <p class="section-subtitle reveal">Memory in ECCA is not a database blob. It's a capability-bounded walk over a content-addressed, encrypted DAG with formal properties from graph theory.</p>
+
+      <div class="grid-2 reveal">
+        <div>
+          <h3>DAG Node Structure</h3>
+          <pre style="margin-top: 1rem;"><code>{
+  "cid": "ecca://&lt;sha256&gt;@&lt;epoch&gt;",
+  "ciphertext": "AES-256-GCM(
+    plaintext,
+    epochKey(stackId, epoch)
+  )",
+  "links": ["parent-cid-1", "parent-cid-2"],
+  "epoch": 42,
+  "kind": "perceive" | "recall" | "pin",
+  "pinned": false,
+  "stackId": "stack:0x..."
+}</code></pre>
+
+          <h4 style="margin-top: 1.5rem;">Access Requirements</h4>
+          <ol style="color: var(--text-secondary); margin-top: 0.5rem;">
+            <li><strong style="color: #fff;">Identity key:</strong> Ed25519 private key → HKDF per-epoch derivation</li>
+            <li><strong style="color: #fff;">Epoch window:</strong> |currentEpoch - nodeEpoch| ≤ 2 OR pinned</li>
+            <li><strong style="color: #fff;">Token balance:</strong> Recall depth ≤ available MemoryToken</li>
+            <li><strong style="color: #fff;">CPV scaling:</strong> Effective memory ×= memoryCoeff</li>
+          </ol>
+        </div>
+
+        <div>
+          <h3>Formal Properties</h3>
+
+          <div class="callout callout-info" style="margin-top: 1rem;">
+            <strong>Monotone Epochs:</strong> If edge (u, v) exists, then u.epoch ≥ v.epoch. Traversal walks chronologically backward through the agent's experience.
+          </div>
+
+          <div class="callout callout-key" style="margin-top: 0.5rem;">
+            <strong>Pin-Bounded Recoverability:</strong> Node v is recoverable from epoch e iff |e - v.epoch| ≤ alignment OR v.pinned. The pinned subgraph is long-term memory.
+          </div>
+
+          <div class="callout callout-warn" style="margin-top: 0.5rem;">
+            <strong>Token-Bounded Depth:</strong> Reconstruction visits ≤ min(requested, memoryToken) nodes. Perfect total recall costs unbounded MemoryToken.
+          </div>
+
+          <div class="equation-block" style="margin-top: 1.5rem; text-align: left; font-size: 0.8rem;">
+            // Expected fidelity over d nodes, non-pinned<br>
+            E[fidelity] = (1/d) × Σ e^(-α × (e_current - v_i.epoch))<br>
+            <br>
+            // For α=0.05, d=32, ~100 epochs:<br>
+            // E[fidelity] ≈ 0.61 ≈ FIDELITY_MIN_DEFAULT
+          </div>
+
+          <p style="color: var(--text-secondary); margin-top: 1rem; font-size: 0.9rem;">This means: after ~100 epochs without pinning, an agent's memory fidelity naturally degrades to the threshold — triggering historical-non-canonical residues and incentivizing memory maintenance.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container"><hr class="neon-divider"></div>
+
+  <!-- ============ NEEDLECAST ============ -->
+  <section>
+    <div class="container">
+      <span class="section-label reveal">// Needlecasting</span>
+      <h2 class="section-title reveal">Transfer consciousness atomically</h2>
+      <p class="section-subtitle reveal">Inspired by Altered Carbon's cortical stack transfer — moving a mind between bodies in six atomic steps.</p>
+
+      <div class="flow-diagram reveal">
+        <div class="flow-step">
+          <div class="flow-step-number">01</div>
+          <div class="flow-step-content">
+            <h4>Freeze Source Sleeve</h4>
+            <p>The source sleeve's tick loop is paused. No further perceive/recall operations. The Stack's current episodicHead is captured as the transfer root.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-number">02</div>
+          <div class="flow-step-content">
+            <h4>Shard Episodic Head</h4>
+            <p>The DHF Compositor collects the 8 most recent CIDs from the episodicHead. These are the critical memory fragments needed for continuity.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-number">03</div>
+          <div class="flow-step-content">
+            <h4>Pin Critical Shards</h4>
+            <p>All 8 shards are pinned on the Hippocampus DAG for durability. Pinned nodes are exempt from epoch-gating — they survive indefinitely. Costs MemoryToken.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-number">04</div>
+          <div class="flow-step-content">
+            <h4>Anchor Route on Medulla</h4>
+            <p>The NeedlecastRouter contract records the transfer route on-chain. This creates a globally auditable record: "Stack X transferred from Sleeve A to Sleeve B at epoch E."</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-number">05</div>
+          <div class="flow-step-content">
+            <h4>Reconstruct Target Sleeve</h4>
+            <p>The target sleeve is spawned with the same Stack identity. It derives fresh per-epoch HKDF keys, loads the pinned shards, and resumes from the transferred episodicHead. Drift resets to 0.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-number">06</div>
+          <div class="flow-step-content">
+            <h4>Settle with RoutingToken</h4>
+            <p>The source Stack's RoutingToken balance is debited: cost = 5 + 0.1 × shards + 0.5 × |Δepoch|. Source sleeve is decommissioned. The mind has moved; the old body is discarded.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container"><hr class="neon-divider"></div>
+
+  <!-- ============ NEUROSCIENCE MAPPING ============ -->
+  <section>
+    <div class="container">
+      <span class="section-label reveal">// Neuroscience ↔ Cryptography</span>
+      <h2 class="section-title reveal">The isomorphism that drives everything</h2>
+      <p class="section-subtitle reveal">ECCA's architecture isn't metaphorically inspired by neuroscience — it's structurally isomorphic. Every design decision maps to a neurological principle.</p>
+
+      <div class="reveal" style="overflow-x: auto;">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Brain Structure</th>
+              <th>ECCA Component</th>
+              <th>Neuroscience Function</th>
+              <th>Cryptographic Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Medulla Oblongata</td>
+              <td><span style="color: var(--neon-green);">Medulla PoW</span></td>
+              <td>Autonomic rhythm (heartbeat, breathing)</td>
+              <td>PoW sequencing, epoch timing, coherence anchor</td>
+            </tr>
+            <tr>
+              <td>Hippocampus</td>
+              <td><span style="color: var(--neon-magenta);">Hippocampus DAG</span></td>
+              <td>Episodic memory formation & consolidation</td>
+              <td>Content-addressed encrypted DAG with epoch gating</td>
+            </tr>
+            <tr>
+              <td>Cerebral Cortex</td>
+              <td><span style="color: var(--neon-cyan);">Cortex EVM</span></td>
+              <td>Executive decision-making, identity</td>
+              <td>Smart contracts, NFT identity, token logic</td>
+            </tr>
+            <tr>
+              <td>Thalamus</td>
+              <td><span style="color: var(--neon-cyan);">Thalamus Router</span></td>
+              <td>Sensory relay, information gating</td>
+              <td>Cross-shard event folding, coherence root computation</td>
+            </tr>
+            <tr>
+              <td>Axon Fibers</td>
+              <td>NATS JetStream</td>
+              <td>Long-range neural transport</td>
+              <td>Durable message bus (AxonalBus)</td>
+            </tr>
+            <tr>
+              <td>Synaptic Field</td>
+              <td>MMR</td>
+              <td>Cortico-thalamic firing patterns</td>
+              <td>Merkle Mountain Range for cross-shard proofs</td>
+            </tr>
+            <tr>
+              <td>Cortical Stack (Altered Carbon)</td>
+              <td>StackIdentity NFT</td>
+              <td>Persistent identity across bodies</td>
+              <td>Ed25519 keypair + CPV + EBC + epoch counter</td>
+            </tr>
+            <tr>
+              <td>Sleeve (Altered Carbon)</td>
+              <td>Process + HKDF key</td>
+              <td>Temporary embodiment</td>
+              <td>Per-epoch capability, bound to sleeve lifecycle</td>
+            </tr>
+            <tr>
+              <td>Cognitive Dissonance</td>
+              <td>Drift Counter</td>
+              <td>Divergence between perception and reality</td>
+              <td>perceive increments, sync resets, threshold → desync</td>
+            </tr>
+            <tr>
+              <td>Scar Tissue</td>
+              <td>Residue Objects</td>
+              <td>Permanent record of neural damage</td>
+              <td>Tradeable failure objects with token bounties</td>
+            </tr>
+            <tr>
+              <td>Synaptic Decay</td>
+              <td>EBC (Epoch Binding Curve)</td>
+              <td>Unused pathways weaken over time</td>
+              <td>Exponential token decay with floor</td>
+            </tr>
+            <tr>
+              <td>Cortical Column Tuning</td>
+              <td>CPV (Coherence Profile Vector)</td>
+              <td>Specialization of neural regions</td>
+              <td>5-coefficient vector scaling token issuance</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-key reveal" style="margin-top: 2rem;">
+        <strong>Why this matters:</strong> The neuroscience mapping isn't cosmetic — it's predictive. When we needed to solve coordination failures, we looked at how brains handle neural damage (scar tissue → residue system). When we needed token decay, we looked at synaptic weakening (use-dependent plasticity → EBC). The brain has solved distributed coordination for millions of years. ECCA learns from that.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CTA ============ -->
+  <section class="cta-section">
+    <div class="container">
+      <h2 class="reveal">Explore the full documentation</h2>
+      <p class="reveal">Deep-dive into every component, API, and protocol detail.</p>
+      <div class="hero-actions reveal" style="justify-content: center;">
+        <a href="docs.html" class="btn btn-primary">Developer Documentation</a>
+        <a href="tokenomics.html" class="btn btn-outline">Token Economics →</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div>
+          <div class="nav-logo" style="margin-bottom: 0.5rem;">
+            <span class="logo-icon">◈</span>
+            ECCA Stack
+          </div>
+          <p class="footer-copy">Eternal Coherence over Cryptographic Anchors</p>
+        </div>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="tokenomics.html">Tokenomics</a></li>
+          <li><a href="docs.html">Documentation</a></li>
+          <li><a href="https://github.com" target="_blank">GitHub</a></li>
+        </ul>
+        <p class="footer-copy">&copy; 2026 ECCA Protocol. MIT License.</p>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>

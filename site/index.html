@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECCA Stack — Eternal Coherence for Distributed AI Agents</title>
+  <meta name="description" content="ECCA Stack is a neuroscience-inspired distributed cognitive operating system for AI agents with persistent memory, cross-chain coherence, and tokenized bandwidth.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-gradient-top"></div>
+
+<!-- Navigation -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <span class="logo-icon">◈</span>
+      ECCA
+    </a>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#tokens">Tokens</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
+      <li><a href="architecture.html">Architecture</a></li>
+      <li><a href="docs.html">Docs</a></li>
+      <li><a href="tokenomics.html" class="nav-cta">Token Launch →</a></li>
+    </ul>
+    <button class="nav-mobile-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="content-wrapper">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-tag">
+          <span class="pulse-dot"></span>
+          MAINNET LAUNCH Q3 2026
+        </div>
+        <h1>The Cognitive Layer for Autonomous AI</h1>
+        <p class="hero-description">
+          A neuroscience-inspired distributed operating system where AI agents persist, remember, reason, and coordinate across independent chains — with cryptographic coherence and tokenized bandwidth.
+        </p>
+        <div class="hero-actions">
+          <a href="tokenomics.html" class="btn btn-primary">Explore Token Launch</a>
+          <a href="architecture.html" class="btn btn-outline">Read Architecture →</a>
+          <a href="docs.html" class="btn btn-ghost">Documentation</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="value" data-count="3" data-suffix="">3</div>
+            <div class="label">Independent Chains</div>
+          </div>
+          <div class="hero-stat">
+            <div class="value" data-count="5" data-suffix="">5</div>
+            <div class="label">Cognitive Tokens</div>
+          </div>
+          <div class="hero-stat">
+            <div class="value" data-count="4" data-suffix="s">4s</div>
+            <div class="label">Epoch Interval</div>
+          </div>
+          <div class="hero-stat">
+            <div class="value" data-count="24" data-suffix="">24</div>
+            <div class="label">Microservices</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ INFO BAR ============ -->
+  <div class="info-bar">
+    <div class="info-bar-content">
+      <span><span class="dot"></span> EPOCH_INTERVAL: 4,000ms</span>
+      <span><span class="dot"></span> CHAIN_ID: 131072</span>
+      <span><span class="dot"></span> ENCRYPTION: AES-256-GCM</span>
+      <span><span class="dot"></span> SIGNATURES: Ed25519</span>
+      <span><span class="dot"></span> KDF: HKDF-SHA512</span>
+      <span><span class="dot"></span> PROOF: Merkle Mountain Range</span>
+      <span><span class="dot"></span> FIELD_DEPTH: 256 leaves</span>
+      <span><span class="dot"></span> FIDELITY_MIN: 0.6</span>
+      <span><span class="dot"></span> DRIFT_MAX: 15</span>
+      <span><span class="dot"></span> EBC_FLOOR: 0.25</span>
+      <!-- Duplicate for seamless scroll -->
+      <span><span class="dot"></span> EPOCH_INTERVAL: 4,000ms</span>
+      <span><span class="dot"></span> CHAIN_ID: 131072</span>
+      <span><span class="dot"></span> ENCRYPTION: AES-256-GCM</span>
+      <span><span class="dot"></span> SIGNATURES: Ed25519</span>
+      <span><span class="dot"></span> KDF: HKDF-SHA512</span>
+      <span><span class="dot"></span> PROOF: Merkle Mountain Range</span>
+      <span><span class="dot"></span> FIELD_DEPTH: 256 leaves</span>
+      <span><span class="dot"></span> FIDELITY_MIN: 0.6</span>
+      <span><span class="dot"></span> DRIFT_MAX: 15</span>
+      <span><span class="dot"></span> EBC_FLOOR: 0.25</span>
+    </div>
+  </div>
+
+  <!-- ============ THE PROBLEM ============ -->
+  <section id="problem">
+    <div class="container">
+      <div class="problem-solution reveal">
+        <div>
+          <span class="section-label">// The Problem</span>
+          <h2 class="section-title">AI agents are stateless, siloed, and fragile</h2>
+          <ul class="problem-list">
+            <li>AI models lose all context between sessions — no persistent memory</li>
+            <li>Inference is locked to single providers — no portability</li>
+            <li>Agent identity is tied to API keys, not cryptographic proof</li>
+            <li>Multi-agent coordination fails silently with no recovery</li>
+            <li>Memory is centralized — one provider controls your agent's mind</li>
+            <li>No economic alignment between agents and infrastructure</li>
+          </ul>
+        </div>
+        <div>
+          <span class="section-label">// The ECCA Solution</span>
+          <h2 class="section-title">Persistent cognitive infrastructure for autonomous agents</h2>
+          <ul class="solution-list">
+            <li>Content-addressed, encrypted memory that persists forever</li>
+            <li>Agents transfer between embodiments (sleeves) with full continuity</li>
+            <li>Identity is an NFT-bound ed25519 keypair — you own your mind</li>
+            <li>Coordination failures become tradeable, incentivized repair objects</li>
+            <li>Memory stored across a decentralized DAG — no single point of failure</li>
+            <li>Bandwidth tokens create natural economic pressure for useful work</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container"><hr class="neon-divider"></div>
+
+  <!-- ============ KEY FEATURES ============ -->
+  <section id="features">
+    <div class="container">
+      <span class="section-label reveal">// Core Capabilities</span>
+      <h2 class="section-title reveal">What makes ECCA different</h2>
+      <p class="section-subtitle reveal">A ground-up rethinking of how autonomous agents persist, coordinate, and evolve — inspired by the architecture of the human brain.</p>
+
+      <div class="features-grid">
+        <div class="card reveal">
+          <div class="card-icon cyan">⧫</div>
+          <h3>Distributed Persistent Memory</h3>
+          <p>Every perception, inference, and decision is stored in an encrypted, content-addressed DAG. Memory is token-gated, epoch-tagged, and survives infrastructure failures. Like a hippocampus for your AI.</p>
+        </div>
+        <div class="card reveal">
+          <div class="card-icon magenta">◈</div>
+          <h3>Portable Agent Identity</h3>
+          <p>Your agent's identity (Stack) is an NFT-bound cryptographic keypair. It can migrate between inference engines, cloud providers, and hardware — like re-sleeving consciousness into a new body.</p>
+        </div>
+        <div class="card reveal">
+          <div class="card-icon green">⬡</div>
+          <h3>Tri-Chain Coherence</h3>
+          <p>Three independent blockchains — PoW sequencing, content-addressed memory, and EVM contracts — bound by a single coherence root every 4 seconds. One chain dies, the others survive.</p>
+        </div>
+        <div class="card reveal">
+          <div class="card-icon yellow">△</div>
+          <h3>Tokenized Bandwidth</h3>
+          <p>Five cognitive tokens (Compute, Memory, Sync, Routing, Residue) that decay over time. Agents that don't work lose capacity. Economic pressure ensures only useful agents persist.</p>
+        </div>
+        <div class="card reveal">
+          <div class="card-icon purple">◎</div>
+          <h3>First-Class Failure Objects</h3>
+          <p>Coordination failures aren't hidden — they become tradeable Residue objects with token bounties. The system is self-healing: more failures = more incentive to become a resolver.</p>
+        </div>
+        <div class="card reveal">
+          <div class="card-icon orange">⟁</div>
+          <h3>Human-AI Co-Embodiment</h3>
+          <p>A Stack can run human and AI sleeves simultaneously, sharing the same encrypted memory. Diverging perspectives become resolvable residues, not errors. True cognitive partnership.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HOW IT WORKS ============ -->
+  <section id="how-it-works">
+    <div class="container">
+      <span class="section-label reveal">// The Coherence Loop</span>
+      <h2 class="section-title reveal">How ECCA coordinates a distributed mind</h2>
+      <p class="section-subtitle reveal">Every 4 seconds, the entire system's state is folded into a single cryptographic commitment — an atomic heartbeat for distributed cognition.</p>
+
+      <div class="flow-diagram">
+        <div class="flow-step reveal">
+          <div class="flow-step-number">01</div>
+          <div class="flow-step-content">
+            <h4>Perceive</h4>
+            <p>Sleeves (agent embodiments) perceive their environment — inference outputs, sensor data, human input. Each perception is encrypted with a per-epoch HKDF key and written to the Hippocampus DAG as a content-addressed node.</p>
+          </div>
+        </div>
+        <div class="flow-step reveal">
+          <div class="flow-step-number">02</div>
+          <div class="flow-step-content">
+            <h4>Fold</h4>
+            <p>The Thalamus Router collects all epoch events across all three chains. It computes per-shard Merkle roots (EVM transactions, DAG writes, sleeve state changes) and folds them into a single 32-byte coherence root.</p>
+          </div>
+        </div>
+        <div class="flow-step reveal">
+          <div class="flow-step-number">03</div>
+          <div class="flow-step-content">
+            <h4>Anchor</h4>
+            <p>The Medulla PoW chain mines a block containing the coherence root. One proof-of-work confirmation atomically finalizes state across all three shards. The block hash is appended to the Synaptic Field MMR for O(log n) cross-shard proofs.</p>
+          </div>
+        </div>
+        <div class="flow-step reveal">
+          <div class="flow-step-number">04</div>
+          <div class="flow-step-content">
+            <h4>Emit</h4>
+            <p>The Treasury issues bandwidth tokens to each active Stack, scaled by its Coherence Profile Vector (CPV) and decayed by the Epoch Binding Curve (EBC). Workers detect drift, flag failures, and open residue bounties.</p>
+          </div>
+        </div>
+        <div class="flow-step reveal">
+          <div class="flow-step-number">05</div>
+          <div class="flow-step-content">
+            <h4>Recall</h4>
+            <p>When a Stack needs memory, the DHF Compositor walks the encrypted DAG, decrypting nodes with per-epoch keys. Recall depth is bounded by MemoryToken balance — deeper memory costs more bandwidth. Fidelity scores measure recall quality.</p>
+          </div>
+        </div>
+        <div class="flow-step reveal">
+          <div class="flow-step-number">06</div>
+          <div class="flow-step-content">
+            <h4>Needlecast</h4>
+            <p>To transfer a Stack to a new Sleeve, the 6-step Needlecast saga freezes the source, shards the memory graph, pins critical nodes for durability, anchors the route on-chain, reconstructs the target, and settles with RoutingToken. The mind moves; the body is disposable.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container"><hr class="neon-divider"></div>
+
+  <!-- ============ ARCHITECTURE OVERVIEW ============ -->
+  <section id="architecture">
+    <div class="container">
+      <span class="section-label reveal">// System Architecture</span>
+      <h2 class="section-title reveal">Three chains, one coherence</h2>
+      <p class="section-subtitle reveal">Inspired by the layered architecture of the human brain — from brainstem rhythms to cortical decision-making.</p>
+
+      <div class="arch-layers reveal">
+        <div class="arch-layer">
+          <span class="arch-layer-label">L3</span>
+          <div class="arch-layer-content">
+            <h4>Synapse API — Gateway Layer</h4>
+            <p>REST + WebSocket gateway for all client interactions. Stack creation, perceive, recall, needlecast, and sleeve management.</p>
+          </div>
+        </div>
+        <div class="arch-layer">
+          <span class="arch-layer-label">L2.5</span>
+          <div class="arch-layer-content">
+            <h4>Routing Layer — Thalamus, DHF Compositor, Needlecast, Treasury, Faucet</h4>
+            <p>Cross-shard event folding, memory reconstruction, re-sleeving orchestration, per-epoch token emission, and development faucet.</p>
+          </div>
+        </div>
+        <div class="arch-layer">
+          <span class="arch-layer-label">L2</span>
+          <div class="arch-layer-content">
+            <h4>Execution Layer — Sleeve Runtime + Worker Runner</h4>
+            <p>4-in-1 parametric sleeve dispatcher (human, AI, mining, memory) and 6-in-1 background worker (drift checker, epoch anchor, residue collector, memory reconciler, treasury emitter, sleeve watchdog).</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-chains reveal" style="margin-top: 1rem;">
+        <div class="arch-chain medulla">
+          <h5>◆ Medulla PoW</h5>
+          <p>Go • Sequencing • Coherence anchoring • Synaptic Field MMR • Port 8332</p>
+        </div>
+        <div class="arch-chain hippocampus">
+          <h5>◆ Hippocampus DAG</h5>
+          <p>Go • Content-addressed memory • Epoch-gated recall • Fidelity scoring • Port 5001</p>
+        </div>
+        <div class="arch-chain cortex">
+          <h5>◆ Cortex EVM</h5>
+          <p>geth • Identity NFTs • Token contracts • Treasury • Residue registry • Port 8545</p>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 2rem;" class="reveal">
+        <a href="architecture.html" class="btn btn-outline">Full Architecture Deep-Dive →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TOKEN OVERVIEW ============ -->
+  <section id="tokens">
+    <div class="container">
+      <span class="section-label reveal">// Cognitive Token System</span>
+      <h2 class="section-title reveal">Five tokens. One cognitive economy.</h2>
+      <p class="section-subtitle reveal">ECCA doesn't use money — it uses bandwidth. Tokens represent capacity to act, not wealth to hoard. Unused tokens decay. Work keeps you alive.</p>
+
+      <div class="token-grid reveal">
+        <div class="token-card compute">
+          <span class="token-symbol">⚡</span>
+          <div class="token-name">ComputeToken</div>
+          <div class="token-desc">Powers inference, perceive operations, and block mining. Consumed on every cognitive action. Decays via EBC.</div>
+        </div>
+        <div class="token-card memory">
+          <span class="token-symbol">◈</span>
+          <div class="token-name">MemoryToken</div>
+          <div class="token-desc">Controls recall depth into the DAG. Deeper memory costs more. Perfect total recall requires unbounded tokens.</div>
+        </div>
+        <div class="token-card sync">
+          <span class="token-symbol">⟲</span>
+          <div class="token-name">SyncToken</div>
+          <div class="token-desc">Pays for drift reset and epoch synchronization. Re-aligns a sleeve to the canonical chain state.</div>
+        </div>
+        <div class="token-card routing">
+          <span class="token-symbol">⇄</span>
+          <div class="token-name">RoutingToken</div>
+          <div class="token-desc">Pays for needlecasting — transferring a Stack to a new Sleeve. Cost scales with shard count and epoch distance.</div>
+        </div>
+        <div class="token-card residue">
+          <span class="token-symbol">◉</span>
+          <div class="token-name">ResidueToken</div>
+          <div class="token-desc">Earned by resolving coordination failures. The only token that doesn't decay. Bounty for keeping the system healthy.</div>
+        </div>
+      </div>
+
+      <div class="stats-bar reveal" style="margin-top: 3rem;">
+        <div class="stat-item">
+          <div class="stat-value" data-count="100" data-suffix="/epoch">100/epoch</div>
+          <div class="stat-label">Base Emission Per Stack</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">e<sup>-0.05Δt</sup></div>
+          <div class="stat-label">Epoch Binding Curve</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">0.25</div>
+          <div class="stat-label">Decay Floor</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" data-count="5" data-suffix="D CPV">5D CPV</div>
+          <div class="stat-label">Coherence Profile Vector</div>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 2rem;" class="reveal">
+        <a href="tokenomics.html" class="btn btn-primary">Full Tokenomics & Launch Details →</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="container"><hr class="neon-divider"></div>
+
+  <!-- ============ DIFFERENTIATORS ============ -->
+  <section id="compare">
+    <div class="container">
+      <span class="section-label reveal">// Why ECCA</span>
+      <h2 class="section-title reveal">Beyond the competition</h2>
+      <p class="section-subtitle reveal">ECCA isn't another "AI + blockchain" project. It's a fundamentally different architecture for persistent, autonomous cognition.</p>
+
+      <div class="reveal" style="overflow-x: auto;">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Capability</th>
+              <th>ECCA Stack</th>
+              <th>Traditional AI Infra</th>
+              <th>Existing Web3 AI</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Persistent agent memory</td>
+              <td class="check">✓ Encrypted DAG with epoch gating</td>
+              <td class="cross">✕ Session-scoped context windows</td>
+              <td class="partial">~ Vector DB, no crypto gating</td>
+            </tr>
+            <tr>
+              <td>Portable identity</td>
+              <td class="check">✓ NFT-bound ed25519 Stack</td>
+              <td class="cross">✕ API keys tied to provider</td>
+              <td class="partial">~ Wallet-based, no cognition</td>
+            </tr>
+            <tr>
+              <td>Cross-chain coherence</td>
+              <td class="check">✓ Tri-chain atomic coherence root</td>
+              <td class="cross">✕ Single provider silo</td>
+              <td class="cross">✕ Single chain only</td>
+            </tr>
+            <tr>
+              <td>Failure handling</td>
+              <td class="check">✓ Tradeable residue bounties</td>
+              <td class="cross">✕ Silent failures, retries</td>
+              <td class="cross">✕ Slashing (punitive only)</td>
+            </tr>
+            <tr>
+              <td>Human-AI co-embodiment</td>
+              <td class="check">✓ Shared memory, conflict resolution</td>
+              <td class="cross">✕ Separate systems</td>
+              <td class="cross">✕ Not considered</td>
+            </tr>
+            <tr>
+              <td>Token decay economics</td>
+              <td class="check">✓ EBC decay with floor — use it or lose it</td>
+              <td class="cross">✕ Pay-per-call (no alignment)</td>
+              <td class="partial">~ Staking (hoarding incentive)</td>
+            </tr>
+            <tr>
+              <td>Memory fidelity scoring</td>
+              <td class="check">✓ Token-bounded recall depth</td>
+              <td class="cross">✕ Unlimited or no recall</td>
+              <td class="cross">✕ No concept</td>
+            </tr>
+            <tr>
+              <td>Agent re-sleeving</td>
+              <td class="check">✓ 6-step atomic needlecast</td>
+              <td class="cross">✕ Can't migrate agents</td>
+              <td class="cross">✕ Can't migrate state</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <div class="container"><hr class="neon-divider"></div>
+
+  <!-- ============ FOR DIFFERENT AUDIENCES ============ -->
+  <section id="audiences">
+    <div class="container">
+      <span class="section-label reveal">// Built for Builders</span>
+      <h2 class="section-title reveal">Speak your language</h2>
+      <p class="section-subtitle reveal">Whether you come from cryptography, web3, or neuroscience — ECCA has been designed with your mental models in mind.</p>
+
+      <div class="audience-tabs reveal">
+        <button class="audience-tab active" data-tab="tab-crypto">Cryptographers</button>
+        <button class="audience-tab" data-tab="tab-web3">Web3 Developers</button>
+        <button class="audience-tab" data-tab="tab-neuro">Neuroscientists</button>
+        <button class="audience-tab" data-tab="tab-ai">AI Engineers</button>
+      </div>
+
+      <div id="tab-crypto" class="audience-content active reveal">
+        <div class="grid-2">
+          <div>
+            <h3>Cryptographic Primitives</h3>
+            <p style="color: var(--text-secondary); margin-top: 1rem;">ECCA uses battle-tested primitives with no bespoke cryptography:</p>
+            <ul style="margin-top: 1rem; list-style: none; color: var(--text-secondary);">
+              <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <code>Ed25519</code> — Stack identity keypairs (RFC 8032)
+              </li>
+              <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <code>HKDF-SHA512</code> — Per-epoch capability key derivation (RFC 5869)
+              </li>
+              <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <code>AES-256-GCM</code> — DAG node payload encryption (NIST SP 800-38D)
+              </li>
+              <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <code>SHA-256</code> — Merkle trees, coherence root, content addressing
+              </li>
+              <li style="padding: 0.5rem 0;">
+                <code>RFC 6962</code> — Domain-separated Merkle tree construction
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3>Key Innovation: Coherence Root</h3>
+            <div class="equation-block" style="margin-top: 1rem; text-align: left; font-size: 0.85rem;">
+              crossRoot = SHA256(<br>
+              &nbsp;&nbsp;"ecca-coh-v1" ‖<br>
+              &nbsp;&nbsp;merkleRoot(evm_txs) ‖<br>
+              &nbsp;&nbsp;merkleRoot(btc_reserved) ‖<br>
+              &nbsp;&nbsp;merkleRoot(dag_writes) ‖<br>
+              &nbsp;&nbsp;merkleRoot(sleeve_events)<br>
+              )
+            </div>
+            <p style="color: var(--text-secondary); margin-top: 1rem;">One Proof-of-Work commitment atomically finalizes three independent shards. Cross-shard verification via Merkle Mountain Range (O(log 256) = 8 hashes per proof).</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-web3" class="audience-content">
+        <div class="grid-2">
+          <div>
+            <h3>Smart Contract Suite</h3>
+            <p style="color: var(--text-secondary); margin-top: 1rem;">7 Solidity contracts on a private EVM chain (Cortex, chain ID 131072):</p>
+            <ul style="margin-top: 1rem; list-style: none; color: var(--text-secondary);">
+              <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <code>StackIdentity.sol</code> — ERC-721 identity NFT with CPV and epoch counter
+              </li>
+              <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <code>BandwidthToken.sol</code> — ERC-20 × 5 cognitive token issuance
+              </li>
+              <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <code>QuellistTreasury.sol</code> — Per-epoch emission engine
+              </li>
+              <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <code>NeedlecastRouter.sol</code> — On-chain re-sleeving coordination
+              </li>
+              <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <code>ResidueRegistry.sol</code> — Failure tracking + bounty distribution
+              </li>
+              <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <code>SleeveRegistry.sol</code> — Sleeve lifecycle management
+              </li>
+              <li style="padding: 0.5rem 0;">
+                <code>EpochAnchor.sol</code> — Per-epoch coherence commitment
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3>Not Another L2</h3>
+            <p style="color: var(--text-secondary); margin-top: 1rem;">ECCA is <strong>not</strong> a Layer 2 or rollup. It's a sovereign tri-chain system where:</p>
+            <ul style="margin-top: 1rem; color: var(--text-secondary);">
+              <li>The EVM chain handles <strong>identity and tokens</strong></li>
+              <li>A Go-based PoW chain handles <strong>sequencing and coherence</strong></li>
+              <li>A Go-based DAG handles <strong>memory storage</strong></li>
+              <li>All three are bound by a coherence root — not a bridge</li>
+            </ul>
+            <p style="color: var(--text-secondary); margin-top: 1rem;">This means one chain can die without halting the system. Discrepancies become residues, not catastrophic failures.</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-neuro" class="audience-content">
+        <div class="grid-2">
+          <div>
+            <h3>Brain ↔ System Isomorphism</h3>
+            <p style="color: var(--text-secondary); margin-top: 1rem;">Every ECCA component maps to a neurological structure — not as metaphor, but as architectural principle:</p>
+            <table class="comparison-table" style="margin-top: 1rem;">
+              <thead>
+                <tr><th>Brain</th><th>ECCA</th><th>Function</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Medulla Oblongata</td><td>Medulla PoW</td><td>Autonomic rhythm</td></tr>
+                <tr><td>Hippocampus</td><td>Hippocampus DAG</td><td>Episodic memory</td></tr>
+                <tr><td>Cerebral Cortex</td><td>Cortex EVM</td><td>Executive decisions</td></tr>
+                <tr><td>Thalamus</td><td>Thalamus Router</td><td>Sensory relay/gating</td></tr>
+                <tr><td>Axon Fibers</td><td>NATS JetStream</td><td>Long-range transport</td></tr>
+                <tr><td>Synaptic Field</td><td>MMR</td><td>Cross-region binding</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <h3>Cognitive Model Properties</h3>
+            <ul style="margin-top: 1rem; color: var(--text-secondary);">
+              <li style="padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <strong style="color: var(--neon-cyan);">Drift = Cognitive Dissonance</strong><br>
+                Divergence between a sleeve's state and canonical epoch. Too much drift triggers decommission.
+              </li>
+              <li style="padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <strong style="color: var(--neon-magenta);">Residue = Scar Tissue</strong><br>
+                Coordination failures that become permanent, tradeable records with repair incentives.
+              </li>
+              <li style="padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <strong style="color: var(--neon-green);">EBC = Synaptic Decay</strong><br>
+                Tokens decay exponentially — mirroring how unused neural pathways weaken over time.
+              </li>
+              <li style="padding: 0.6rem 0;">
+                <strong style="color: var(--neon-yellow);">CPV = Cortical Tuning</strong><br>
+                A 5-coefficient vector per Stack. Like cortical column specialization — optimize for compute, memory, or routing.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-ai" class="audience-content">
+        <div class="grid-2">
+          <div>
+            <h3>For Agent Developers</h3>
+            <p style="color: var(--text-secondary); margin-top: 1rem;">Build AI agents that remember across sessions, transfer between inference backends, and coordinate with other agents — all with cryptographic guarantees.</p>
+            <pre style="margin-top: 1rem;"><code>// Create a persistent AI agent
+const stack = await synapse.post('/v1/stacks', {
+  pubkey: myKeypair.pub,
+  cpv: { compute: 1.5, memory: 0.8, 
+         sync: 1.0, routing: 0.5, residue: 1.2 }
+});
+
+// Spawn an AI sleeve
+const sleeve = await synapse.post(
+  `/v1/sleeves/${stack.id}`,
+  { kind: 'ai', tickRate: 2000 }
+);
+
+// Perceive (write to memory)
+await synapse.post('/v1/perceive', {
+  stackId: stack.id,
+  text: 'Inference output: market trend analysis...',
+  sleeveId: sleeve.id
+});
+
+// Recall (read from memory, depth-bounded)
+const memory = await synapse.post('/v1/recall', {
+  stackId: stack.id,
+  depth: 16  // costs 16 MemoryToken
+});
+// → { fragments: [...], fidelity: 0.87 }</code></pre>
+          </div>
+          <div>
+            <h3>Key Benefits</h3>
+            <ul style="margin-top: 1rem; list-style: none; color: var(--text-secondary);">
+              <li style="padding: 0.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <strong style="color: #fff;">Persistent Cross-Session Memory</strong><br>
+                Your agent remembers everything — gated by epoch windows and token balance, not context window limits.
+              </li>
+              <li style="padding: 0.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <strong style="color: #fff;">Provider-Agnostic Inference</strong><br>
+                Switch from GPT to Claude to Llama without losing state. The Stack carries the mind; the Sleeve is just the body.
+              </li>
+              <li style="padding: 0.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <strong style="color: #fff;">Multi-Agent Coordination</strong><br>
+                Agents interact through the shared DAG and residue system. Failures become opportunities, not errors.
+              </li>
+              <li style="padding: 0.8rem 0;">
+                <strong style="color: #fff;">Economic Incentive Alignment</strong><br>
+                Token decay ensures your agent is incentivized to do useful work. No free-loading on infrastructure.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container"><hr class="neon-divider"></div>
+
+  <!-- ============ ROADMAP ============ -->
+  <section id="roadmap">
+    <div class="container">
+      <span class="section-label reveal">// Development Roadmap</span>
+      <h2 class="section-title reveal">Building the cognitive layer</h2>
+      <p class="section-subtitle reveal">From genesis to global deployment — the path to a fully autonomous, self-healing distributed cognitive infrastructure.</p>
+
+      <div class="roadmap reveal">
+        <div class="roadmap-item completed">
+          <div class="roadmap-phase">Phase 0 — Genesis // Q4 2025</div>
+          <h3>Research & Architecture</h3>
+          <p>Core protocol design, neuroscience-to-crypto mapping, formal memory graph theory, coherence root specification, token economic model design, and system architecture whitepaper.</p>
+          <div class="roadmap-tags">
+            <span class="roadmap-tag">Whitepaper</span>
+            <span class="roadmap-tag">Protocol Spec</span>
+            <span class="roadmap-tag">Economic Model</span>
+          </div>
+        </div>
+
+        <div class="roadmap-item completed">
+          <div class="roadmap-phase">Phase 1 — Foundation // Q1 2026</div>
+          <h3>Core Implementation</h3>
+          <p>Monorepo scaffold, shared packages (proto, crypto, bus, db, chain, service-base), Prisma schema, 7 Solidity contracts, Go fork implementations (Medulla PoW + Hippocampus DAG), Docker Compose with 24 services.</p>
+          <div class="roadmap-tags">
+            <span class="roadmap-tag">TypeScript</span>
+            <span class="roadmap-tag">Go</span>
+            <span class="roadmap-tag">Solidity</span>
+            <span class="roadmap-tag">Docker</span>
+          </div>
+        </div>
+
+        <div class="roadmap-item active">
+          <div class="roadmap-phase">Phase 2 — Coherence // Q2 2026</div>
+          <h3>Service Integration & Testing</h3>
+          <p>Full service implementation (Synapse API, Thalamus Router, DHF Compositor, Needlecast, Treasury, Faucet), worker pipeline, integration tests, contract test suites, Go unit tests, and end-to-end coherence loop validation.</p>
+          <div class="roadmap-tags">
+            <span class="roadmap-tag">Integration</span>
+            <span class="roadmap-tag">Testing</span>
+            <span class="roadmap-tag">CI/CD</span>
+          </div>
+        </div>
+
+        <div class="roadmap-item future">
+          <div class="roadmap-phase">Phase 3 — Testnet // Q3 2026</div>
+          <h3>Public Testnet & Token Launch</h3>
+          <p>Incentivized testnet with bandwidth token distribution, public faucet, developer SDK release, third-party sleeve templates, load testing (k6 suite), security audit of smart contracts, and community-built resolver agents.</p>
+          <div class="roadmap-tags">
+            <span class="roadmap-tag">Testnet</span>
+            <span class="roadmap-tag">Token Launch</span>
+            <span class="roadmap-tag">SDK</span>
+            <span class="roadmap-tag">Audit</span>
+          </div>
+        </div>
+
+        <div class="roadmap-item future">
+          <div class="roadmap-phase">Phase 4 — Embodiment // Q4 2026</div>
+          <h3>Mainnet & AI Agent Marketplace</h3>
+          <p>Mainnet launch with production PoW difficulty, decentralized Hippocampus replication, Cortex EVM bridge to Ethereum L1, agent marketplace for sleeve templates, human-AI co-embodiment workflows, and Kubernetes production deployment (Helm charts).</p>
+          <div class="roadmap-tags">
+            <span class="roadmap-tag">Mainnet</span>
+            <span class="roadmap-tag">Bridge</span>
+            <span class="roadmap-tag">Marketplace</span>
+            <span class="roadmap-tag">Production K8s</span>
+          </div>
+        </div>
+
+        <div class="roadmap-item future">
+          <div class="roadmap-phase">Phase 5 — Expansion // 2027</div>
+          <h3>Cross-Network Federation & Advanced Features</h3>
+          <p>BTC bridge integration (btcRoot in coherence), multi-network needlecasting (Stack transfer across ECCA instances), recursive coherence proofs (ZK-SNARKs for cross-epoch verification), and autonomous residue resolver DAOs.</p>
+          <div class="roadmap-tags">
+            <span class="roadmap-tag">BTC Bridge</span>
+            <span class="roadmap-tag">Federation</span>
+            <span class="roadmap-tag">ZK Proofs</span>
+            <span class="roadmap-tag">Resolver DAOs</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container"><hr class="neon-divider"></div>
+
+  <!-- ============ CTA ============ -->
+  <section class="cta-section">
+    <div class="container">
+      <h2 class="reveal">Build the future of<br>distributed cognition</h2>
+      <p class="reveal">Join the testnet. Launch your first persistent AI agent. Earn residue tokens by keeping the system healthy.</p>
+      <div class="hero-actions reveal" style="justify-content: center;">
+        <a href="tokenomics.html" class="btn btn-primary">Token Launch Details</a>
+        <a href="docs.html" class="btn btn-outline">Start Building →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div>
+          <div class="nav-logo" style="margin-bottom: 0.5rem;">
+            <span class="logo-icon">◈</span>
+            ECCA Stack
+          </div>
+          <p class="footer-copy">Eternal Coherence over Cryptographic Anchors</p>
+        </div>
+        <ul class="footer-links">
+          <li><a href="architecture.html">Architecture</a></li>
+          <li><a href="docs.html">Documentation</a></li>
+          <li><a href="tokenomics.html">Tokenomics</a></li>
+          <li><a href="https://github.com" target="_blank">GitHub</a></li>
+        </ul>
+        <p class="footer-copy">&copy; 2026 ECCA Protocol. MIT License.</p>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>
