@@ -1,0 +1,5 @@
+services/ecca-bot/
+├── bot.py              # Main Discord bot with LangChain RAG
+├── Dockerfile
+├── requirements.txt
+└── docs/               # Mounted from project docs at runtime

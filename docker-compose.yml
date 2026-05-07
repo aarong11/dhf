@@ -57,6 +57,7 @@ volumes:
   grafana-data:
   loki-data:
   ollama-data:
+  ecca-bot-chroma:
 
 services:
   # ───────────────────────── DATA PLANE ──────────────────────────────────────
@@ -356,6 +357,24 @@ services:
     environment:
       COLLECTOR_OTLP_ENABLED: "true"
     ports: ["16686:16686", "14268:14268", "4317:4317", "4318:4318"]
+    networks: [ecca-net]
+    logging: *default-logging
+    <<: *default-restart
+
+  # ── ECCA Discord Bot (LangChain + Ollama RAG) ────────────────────
+  ecca-bot:
+    build:
+      context: ./services/ecca-bot
+      dockerfile: Dockerfile
+    environment:
+      DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN}
+      OLLAMA_BASE_URL: http://100.121.246.33:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-gpt-oss:20b}
+      DOCS_DIR: /app/docs
+      CHROMA_DIR: /app/chroma_db
+    volumes:
+      - ./docs:/app/docs:ro
+      - ecca-bot-chroma:/app/chroma_db
     networks: [ecca-net]
     logging: *default-logging
     <<: *default-restart
