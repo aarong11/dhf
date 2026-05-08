@@ -1,0 +1,1449 @@
+{
+  "suites": [
+    {
+      "name": "@ecca/proto",
+      "filter": "@ecca/proto",
+      "desc": "Token taxonomy, event schemas, zod validators, constants. The shared type contract between all 24 services.",
+      "pass": 35,
+      "fail": 0,
+      "total": 35,
+      "duration": 54.715542,
+      "tests": [
+        {
+          "name": "validates all five token kinds",
+          "status": "pass",
+          "duration": 0.299167
+        },
+        {
+          "name": "rejects unknown token kinds",
+          "status": "pass",
+          "duration": 0.244625
+        },
+        {
+          "name": "maps every kind to a contract name",
+          "status": "pass",
+          "duration": 0.071416
+        },
+        {
+          "name": "validates DEFAULT_BALANCE",
+          "status": "pass",
+          "duration": 0.107667
+        },
+        {
+          "name": "rejects negative values",
+          "status": "pass",
+          "duration": 0.0995
+        },
+        {
+          "name": "parses with defaults",
+          "status": "pass",
+          "duration": 0.110083
+        },
+        {
+          "name": "rejects coefficients above 2",
+          "status": "pass",
+          "duration": 0.110125
+        },
+        {
+          "name": "rejects negative coefficients",
+          "status": "pass",
+          "duration": 0.075708
+        },
+        {
+          "name": "parses with defaults",
+          "status": "pass",
+          "duration": 0.160084
+        },
+        {
+          "name": "rejects decayRate > 1",
+          "status": "pass",
+          "duration": 0.1105
+        },
+        {
+          "name": "returns raw balance at epoch 0",
+          "status": "pass",
+          "duration": 0.082459
+        },
+        {
+          "name": "decays over time but never below floor",
+          "status": "pass",
+          "duration": 0.035416
+        },
+        {
+          "name": "applies CPV multipliers",
+          "status": "pass",
+          "duration": 0.0475
+        },
+        {
+          "name": "does not decay residue tokens",
+          "status": "pass",
+          "duration": 0.0295
+        },
+        {
+          "name": "handles moderate decay correctly",
+          "status": "pass",
+          "duration": 0.029291
+        },
+        {
+          "name": "validates StackId format",
+          "status": "pass",
+          "duration": 0.274
+        },
+        {
+          "name": "validates SleeveId format",
+          "status": "pass",
+          "duration": 0.104333
+        },
+        {
+          "name": "validates ECCA CID format",
+          "status": "pass",
+          "duration": 0.102375
+        },
+        {
+          "name": "validates EmbodimentType",
+          "status": "pass",
+          "duration": 0.086333
+        },
+        {
+          "name": "validates all five residue kinds",
+          "status": "pass",
+          "duration": 0.067167
+        },
+        {
+          "name": "ResidueKindEnum companion maps to valid values",
+          "status": "pass",
+          "duration": 0.05075
+        },
+        {
+          "name": "validates StackCreated",
+          "status": "pass",
+          "duration": 0.103166
+        },
+        {
+          "name": "validates SleeveSpawned",
+          "status": "pass",
+          "duration": 0.039583
+        },
+        {
+          "name": "validates PerceiveEvent",
+          "status": "pass",
+          "duration": 0.044083
+        },
+        {
+          "name": "validates EpochTransition",
+          "status": "pass",
+          "duration": 0.043875
+        },
+        {
+          "name": "rejects unknown event type",
+          "status": "pass",
+          "duration": 0.079209
+        },
+        {
+          "name": "EPOCH_INTERVAL_MS matches ECCA namespace",
+          "status": "pass",
+          "duration": 0.033375
+        },
+        {
+          "name": "DRIFT_MAX_DEFAULT matches ECCA namespace",
+          "status": "pass",
+          "duration": 0.026583
+        },
+        {
+          "name": "FIDELITY_MIN_DEFAULT is 0.6",
+          "status": "pass",
+          "duration": 0.021917
+        },
+        {
+          "name": "CORTEX_CHAIN_ID is 131072",
+          "status": "pass",
+          "duration": 0.022166
+        },
+        {
+          "name": "SYNAPTIC_FIELD_DEPTH is 256",
+          "status": "pass",
+          "duration": 0.024542
+        },
+        {
+          "name": "stream name is ECCA",
+          "status": "pass",
+          "duration": 0.032041
+        },
+        {
+          "name": "subjects cover all ECCA namespaces",
+          "status": "pass",
+          "duration": 0.249417
+        },
+        {
+          "name": "max messages is 1M",
+          "status": "pass",
+          "duration": 0.020208
+        },
+        {
+          "name": "all subjects start with ecca.",
+          "status": "pass",
+          "duration": 0.036666
+        }
+      ]
+    },
+    {
+      "name": "@ecca/crypto",
+      "filter": "@ecca/crypto",
+      "desc": "SHA-256, HKDF-SHA512 key derivation, AES-256-GCM encryption, Ed25519 signatures, Merkle trees, MMR, coherence roots. All via @noble audited libraries.",
+      "pass": 53,
+      "fail": 0,
+      "total": 53,
+      "duration": 105.790083,
+      "tests": [
+        {
+          "name": "returns 32 bytes for string input",
+          "status": "pass",
+          "duration": 0.503875
+        },
+        {
+          "name": "returns 32 bytes for Uint8Array input",
+          "status": "pass",
+          "duration": 0.097583
+        },
+        {
+          "name": "is deterministic",
+          "status": "pass",
+          "duration": 0.314458
+        },
+        {
+          "name": "different inputs produce different hashes",
+          "status": "pass",
+          "duration": 0.13325
+        },
+        {
+          "name": "returns 64-char hex string",
+          "status": "pass",
+          "duration": 0.197041
+        },
+        {
+          "name": "accepts objects",
+          "status": "pass",
+          "duration": 0.080625
+        },
+        {
+          "name": "is deterministic for objects",
+          "status": "pass",
+          "duration": 0.098875
+        },
+        {
+          "name": "produces ecca:// prefixed CID with epoch",
+          "status": "pass",
+          "duration": 0.134209
+        },
+        {
+          "name": "content-addressing: same content + epoch = same CID",
+          "status": "pass",
+          "duration": 0.10725
+        },
+        {
+          "name": "different epoch = different CID",
+          "status": "pass",
+          "duration": 0.140625
+        },
+        {
+          "name": "parses a valid ECCA CID",
+          "status": "pass",
+          "duration": 0.155792
+        },
+        {
+          "name": "returns null for non-ECCA CIDs",
+          "status": "pass",
+          "duration": 0.325333
+        },
+        {
+          "name": "handles CID without epoch",
+          "status": "pass",
+          "duration": 0.034375
+        },
+        {
+          "name": "returns 32-byte key",
+          "status": "pass",
+          "duration": 1.379208
+        },
+        {
+          "name": "is deterministic for same inputs",
+          "status": "pass",
+          "duration": 1.059
+        },
+        {
+          "name": "different stack IDs produce different keys",
+          "status": "pass",
+          "duration": 0.239417
+        },
+        {
+          "name": "different epochs produce different keys",
+          "status": "pass",
+          "duration": 0.510959
+        },
+        {
+          "name": "uses HKDF-SHA512",
+          "status": "pass",
+          "duration": 0.266958
+        },
+        {
+          "name": "round-trips string content",
+          "status": "pass",
+          "duration": 1.252917
+        },
+        {
+          "name": "round-trips binary content",
+          "status": "pass",
+          "duration": 0.313708
+        },
+        {
+          "name": "produces versioned payload",
+          "status": "pass",
+          "duration": 0.240583
+        },
+        {
+          "name": "different encryptions of same plaintext produce different ciphertexts",
+          "status": "pass",
+          "duration": 0.240083
+        },
+        {
+          "name": "decryption with wrong key fails",
+          "status": "pass",
+          "duration": 0.386167
+        },
+        {
+          "name": "decryption with wrong version throws",
+          "status": "pass",
+          "duration": 0.258834
+        },
+        {
+          "name": "generates hex-encoded keypair",
+          "status": "pass",
+          "duration": 22.923917
+        },
+        {
+          "name": "different calls produce different keypairs",
+          "status": "pass",
+          "duration": 0.4115
+        },
+        {
+          "name": "sign + verify round trip",
+          "status": "pass",
+          "duration": 2.764333
+        },
+        {
+          "name": "verify rejects wrong message",
+          "status": "pass",
+          "duration": 1.934375
+        },
+        {
+          "name": "verify rejects wrong pubkey",
+          "status": "pass",
+          "duration": 1.921625
+        },
+        {
+          "name": "sign accepts Uint8Array message",
+          "status": "pass",
+          "duration": 1.841125
+        },
+        {
+          "name": "returns hex string",
+          "status": "pass",
+          "duration": 0.274625
+        },
+        {
+          "name": "is deterministic",
+          "status": "pass",
+          "duration": 0.364791
+        },
+        {
+          "name": "different leaves produce different roots",
+          "status": "pass",
+          "duration": 0.181875
+        },
+        {
+          "name": "order matters",
+          "status": "pass",
+          "duration": 0.162041
+        },
+        {
+          "name": "handles single leaf",
+          "status": "pass",
+          "duration": 0.053583
+        },
+        {
+          "name": "handles empty array",
+          "status": "pass",
+          "duration": 0.047042
+        },
+        {
+          "name": "accepts Uint8Array leaves",
+          "status": "pass",
+          "duration": 0.112083
+        },
+        {
+          "name": "generates verifiable proof for each leaf",
+          "status": "pass",
+          "duration": 0.398209
+        },
+        {
+          "name": "proof fails with wrong root",
+          "status": "pass",
+          "duration": 0.070833
+        },
+        {
+          "name": "proof fails with wrong leaf",
+          "status": "pass",
+          "duration": 0.087666
+        },
+        {
+          "name": "rejects out-of-range index",
+          "status": "pass",
+          "duration": 0.040584
+        },
+        {
+          "name": "handles odd number of leaves",
+          "status": "pass",
+          "duration": 0.423625
+        },
+        {
+          "name": "starts empty",
+          "status": "pass",
+          "duration": 0.065458
+        },
+        {
+          "name": "append returns root hex after each insert",
+          "status": "pass",
+          "duration": 0.058667
+        },
+        {
+          "name": "root changes with each append",
+          "status": "pass",
+          "duration": 0.227292
+        },
+        {
+          "name": "is deterministic",
+          "status": "pass",
+          "duration": 0.216875
+        },
+        {
+          "name": "snapshot captures size and peaks",
+          "status": "pass",
+          "duration": 0.193
+        },
+        {
+          "name": "peak count follows binary structure",
+          "status": "pass",
+          "duration": 0.583375
+        },
+        {
+          "name": "returns hex string",
+          "status": "pass",
+          "duration": 0.087458
+        },
+        {
+          "name": "is deterministic",
+          "status": "pass",
+          "duration": 0.047
+        },
+        {
+          "name": "different inputs produce different roots",
+          "status": "pass",
+          "duration": 0.040625
+        },
+        {
+          "name": "covers all four chains in the hash",
+          "status": "pass",
+          "duration": 0.054167
+        },
+        {
+          "name": "round-trips bytes",
+          "status": "pass",
+          "duration": 0.033625
+        }
+      ]
+    },
+    {
+      "name": "@ecca/chain",
+      "filter": "@ecca/chain",
+      "desc": "Cortex EVM (viem), Hippocampus DAG (HTTP), Medulla PoW (JSON-RPC) client wrappers. ABI validation for all 7 contracts. TripartiteGame resource enum.",
+      "pass": 25,
+      "fail": 0,
+      "total": 25,
+      "duration": 167.851291,
+      "tests": [
+        {
+          "name": "has chain ID 131072",
+          "status": "pass",
+          "duration": 0.266166
+        },
+        {
+          "name": "has native currency Siyana",
+          "status": "pass",
+          "duration": 0.062917
+        },
+        {
+          "name": "has a default RPC URL",
+          "status": "pass",
+          "duration": 0.062416
+        },
+        {
+          "name": "returns a PublicClient with the cortex chain",
+          "status": "pass",
+          "duration": 0.467209
+        },
+        {
+          "name": "returns a WalletClient with an account",
+          "status": "pass",
+          "duration": 16.374042
+        },
+        {
+          "name": "STACK_IDENTITY_ABI is a non-empty array",
+          "status": "pass",
+          "duration": 0.126541
+        },
+        {
+          "name": "BANDWIDTH_TOKEN_ABI is a non-empty array",
+          "status": "pass",
+          "duration": 0.126542
+        },
+        {
+          "name": "RESIDUE_REGISTRY_ABI is a non-empty array",
+          "status": "pass",
+          "duration": 0.0385
+        },
+        {
+          "name": "NEEDLECAST_ROUTER_ABI is a non-empty array",
+          "status": "pass",
+          "duration": 0.0395
+        },
+        {
+          "name": "QUELLIST_TREASURY_ABI is a non-empty array",
+          "status": "pass",
+          "duration": 0.0655
+        },
+        {
+          "name": "TRIPARTITE_GAME_ABI is a non-empty array",
+          "status": "pass",
+          "duration": 0.032792
+        },
+        {
+          "name": "EPOCH_ANCHOR_ABI is a non-empty array",
+          "status": "pass",
+          "duration": 0.030416
+        },
+        {
+          "name": "STACK_IDENTITY_ABI has mintStack function",
+          "status": "pass",
+          "duration": 0.048208
+        },
+        {
+          "name": "BANDWIDTH_TOKEN_ABI has spend function",
+          "status": "pass",
+          "duration": 0.028125
+        },
+        {
+          "name": "EPOCH_ANCHOR_ABI has commitAnchor function",
+          "status": "pass",
+          "duration": 0.027041
+        },
+        {
+          "name": "TRIPARTITE_GAME_ABI has all game functions",
+          "status": "pass",
+          "duration": 0.038208
+        },
+        {
+          "name": "maps Compute to 0",
+          "status": "pass",
+          "duration": 0.041542
+        },
+        {
+          "name": "maps Storage to 1",
+          "status": "pass",
+          "duration": 0.033291
+        },
+        {
+          "name": "maps Bandwidth to 2",
+          "status": "pass",
+          "duration": 0.027083
+        },
+        {
+          "name": "constructs with default URL",
+          "status": "pass",
+          "duration": 0.051208
+        },
+        {
+          "name": "constructs with custom URL",
+          "status": "pass",
+          "duration": 0.02375
+        },
+        {
+          "name": "has all required methods",
+          "status": "pass",
+          "duration": 0.031875
+        },
+        {
+          "name": "constructs with default URL",
+          "status": "pass",
+          "duration": 0.049042
+        },
+        {
+          "name": "constructs with custom URL",
+          "status": "pass",
+          "duration": 0.032708
+        },
+        {
+          "name": "has all required methods",
+          "status": "pass",
+          "duration": 0.024833
+        }
+      ]
+    },
+    {
+      "name": "@ecca/service-base",
+      "filter": "@ecca/service-base",
+      "desc": "Fastify bootstrap, health/readiness probes, CORS, graceful shutdown. Every TypeScript service uses this foundation.",
+      "pass": 10,
+      "fail": 0,
+      "total": 10,
+      "duration": 117.095458,
+      "tests": [
+        {
+          "name": "returns a pino logger with the given name",
+          "status": "pass",
+          "duration": 1.441167
+        },
+        {
+          "name": "creates a Fastify instance",
+          "status": "pass",
+          "duration": 7.894417
+        },
+        {
+          "name": "registers /healthz endpoint",
+          "status": "pass",
+          "duration": 5.758041
+        },
+        {
+          "name": "registers /readyz endpoint",
+          "status": "pass",
+          "duration": 1.680542
+        },
+        {
+          "name": "uses cors by default",
+          "status": "pass",
+          "duration": 1.271875
+        },
+        {
+          "name": "can disable cors",
+          "status": "pass",
+          "duration": 0.825291
+        },
+        {
+          "name": "binds to a port",
+          "status": "pass",
+          "duration": 3.881916
+        },
+        {
+          "name": "registers signal handlers without error",
+          "status": "pass",
+          "duration": 1.481708
+        },
+        {
+          "name": "accepts an extra cleanup callback",
+          "status": "pass",
+          "duration": 1.674375
+        },
+        {
+          "name": "is a function",
+          "status": "pass",
+          "duration": 0.076875
+        }
+      ]
+    },
+    {
+      "name": "@ecca/semantic-address",
+      "filter": "@ecca/semantic-address",
+      "desc": "Hierarchical content-derived addressing: 5-facet grammar (domain>entity>relation>temporal>qualifier), prefix queries, address book, NLP parser.",
+      "pass": 17,
+      "fail": 0,
+      "total": 17,
+      "duration": 50.685042,
+      "tests": [
+        {
+          "name": "produces identical output regardless of input order",
+          "status": "pass",
+          "duration": 0.334083
+        },
+        {
+          "name": "normalizes case and whitespace",
+          "status": "pass",
+          "duration": 0.068833
+        },
+        {
+          "name": "sorts multi-value facets",
+          "status": "pass",
+          "duration": 0.066583
+        },
+        {
+          "name": "reports depth correctly",
+          "status": "pass",
+          "duration": 0.063625
+        },
+        {
+          "name": "produces 32-byte addresses",
+          "status": "pass",
+          "duration": 0.472917
+        },
+        {
+          "name": "same grammar + same content = same address",
+          "status": "pass",
+          "duration": 0.283375
+        },
+        {
+          "name": "same grammar + different content = same prefix, different address",
+          "status": "pass",
+          "duration": 0.507458
+        },
+        {
+          "name": "encodes depth correctly",
+          "status": "pass",
+          "duration": 0.172625
+        },
+        {
+          "name": "produces prefix bytes equal to depth * 4",
+          "status": "pass",
+          "duration": 0.290333
+        },
+        {
+          "name": "stops at first missing facet",
+          "status": "pass",
+          "duration": 0.075375
+        },
+        {
+          "name": "partial prefix matches full address with same leading grammar",
+          "status": "pass",
+          "duration": 0.13175
+        },
+        {
+          "name": "partial prefix does NOT match address with different domain",
+          "status": "pass",
+          "duration": 0.066667
+        },
+        {
+          "name": "query by partial address returns matching entries",
+          "status": "pass",
+          "duration": 0.256791
+        },
+        {
+          "name": "hex prefix query works for partial address resolution",
+          "status": "pass",
+          "duration": 0.097625
+        },
+        {
+          "name": "extracts domain from natural language",
+          "status": "pass",
+          "duration": 0.597417
+        },
+        {
+          "name": "extracts temporal markers",
+          "status": "pass",
+          "duration": 0.459542
+        },
+        {
+          "name": "same meaning different phrasing → same normalized address",
+          "status": "pass",
+          "duration": 0.090917
+        }
+      ]
+    },
+    {
+      "name": "contracts",
+      "filter": "@ecca/contracts",
+      "desc": "Solidity smart contracts — StackIdentity, BandwidthToken, EpochAnchor, TripartiteGame, ResidueRegistry, NeedlecastRouter, QuellistTreasury, SleeveRegistry",
+      "pass": 135,
+      "fail": 0,
+      "total": 135,
+      "duration": 0,
+      "tests": [
+        {
+          "name": "should have correct name and symbol for ComputeToken (337ms)",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should have correct name and symbol for MemoryToken",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should have 18 decimals — fine-grained cognitive capacity",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should mint bandwidth to a stack — consciousness comes alive",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should increase totalSupply on mint — more bandwidth in the system",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject mint from non-minter — only the treasury can issue bandwidth",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should allow owner to change the minter — treasury upgrade",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should allow stack owner to authorize a sleeve runtime",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject authorization from non-owner — you don't own that stack",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should allow revoking sleeve authorization — decommission",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should allow authorized sleeve to spend bandwidth",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should allow stack owner to spend directly",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject spend from unauthorized address — no stealing bandwidth",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject overspend — insufficient bandwidth for cognitive op",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should decrease totalSupply on spend — bandwidth consumed",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should transfer bandwidth between stacks",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject transfer from non-owner — can't move someone else's bandwidth",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject transfer exceeding balance — can't overdraft consciousness",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should allow owner to authorize a bridger — the needle operator",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should allow owner to revoke bridger — decommissioning the needle",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject non-owner from setting bridger — CTAC-only authority",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should commit an epoch anchor with all coherence roots",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should advance the head epoch pointer — time marches forward",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should allow multiple epoch commits in sequence — building the timeline",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject epoch regression — no time travel allowed",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject same epoch re-commit — each heartbeat is unique",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject commit from non-bridger — unauthorized needle transmission",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should record timestamp — when the anchor was committed to the chain",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should return zero-state for uncommitted epochs",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should start with head at 0 — no epochs committed yet",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject an anchor whose medullaHeight is not strictly greater",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should track lastMedullaHeight across commits",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "verifyContinuity returns (true, true) when both anchors exist and roots advanced",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "verifyContinuity returns (false, false) for the genesis epoch",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "verifyContinuity returns (false, false) for an epoch with no prior anchor",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "verifyShardInclusion accepts a valid Merkle proof for L0",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "verifyShardInclusion accepts a valid Merkle proof for L3 (right-right path)",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "verifyShardInclusion rejects a forged proof",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "verifyShardInclusion returns false for an unknown epoch",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "verifyShardInclusion returns false for a bad shard id",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should allow anyone to anchor an epoch — mining is permissionless",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should store anchor data — epoch, root, miner, timestamp",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should accumulate anchors — building the coherence timeline",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should route a needlecast for the stack owner",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should track lastAnchorOf — linking stacks to their latest needlecast point",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject route from non-owner — can't needlecast someone else's stack",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should allow owner to needlecast their own stack",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should allow multiple needlecasts — consciousness can move many times",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject epoch regression in needlecast — no going back in time",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should support complete flow: mine epoch, then needlecast through it",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should issue ComputeToken to a stack — processing power granted",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should issue MemoryToken — expanding recall capacity",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should issue SyncToken — cross-chain coherence resources",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should issue RoutingToken — needlecast routing capacity",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should issue ResidueToken — bounty for resolving coordination residues",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject invalid token kind — only 5 bandwidth channels exist",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject issuance from non-owner — Quellist principles cannot be subverted",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should claim epoch rewards — equal bandwidth across all four channels",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should track lastClaimEpoch — preventing double claims",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject claim for same epoch — no double-dipping consciousness",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject claim for earlier epoch — time regression",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should allow incremental claims — epoch by epoch progression",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should allow owner to change emission rate",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject emission change from non-owner",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should apply new emission rate to subsequent claims",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should detect a StaleOrdering residue — routing lag artifact",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should detect a SpeculativeDivergence residue — compute/memory mismatch",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should detect a ReorgOrphan residue — medulla-pow chain reorg crossed anchor",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject duplicate residue detection — each glitch is unique",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject bounty exceeding MAX_BOUNTY — prevent economic overflow",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should track residue count — how many ghosts haunt the system",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should resolve a residue with valid proof — ghost exorcised",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should mint ResidueToken as bounty to resolver — reward for fixing coherence",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject proof on non-existent residue — can't fix what isn't broken",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject double-resolution — first valid proof wins",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject proof from non-stack-owner — impersonation prevented",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should store proofHash — keccak of the resolution evidence",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should default to first-valid-proof model — meritocratic resolution",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should allow owner to change payout model — governance decision",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject model change from non-owner — only governance can alter economics",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should register a Human embodiment sleeve — organic body",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should register an AI embodiment sleeve — digital construct",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should register a Mining embodiment sleeve — proof-of-work body",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should register a Memory embodiment sleeve — hippocampus storage",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should store host ID — which machine runs this sleeve",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject duplicate registration — each sleeve is unique",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject registration from non-stack-owner — only you can clothe yourself",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should add sleeve to stack's sleeve list — tracking all bodies",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should decommission a sleeve — the body dies, but the stack lives on",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject decommission of already-dead sleeve — can't kill what's dead",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject decommission from non-owner — only you can retire your body",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should allow a stack to have multiple active sleeves simultaneously",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should keep decommissioned sleeves in the list — history is preserved",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should return empty list for stack with no sleeves — a naked stack",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should mint a cortical stack with correct identity pubkey",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should assign sequential tokenIds like stack serial numbers",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should emit StackMinted event — consciousness comes online",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should store the Coherence Profile Vector (CPV) — cognitive personality matrix",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should store Epoch Binding Curve — how fast memories decay",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject CPV coefficient > 2.0 — no consciousness can exceed limits",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject decay rate > 1.0 — binding cannot exceed unity",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should allow owner to authorize a router contract",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should allow owner to revoke router authorization",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject non-owner from authorizing routers — only CTAC has that power",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should record a needlecast from an authorized router",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject needlecast from unauthorized sender — only sanctioned routes",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject epoch regression — time only moves forward",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject needlecast on non-existent stack — can't cast into void",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should return zero-state for freshly minted stack",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should let the referee open a new game",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject double-open of the same game",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject openGame from non-referee — no rogue notary",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should let each party register itself with a per-epoch budget",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject registration by non-stack-owner — only the bearer",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject double-registration of the same party",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should expose the full party roster to inspectors",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should let a registered party consume compute within its budget",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should let consumption accumulate up to the per-epoch cap",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should revert when a single consume exceeds the per-epoch budget",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should revert when accumulated consumption tips over the cap",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reset budgets per epoch — same cap applies in the next epoch",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject consume from a party that never registered",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject consume against an unknown game id",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should reject consume with an out-of-range resource enum",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should burn the underlying BandwidthToken on every consume",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "should fail if the underlying BandwidthToken balance is insufficient",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "verifyAllocationFair returns true when no party exceeds its cap",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "verifyAllocationFair returns true even with all parties at the exact cap",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "auditEpoch emits AllocationVerified(true) and returns true on a fair epoch",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "remainingBudget reports the unspent allowance per resource",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "remainingBudget for an unregistered party is 0",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "any inspector address can read verifyAllocationFair — view is permissionless",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "emits a Consumed event for every spend so inspectors can re-derive the ledger",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "makes overspend impossible: the cap is a hard property, not a guideline",
+          "status": "pass",
+          "duration": 0
+        },
+        {
+          "name": "supports many epochs of activity and remains auditable for each",
+          "status": "pass",
+          "duration": 0
+        }
+      ]
+    }
+  ],
+  "ts": "2026-05-08T23:29:20Z",
+  "totalPass": 275,
+  "totalFail": 0,
+  "totalTests": 275
+}

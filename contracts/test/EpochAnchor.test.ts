@@ -206,4 +206,154 @@ describe("EpochAnchor — Cross-Chain Temporal Anchoring", function () {
       expect(await epochAnchor.read.head()).to.equal(0n);
     });
   });
+
+  describe("Medulla-Height Continuity — No anchors from forked or rewound chains", function () {
+    it("should reject an anchor whose medullaHeight is not strictly greater", async function () {
+      const { epochAnchor, bridger } = await loadFixture(deployEpochAnchorFixture);
+      await epochAnchor.write.setBridger([bridger.account.address, true]);
+      const ba = await hre.viem.getContractAt("EpochAnchor", epochAnchor.address, {
+        client: { wallet: bridger },
+      });
+      await ba.write.commitAnchor([
+        1n, CROSS_ROOT, EVM_ROOT, IPFS_ROOT, SLEEVES_ROOT, SYNAPTIC_ROOT, 100n,
+      ]);
+      // Epoch advances but medullaHeight stays the same — looks like a
+      // bridger replaying a stale PoW tip.
+      await expect(
+        ba.write.commitAnchor([
+          2n, CROSS_ROOT, EVM_ROOT, IPFS_ROOT, SLEEVES_ROOT, SYNAPTIC_ROOT, 100n,
+        ]),
+      ).to.be.rejectedWith("medulla height regression");
+    });
+
+    it("should track lastMedullaHeight across commits", async function () {
+      const { epochAnchor, bridger } = await loadFixture(deployEpochAnchorFixture);
+      await epochAnchor.write.setBridger([bridger.account.address, true]);
+      const ba = await hre.viem.getContractAt("EpochAnchor", epochAnchor.address, {
+        client: { wallet: bridger },
+      });
+      await ba.write.commitAnchor([
+        1n, CROSS_ROOT, EVM_ROOT, IPFS_ROOT, SLEEVES_ROOT, SYNAPTIC_ROOT, 100n,
+      ]);
+      expect(await epochAnchor.read.lastMedullaHeight()).to.equal(100n);
+      await ba.write.commitAnchor([
+        2n, CROSS_ROOT, EVM_ROOT, IPFS_ROOT, SLEEVES_ROOT, SYNAPTIC_ROOT, 137n,
+      ]);
+      expect(await epochAnchor.read.lastMedullaHeight()).to.equal(137n);
+    });
+  });
+
+  describe("Synaptic-Root Continuity — Cross-epoch witness consistency", function () {
+    async function commitChain() {
+      const ctx = await loadFixture(deployEpochAnchorFixture);
+      await ctx.epochAnchor.write.setBridger([ctx.bridger.account.address, true]);
+      const ba = await hre.viem.getContractAt("EpochAnchor", ctx.epochAnchor.address, {
+        client: { wallet: ctx.bridger },
+      });
+      await ba.write.commitAnchor([
+        1n, CROSS_ROOT, EVM_ROOT, IPFS_ROOT, SLEEVES_ROOT,
+        keccak256(toHex("synaptic:1")), 100n,
+      ]);
+      await ba.write.commitAnchor([
+        2n, keccak256(toHex("cross:2")), EVM_ROOT, IPFS_ROOT, SLEEVES_ROOT,
+        keccak256(toHex("synaptic:2")), 200n,
+      ]);
+      return ctx;
+    }
+
+    it("verifyContinuity returns (true, true) when both anchors exist and roots advanced", async function () {
+      const { epochAnchor } = await commitChain();
+      const [exists, extended] = await epochAnchor.read.verifyContinuity([2n]);
+      expect(exists).to.be.true;
+      expect(extended).to.be.true;
+    });
+
+    it("verifyContinuity returns (false, false) for the genesis epoch", async function () {
+      const { epochAnchor } = await commitChain();
+      const [exists, extended] = await epochAnchor.read.verifyContinuity([0n]);
+      expect(exists).to.be.false;
+      expect(extended).to.be.false;
+    });
+
+    it("verifyContinuity returns (false, false) for an epoch with no prior anchor", async function () {
+      const { epochAnchor, bridger } = await loadFixture(deployEpochAnchorFixture);
+      await epochAnchor.write.setBridger([bridger.account.address, true]);
+      const ba = await hre.viem.getContractAt("EpochAnchor", epochAnchor.address, {
+        client: { wallet: bridger },
+      });
+      // Skip epoch 1: commit straight at epoch 5
+      await ba.write.commitAnchor([
+        5n, CROSS_ROOT, EVM_ROOT, IPFS_ROOT, SLEEVES_ROOT, SYNAPTIC_ROOT, 100n,
+      ]);
+      const [exists, extended] = await epochAnchor.read.verifyContinuity([5n]);
+      expect(exists).to.be.false;
+      expect(extended).to.be.false;
+    });
+  });
+
+  describe("Shard Inclusion Proofs — Inspectors prove a specific event was anchored", function () {
+    // 4-leaf evm shard:  L0 L1 L2 L3
+    //                    \/    \/
+    //                    H01    H23
+    //                      \    /
+    //                        ROOT
+    const L0 = keccak256(toHex("tx:0xdead"));
+    const L1 = keccak256(toHex("tx:0xbeef"));
+    const L2 = keccak256(toHex("tx:0xcafe"));
+    const L3 = keccak256(toHex("tx:0xface"));
+
+    function pair(left: `0x${string}`, right: `0x${string}`): `0x${string}` {
+      // Mirrors `keccak256(abi.encodePacked(left, right))` — viem keccak256
+      // accepts a concatenated hex string.
+      return keccak256(("0x" + left.slice(2) + right.slice(2)) as `0x${string}`);
+    }
+
+    async function deployWithShard() {
+      const ctx = await loadFixture(deployEpochAnchorFixture);
+      await ctx.epochAnchor.write.setBridger([ctx.bridger.account.address, true]);
+      const ba = await hre.viem.getContractAt("EpochAnchor", ctx.epochAnchor.address, {
+        client: { wallet: ctx.bridger },
+      });
+      const H01 = pair(L0, L1);
+      const H23 = pair(L2, L3);
+      const evmRoot = pair(H01, H23);
+      await ba.write.commitAnchor([
+        1n, CROSS_ROOT, evmRoot, IPFS_ROOT, SLEEVES_ROOT, SYNAPTIC_ROOT, 100n,
+      ]);
+      return { ...ctx, evmRoot, H01, H23 };
+    }
+
+    it("verifyShardInclusion accepts a valid Merkle proof for L0", async function () {
+      const { epochAnchor, H23 } = await deployWithShard();
+      // L0 is at index 0: siblings = [L1, H23], indexBits = 0b00
+      const ok = await epochAnchor.read.verifyShardInclusion([1n, 0, L0, [L1, H23], 0n]);
+      expect(ok).to.be.true;
+    });
+
+    it("verifyShardInclusion accepts a valid Merkle proof for L3 (right-right path)", async function () {
+      const { epochAnchor, H01 } = await deployWithShard();
+      // L3 is at index 3: siblings = [L2, H01], indexBits = 0b11 = 3
+      const ok = await epochAnchor.read.verifyShardInclusion([1n, 0, L3, [L2, H01], 3n]);
+      expect(ok).to.be.true;
+    });
+
+    it("verifyShardInclusion rejects a forged proof", async function () {
+      const { epochAnchor, H23 } = await deployWithShard();
+      const forged = keccak256(toHex("tx:0xnope"));
+      const ok = await epochAnchor.read.verifyShardInclusion([1n, 0, forged, [L1, H23], 0n]);
+      expect(ok).to.be.false;
+    });
+
+    it("verifyShardInclusion returns false for an unknown epoch", async function () {
+      const { epochAnchor } = await deployWithShard();
+      const ok = await epochAnchor.read.verifyShardInclusion([999n, 0, L0, [L1, L2], 0n]);
+      expect(ok).to.be.false;
+    });
+
+    it("verifyShardInclusion returns false for a bad shard id", async function () {
+      const { epochAnchor } = await deployWithShard();
+      const ok = await epochAnchor.read.verifyShardInclusion([1n, 9, L0, [L1, L2], 0n]);
+      expect(ok).to.be.false;
+    });
+  });
 });

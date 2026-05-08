@@ -36,4 +36,24 @@ Token consumption per primitive (default rates):
 - Token spent on a primitive is **burned** from the stack's bandwidth ledger (it does not return to treasury).
 - This makes coordination work the only path to sustained activity — a stack that does nothing productive runs out of bandwidth.
 
+## On-chain enforcement (v3.1)
+
+For cooperative-game scenarios where parties need *provable* bounds on
+their resource consumption (e.g. weapons-inspection treaties), spending
+must route through the `TripartiteGame` referee contract:
+
+- `TripartiteGame.consume(gameId, tokenId, epoch, resource, amount, reason)`
+  enforces a per-party, per-epoch hard cap before atomically calling
+  `BandwidthToken.spend()` on the underlying token.
+- The cap is enforced by `require()` inside the contract, not by an
+  off-chain check — there is no admin path that can mutate consumption
+  past the cap.
+- Storage in particular is bounded by **pin leases** (see
+  [pin_lease.md](pin_lease.md)): pinning is no longer a one-shot purchase
+  but a continuous expense, so `MemoryToken` is genuinely rate-limited
+  across epochs.
+
+See [tripartite_game.md](tripartite_game.md) for the full game-theoretic
+argument and the audit primitive `verifyAllocationFair(gameId, epoch)`.
+
 See [token_bandwidth_model.md](token_bandwidth_model.md), [incentive_loop.md](incentive_loop.md).

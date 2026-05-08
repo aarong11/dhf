@@ -114,6 +114,13 @@ async function main() {
 
   const epochAnchor = await deploy('EpochAnchor');
 
+  // 5. TripartiteGame — provably-fair multilateral resource allocation.
+  //    Wires compute / memory / routing tokens into a single referee that
+  //    enforces per-party, per-epoch caps for cooperative-game scenarios.
+  const tripartite = await deploy('TripartiteGame', [
+    compute.address, memT.address, routing.address, stackIdentity.address,
+  ]);
+
   // Persist for off-chain services
   mkdirSync(DEPLOY_DIR, { recursive: true });
   const out = {
@@ -130,6 +137,7 @@ async function main() {
     SleeveRegistry: sleeveReg.address,
     ResidueRegistry: residueReg.address,
     EpochAnchor: epochAnchor.address,
+    TripartiteGame: tripartite.address,
   };
   writeFileSync(join(DEPLOY_DIR, 'cortex.json'), JSON.stringify(out, null, 2));
   console.log(`\nWrote ${join(DEPLOY_DIR, 'cortex.json')}`);

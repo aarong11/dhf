@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -58,6 +59,49 @@ func main() {
 			return
 		}
 		_ = json.NewEncoder(w).Encode(map[string]bool{"ok": true})
+	})
+
+	// /pin/lease — extends a pin lease until the supplied epoch. Pin leases
+	// are the storage-scarcity primitive: a node only bypasses the ±2 epoch
+	// drift gate while its lease covers the caller's current epoch.
+	mux.HandleFunc("/pin/lease", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			http.Error(w, "POST required", 405)
+			return
+		}
+		var body struct {
+			CID        string `json:"cid"`
+			UntilEpoch uint64 `json:"untilEpoch"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+		if err := d.Lease(body.CID, body.UntilEpoch); err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+		_ = json.NewEncoder(w).Encode(map[string]any{"ok": true, "untilEpoch": body.UntilEpoch})
+	})
+
+	// /pin/status — reports whether a pin lease is currently active relative
+	// to a given epoch. Inspectors call this to verify that a party that
+	// claims to be storing X is actually paying for it.
+	mux.HandleFunc("/pin/status", func(w http.ResponseWriter, r *http.Request) {
+		cid := r.URL.Query().Get("cid")
+		var ep uint64
+		if v := r.URL.Query().Get("epoch"); v != "" {
+			_, _ = fmt.Sscanf(v, "%d", &ep)
+		}
+		active := d.LeaseActive(cid, ep)
+		n, ok := d.Get(cid)
+		var expiry uint64
+		if ok {
+			expiry = n.PinExpiry
+		}
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"cid": cid, "active": active, "untilEpoch": expiry,
+		})
 	})
 
 	mux.HandleFunc("/dhf/recall", func(w http.ResponseWriter, r *http.Request) {

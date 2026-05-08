@@ -64,3 +64,39 @@ export const QUELLIST_TREASURY_ABI = parseAbi([
   'function issue(uint256 tokenId, uint8 kind, uint256 amount, bytes32 reason) external',
   'function claim(uint256 tokenId) external',
 ]);
+
+export const TRIPARTITE_GAME_ABI = parseAbi([
+  'event GameOpened(bytes32 indexed gameId, address indexed referee)',
+  'event PartyRegistered(bytes32 indexed gameId, uint256 indexed tokenId, bytes32 label, uint256 computeBudget, uint256 storageBudget, uint256 bandwidthBudget)',
+  'event Consumed(bytes32 indexed gameId, uint256 indexed tokenId, uint256 indexed epoch, uint8 resource, uint256 amount, bytes32 reason)',
+  'event AllocationVerified(bytes32 indexed gameId, uint256 indexed epoch, bool fair)',
+  'function openGame(bytes32 gameId) external',
+  'function registerParty(bytes32 gameId, uint256 tokenId, bytes32 label, uint256 computeBudget, uint256 storageBudget, uint256 bandwidthBudget) external',
+  'function consume(bytes32 gameId, uint256 tokenId, uint256 epoch, uint8 resource, uint256 amount, bytes32 reason) external',
+  'function verifyAllocationFair(bytes32 gameId, uint256 epoch) view returns (bool)',
+  'function auditEpoch(bytes32 gameId, uint256 epoch) returns (bool)',
+  'function remainingBudget(bytes32 gameId, uint256 tokenId, uint256 epoch, uint8 resource) view returns (uint256)',
+  'function rosterOf(bytes32 gameId) view returns (uint256[])',
+  'function budgetOf(bytes32 gameId, uint256 tokenId) view returns (uint256, uint256, uint256)',
+  'function consumed(bytes32 gameId, uint256 epoch, uint256 tokenId, uint8 resource) view returns (uint256)',
+]);
+
+export const EPOCH_ANCHOR_ABI = parseAbi([
+  'event EpochAnchored(uint256 indexed epoch, bytes32 crossRoot, bytes32 synapticFieldRoot, uint256 medullaHeight)',
+  'event BridgerSet(address indexed b, bool ok)',
+  'function setBridger(address b, bool ok) external',
+  'function commitAnchor(uint256 epoch, bytes32 crossRoot, bytes32 evmRoot, bytes32 ipfsRoot, bytes32 sleevesRoot, bytes32 synapticFieldRoot, uint256 medullaHeight) external',
+  'function head() view returns (uint256)',
+  'function lastMedullaHeight() view returns (uint256)',
+  'function byEpoch(uint256) view returns (bytes32 crossRoot, bytes32 evmRoot, bytes32 ipfsRoot, bytes32 sleevesRoot, bytes32 synapticFieldRoot, uint256 medullaHeight, uint256 ts)',
+  'function verifyContinuity(uint256 epoch) view returns (bool exists, bool extended)',
+  'function verifyShardInclusion(uint256 epoch, uint8 shard, bytes32 leaf, bytes32[] siblings, uint256 indexBits) view returns (bool)',
+]);
+
+/// Resource enum mirrors TripartiteGame.sol RES_* constants.
+export const TripartiteResource = {
+  Compute: 0 as const,
+  Storage: 1 as const,
+  Bandwidth: 2 as const,
+};
+export type TripartiteResource = typeof TripartiteResource[keyof typeof TripartiteResource];

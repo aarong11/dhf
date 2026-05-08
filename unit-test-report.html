@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECCA // Unit &amp; Contract Test Report</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Orbitron:wght@400;700;900&display=swap');
+
+:root {
+  --bg-deep: #030308;
+  --bg-panel: #0a0a14;
+  --bg-card: #0f0f1a;
+  --bg-code: #080812;
+  --neon-cyan: #00f0ff;
+  --neon-magenta: #ff00e6;
+  --neon-green: #00ff88;
+  --neon-red: #ff0055;
+  --neon-yellow: #ffcc00;
+  --neon-purple: #b347ff;
+  --neon-blue: #4488ff;
+  --text: #c8c8d4;
+  --text-dim: #5a5a6e;
+  --border: #1a1a2e;
+  --glow-cyan: 0 0 10px #00f0ff44, 0 0 40px #00f0ff22;
+  --glow-green: 0 0 10px #00ff8844, 0 0 40px #00ff8822;
+  --glow-red: 0 0 10px #ff005544, 0 0 40px #ff005522;
+  --glow-magenta: 0 0 10px #ff00e644, 0 0 40px #ff00e622;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg-deep);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 2px,
+    rgba(0, 240, 255, 0.008) 2px, rgba(0, 240, 255, 0.008) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image:
+    linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.header {
+  background: linear-gradient(180deg, var(--bg-panel) 0%, var(--bg-deep) 100%);
+  border-bottom: 1px solid var(--neon-cyan);
+  padding: 2.5rem 2rem 2rem;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 4px 60px rgba(0, 240, 255, 0.1);
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), var(--neon-magenta), var(--neon-cyan), transparent);
+  animation: borderGlow 3s ease-in-out infinite;
+}
+
+@keyframes borderGlow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+  20%, 24%, 55% { opacity: 0.6; }
+}
+
+.header h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 900;
+  letter-spacing: 0.4em;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+  animation: flicker 4s infinite;
+}
+
+.header .subtitle {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.header .timestamp {
+  margin-top: 0.6rem;
+  font-size: 0.7rem;
+  color: var(--neon-cyan);
+  opacity: 0.7;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.stats-bar {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  padding: 1.5rem 2rem;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.stat { text-align: center; }
+
+.stat-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+
+.stat-value.pass-count { color: var(--neon-green); text-shadow: var(--glow-green); }
+.stat-value.fail-count { color: var(--neon-red); text-shadow: var(--glow-red); }
+.stat-value.total-count { color: var(--neon-cyan); text-shadow: var(--glow-cyan); }
+.stat-value.suite-count { color: var(--neon-purple); }
+
+.stat-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--text-dim);
+  margin-top: 0.3rem;
+}
+
+.progress-container { padding: 0 2rem; margin: 1.2rem auto; max-width: 960px; }
+
+.progress-bar {
+  height: 4px;
+  background: var(--bg-card);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+
+.progress-fill.all-pass {
+  background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan));
+  box-shadow: 0 0 12px var(--neon-green);
+}
+
+.progress-fill.has-fails {
+  background: linear-gradient(90deg, var(--neon-green), var(--neon-red));
+  box-shadow: 0 0 12px var(--neon-red);
+}
+
+.nav-links {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.8rem 2rem;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.nav-links a {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.6rem;
+  border-radius: 3px;
+  transition: all 0.2s;
+}
+
+.nav-links a:hover, .nav-links a.active {
+  color: var(--neon-cyan);
+  background: rgba(0, 240, 255, 0.06);
+}
+
+.content { max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; }
+
+.phase {
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-card);
+  overflow: hidden;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.phase:hover {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.06);
+}
+
+.phase.collapsed .phase-body { display: none; }
+.phase.collapsed .phase-toggle { transform: rotate(-90deg); }
+
+.phase-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(90deg, rgba(0, 240, 255, 0.03), transparent);
+  user-select: none;
+}
+
+.phase-header:hover { background: linear-gradient(90deg, rgba(0, 240, 255, 0.07), transparent); }
+
+.phase-num {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--neon-magenta);
+  background: rgba(255, 0, 230, 0.1);
+  border: 1px solid rgba(255, 0, 230, 0.3);
+  border-radius: 4px;
+  padding: 0.25rem 0.6rem;
+  min-width: 2.2rem;
+  text-align: center;
+}
+
+.phase-header h2 {
+  flex: 1;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--neon-cyan);
+  letter-spacing: 0.05em;
+}
+
+.phase-status {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 3px;
+}
+
+.phase-status.pass {
+  color: var(--neon-green);
+  background: rgba(0, 255, 136, 0.08);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.phase-status.fail {
+  color: var(--neon-red);
+  background: rgba(255, 0, 85, 0.08);
+  border: 1px solid rgba(255, 0, 85, 0.3);
+}
+
+.phase-toggle { color: var(--text-dim); font-size: 0.8rem; transition: transform 0.2s; }
+
+.phase-body { padding: 1.2rem 1.5rem; }
+
+.phase-desc {
+  color: var(--text-dim);
+  font-size: 0.72rem;
+  margin-bottom: 1rem;
+  padding: 0.8rem 1rem;
+  border-left: 3px solid var(--neon-purple);
+  background: rgba(179, 71, 255, 0.04);
+  border-radius: 0 4px 4px 0;
+  line-height: 1.8;
+}
+
+.detail-box {
+  font-size: 0.72rem;
+  margin: 0.6rem 0;
+  padding: 0.7rem 1rem;
+  border-radius: 4px;
+  line-height: 1.7;
+  border-left: 3px solid;
+}
+
+.detail-label {
+  display: block;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.3rem;
+}
+
+.detail-what { border-color: var(--neon-cyan); background: rgba(0, 240, 255, 0.03); }
+.detail-what .detail-label { color: var(--neon-cyan); }
+
+.detail-how { border-color: var(--neon-green); background: rgba(0, 255, 136, 0.03); }
+.detail-how .detail-label { color: var(--neon-green); }
+
+.detail-why { border-color: var(--neon-magenta); background: rgba(255, 0, 230, 0.03); }
+.detail-why .detail-label { color: var(--neon-magenta); }
+
+.detail-when { border-color: var(--neon-yellow); background: rgba(255, 204, 0, 0.03); }
+.detail-when .detail-label { color: var(--neon-yellow); }
+
+.verify-box {
+  font-size: 0.72rem;
+  margin: 0.6rem 0;
+  padding: 0.7rem 1rem;
+  border-left: 3px solid var(--neon-blue);
+  background: rgba(68, 136, 255, 0.03);
+  border-radius: 0 4px 4px 0;
+}
+
+.verify-box .detail-label { color: var(--neon-blue); }
+.verify-box code { color: var(--neon-cyan); font-size: 0.68rem; }
+
+.svc-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.8rem 0;
+}
+
+.service-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.8rem;
+  background: rgba(0, 240, 255, 0.03);
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  border-radius: 4px;
+  font-size: 0.68rem;
+}
+
+.svc-name { font-weight: 700; color: var(--neon-cyan); }
+
+.test-list { margin: 1rem 0; }
+
+.test {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0.8rem;
+  margin: 0.15rem 0;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  transition: background 0.2s;
+}
+
+.test.pass {
+  background: rgba(0, 255, 136, 0.03);
+  border-left: 3px solid var(--neon-green);
+}
+.test.pass:hover { background: rgba(0, 255, 136, 0.07); }
+
+.test.fail {
+  background: rgba(255, 0, 85, 0.05);
+  border-left: 3px solid var(--neon-red);
+}
+.test.fail:hover { background: rgba(255, 0, 85, 0.09); }
+
+.test .indicator { font-weight: 700; font-size: 1rem; }
+.test.pass .indicator { color: var(--neon-green); text-shadow: var(--glow-green); }
+.test.fail .indicator { color: var(--neon-red); text-shadow: var(--glow-red); }
+
+.test-dur { color: var(--text-dim); font-size: 0.6rem; margin-left: 0.3rem; }
+
+.suite-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  margin-top: 0.8rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.suite-summary.pass {
+  background: rgba(0, 255, 136, 0.06);
+  color: var(--neon-green);
+  border: 1px solid rgba(0, 255, 136, 0.2);
+}
+
+.suite-summary.fail {
+  background: rgba(255, 0, 85, 0.06);
+  color: var(--neon-red);
+  border: 1px solid rgba(255, 0, 85, 0.2);
+}
+
+.suite-dur { font-weight: 400; font-size: 0.65rem; color: var(--text-dim); }
+
+.result-banner {
+  margin: 2.5rem 0;
+  padding: 2.5rem;
+  text-align: center;
+  border-radius: 10px;
+  border: 1px solid;
+  position: relative;
+  overflow: hidden;
+}
+
+.result-banner::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%; right: -50%; bottom: -50%;
+  background: conic-gradient(from 0deg, transparent, rgba(0, 255, 136, 0.03), transparent, rgba(0, 240, 255, 0.03), transparent);
+  animation: spin 10s linear infinite;
+}
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+.result-banner.all-pass {
+  background: rgba(0, 255, 136, 0.02);
+  border-color: var(--neon-green);
+  box-shadow: 0 0 60px rgba(0, 255, 136, 0.1), inset 0 0 60px rgba(0, 255, 136, 0.02);
+}
+
+.result-banner.has-fails {
+  background: rgba(255, 0, 85, 0.02);
+  border-color: var(--neon-red);
+  box-shadow: 0 0 60px rgba(255, 0, 85, 0.1), inset 0 0 60px rgba(255, 0, 85, 0.02);
+}
+
+.result-banner h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.6rem;
+  margin-bottom: 0.6rem;
+  position: relative;
+  z-index: 1;
+}
+
+.result-banner.all-pass h2 { color: var(--neon-green); text-shadow: var(--glow-green); }
+.result-banner.has-fails h2 { color: var(--neon-red); text-shadow: var(--glow-red); }
+
+.result-banner p { color: var(--text-dim); font-size: 0.75rem; position: relative; z-index: 1; }
+
+.lifecycle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.8rem;
+  margin: 2rem 0;
+}
+
+.lifecycle-item {
+  padding: 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.72rem;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.lifecycle-item:hover { border-color: var(--neon-cyan); transform: translateY(-2px); }
+.lifecycle-item.lc-pass { border-left: 3px solid var(--neon-green); }
+.lifecycle-item .lc-label { color: var(--neon-cyan); font-weight: 700; display: block; margin-bottom: 0.3rem; font-size: 0.75rem; }
+.lifecycle-item .lc-desc { color: var(--text-dim); }
+
+.footer {
+  text-align: center;
+  padding: 2.5rem;
+  color: var(--text-dim);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  border-top: 1px solid var(--border);
+  margin-top: 3rem;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--neon-cyan); }
+
+@media (max-width: 600px) {
+  .header h1 { font-size: 1.4rem; letter-spacing: 0.15em; }
+  .stats-bar { gap: 1.5rem; }
+  .stat-value { font-size: 1.5rem; }
+  .content { padding: 0 0.8rem; }
+  .lifecycle-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>ECCA // UNIT</h1>
+  <div class="subtitle">Unit &amp; Contract Test Report &mdash; Package-Level Verification</div>
+  <div class="timestamp">2026-05-08T23:29:20Z</div>
+</div>
+<div class="stats-bar">
+  <div class="stat"><div class="stat-value pass-count">275</div><div class="stat-label">Passed</div></div>
+  <div class="stat"><div class="stat-value fail-count">0</div><div class="stat-label">Failed</div></div>
+  <div class="stat"><div class="stat-value total-count">275</div><div class="stat-label">Total</div></div>
+  <div class="stat"><div class="stat-value suite-count">6</div><div class="stat-label">Suites</div></div>
+</div>
+<div class="progress-container">
+  <div class="progress-bar"><div class="progress-fill all-pass" style="width: 100%"></div></div>
+</div>
+<div class="nav-links">
+  <a href="e2e-report.html">E2E Report</a>
+  <a href="unit-test-report.html" class="active">Unit Tests</a>
+  <a href="docs/index.html">Docs</a>
+  <a href="docs/developer.html">Developer Guide</a>
+  <a href="docs/architecture.html">Architecture</a>
+</div>
+<div class="content">
+
+<section class="phase" id="suite-01">
+<div class="phase-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="phase-num">01</span>
+  <h2>📜 @ecca/proto</h2>
+  <span class="phase-status pass">35/35</span>
+  <span class="phase-toggle">&#x25BC;</span>
+</div>
+<div class="phase-body"><p class="phase-desc">Token taxonomy, event schemas, zod validators, constants. The shared type contract between all 24 services.</p><div class="detail-box detail-what"><span class="detail-label">WHAT IS TESTED</span>Token taxonomy (5 cognitive tokens), event schemas (12 event types), zod validators, NATS stream config, ECCA constants.</div><div class="detail-box detail-how"><span class="detail-label">HOW IT WORKS</span>Zod schema parsing, round-trip validation, boundary checks (negative values, out-of-range coefficients), discriminated union matching.</div><div class="detail-box detail-why"><span class="detail-label">WHY IT MATTERS</span>Every service imports @ecca/proto — if these schemas break, all 24 services fail to communicate. This is the type contract.</div><div class="detail-box detail-when"><span class="detail-label">WHEN TO RUN</span>On every build. These types are checked at compile time AND runtime (zod parsing on NATS messages).</div><div class="svc-grid"><div class="service-tag"><span class="svc-name">siyana-api</span></div><div class="service-tag"><span class="svc-name">thalamus-router</span></div><div class="service-tag"><span class="svc-name">dhf-compositor</span></div><div class="service-tag"><span class="svc-name">needlecast-router-svc</span></div><div class="service-tag"><span class="svc-name">quellist-treasury-svc</span></div><div class="service-tag"><span class="svc-name">bandwidth-faucet</span></div><div class="service-tag"><span class="svc-name">sleeve-runtime</span></div><div class="service-tag"><span class="svc-name">workers/runner</span></div></div><div class="verify-box"><span class="detail-label">WHERE TO LOOK</span><code>packages/proto/src/tokens.ts, packages/proto/src/events.ts, packages/proto/src/index.ts</code></div><div class="test-list"><div class="test pass"><span class="indicator">&#x2713;</span> validates all five token kinds <span class="test-dur">(0.3ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> rejects unknown token kinds <span class="test-dur">(0.2ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> maps every kind to a contract name <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> validates DEFAULT_BALANCE <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> rejects negative values <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> parses with defaults <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> rejects coefficients above 2 <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> rejects negative coefficients <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> parses with defaults <span class="test-dur">(0.2ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> rejects decayRate &gt; 1 <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> returns raw balance at epoch 0 <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> decays over time but never below floor <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> applies CPV multipliers <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> does not decay residue tokens <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> handles moderate decay correctly <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> validates StackId format <span class="test-dur">(0.3ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> validates SleeveId format <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> validates ECCA CID format <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> validates EmbodimentType <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> validates all five residue kinds <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> ResidueKindEnum companion maps to valid values <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> validates StackCreated <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> validates SleeveSpawned <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> validates PerceiveEvent <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> validates EpochTransition <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> rejects unknown event type <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> EPOCH_INTERVAL_MS matches ECCA namespace <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> DRIFT_MAX_DEFAULT matches ECCA namespace <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> FIDELITY_MIN_DEFAULT is 0.6 <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> CORTEX_CHAIN_ID is 131072 <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> SYNAPTIC_FIELD_DEPTH is 256 <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> stream name is ECCA <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> subjects cover all ECCA namespaces <span class="test-dur">(0.2ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> max messages is 1M <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> all subjects start with ecca. <span class="test-dur">(0.0ms)</span></div></div><div class="suite-summary pass"><span>35/35 passed</span><span class="suite-dur">0.05s</span></div></div>
+</section>
+<section class="phase" id="suite-02">
+<div class="phase-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="phase-num">02</span>
+  <h2>🔐 @ecca/crypto</h2>
+  <span class="phase-status pass">53/53</span>
+  <span class="phase-toggle">&#x25BC;</span>
+</div>
+<div class="phase-body"><p class="phase-desc">SHA-256, HKDF-SHA512 key derivation, AES-256-GCM encryption, Ed25519 signatures, Merkle trees, MMR, coherence roots. All via @noble audited libraries.</p><div class="detail-box detail-what"><span class="detail-label">WHAT IS TESTED</span>SHA-256, HKDF-SHA512 key derivation, AES-256-GCM authenticated encryption, Ed25519 signatures, RFC-6962 Merkle trees, Synaptic Field MMR, coherence root hashing.</div><div class="detail-box detail-how"><span class="detail-label">HOW IT WORKS</span>Round-trip encrypt/decrypt, signature verify, Merkle proof verification for all leaf positions, MMR append determinism, cross-chain coherence root field coverage.</div><div class="detail-box detail-why"><span class="detail-label">WHY IT MATTERS</span>Cryptographic primitives underpin every security guarantee: memory encryption, identity verification, cross-chain consistency proofs, and on-chain anchor hashing.</div><div class="detail-box detail-when"><span class="detail-label">WHEN TO RUN</span>On build. These are pure functions with no I/O — fastest test suite. Run them on every commit.</div><div class="svc-grid"><div class="service-tag"><span class="svc-name">siyana-api (encrypt/decrypt memories)</span></div><div class="service-tag"><span class="svc-name">thalamus-router (coherenceRoot, merkleRoot)</span></div><div class="service-tag"><span class="svc-name">dhf-compositor (decrypt fragments)</span></div><div class="service-tag"><span class="svc-name">workers/runner (sha256hex for residue IDs)</span></div></div><div class="verify-box"><span class="detail-label">WHERE TO LOOK</span><code>packages/crypto/src/index.ts — all exports from @noble/hashes, @noble/ciphers, @noble/curves</code></div><div class="test-list"><div class="test pass"><span class="indicator">&#x2713;</span> returns 32 bytes for string input <span class="test-dur">(0.5ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> returns 32 bytes for Uint8Array input <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> is deterministic <span class="test-dur">(0.3ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> different inputs produce different hashes <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> returns 64-char hex string <span class="test-dur">(0.2ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> accepts objects <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> is deterministic for objects <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> produces ecca:// prefixed CID with epoch <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> content-addressing: same content + epoch = same CID <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> different epoch = different CID <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> parses a valid ECCA CID <span class="test-dur">(0.2ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> returns null for non-ECCA CIDs <span class="test-dur">(0.3ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> handles CID without epoch <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> returns 32-byte key <span class="test-dur">(1.4ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> is deterministic for same inputs <span class="test-dur">(1.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> different stack IDs produce different keys <span class="test-dur">(0.2ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> different epochs produce different keys <span class="test-dur">(0.5ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> uses HKDF-SHA512 <span class="test-dur">(0.3ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> round-trips string content <span class="test-dur">(1.3ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> round-trips binary content <span class="test-dur">(0.3ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> produces versioned payload <span class="test-dur">(0.2ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> different encryptions of same plaintext produce different ciphertexts <span class="test-dur">(0.2ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> decryption with wrong key fails <span class="test-dur">(0.4ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> decryption with wrong version throws <span class="test-dur">(0.3ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> generates hex-encoded keypair <span class="test-dur">(22.9ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> different calls produce different keypairs <span class="test-dur">(0.4ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> sign + verify round trip <span class="test-dur">(2.8ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> verify rejects wrong message <span class="test-dur">(1.9ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> verify rejects wrong pubkey <span class="test-dur">(1.9ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> sign accepts Uint8Array message <span class="test-dur">(1.8ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> returns hex string <span class="test-dur">(0.3ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> is deterministic <span class="test-dur">(0.4ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> different leaves produce different roots <span class="test-dur">(0.2ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> order matters <span class="test-dur">(0.2ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> handles single leaf <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> handles empty array <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> accepts Uint8Array leaves <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> generates verifiable proof for each leaf <span class="test-dur">(0.4ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> proof fails with wrong root <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> proof fails with wrong leaf <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> rejects out-of-range index <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> handles odd number of leaves <span class="test-dur">(0.4ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> starts empty <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> append returns root hex after each insert <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> root changes with each append <span class="test-dur">(0.2ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> is deterministic <span class="test-dur">(0.2ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> snapshot captures size and peaks <span class="test-dur">(0.2ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> peak count follows binary structure <span class="test-dur">(0.6ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> returns hex string <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> is deterministic <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> different inputs produce different roots <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> covers all four chains in the hash <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> round-trips bytes <span class="test-dur">(0.0ms)</span></div></div><div class="suite-summary pass"><span>53/53 passed</span><span class="suite-dur">0.11s</span></div></div>
+</section>
+<section class="phase" id="suite-03">
+<div class="phase-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="phase-num">03</span>
+  <h2>⛓️ @ecca/chain</h2>
+  <span class="phase-status pass">25/25</span>
+  <span class="phase-toggle">&#x25BC;</span>
+</div>
+<div class="phase-body"><p class="phase-desc">Cortex EVM (viem), Hippocampus DAG (HTTP), Medulla PoW (JSON-RPC) client wrappers. ABI validation for all 7 contracts. TripartiteGame resource enum.</p><div class="detail-box detail-what"><span class="detail-label">WHAT IS TESTED</span>Cortex EVM chain config, viem client factories, 7 canonical contract ABIs (StackIdentity, BandwidthToken, ResidueRegistry, NeedlecastRouter, QuellistTreasury, TripartiteGame, EpochAnchor), Hippocampus DAG client, Medulla PoW JSON-RPC client.</div><div class="detail-box detail-how"><span class="detail-label">HOW IT WORKS</span>Chain ID validation, native currency config, ABI shape verification (specific function presence), client construction with private key, method existence checks.</div><div class="detail-box detail-why"><span class="detail-label">WHY IT MATTERS</span>These clients are the only bridge between TypeScript services and the three blockchains. Wrong ABIs = silent failures when calling contracts.</div><div class="detail-box detail-when"><span class="detail-label">WHEN TO RUN</span>On build. ABI tests catch mismatches between contracts/src/*.sol and the viem ABI constants immediately.</div><div class="svc-grid"><div class="service-tag"><span class="svc-name">siyana-api (cortex for NFT minting)</span></div><div class="service-tag"><span class="svc-name">thalamus-router (medulla + cortex)</span></div><div class="service-tag"><span class="svc-name">workers/runner (medulla + hippocampus)</span></div><div class="service-tag"><span class="svc-name">needlecast-router-svc (cortex)</span></div></div><div class="verify-box"><span class="detail-label">WHERE TO LOOK</span><code>packages/chain/src/cortex.ts, packages/chain/src/hippocampus.ts, packages/chain/src/medulla.ts</code></div><div class="test-list"><div class="test pass"><span class="indicator">&#x2713;</span> has chain ID 131072 <span class="test-dur">(0.3ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> has native currency Siyana <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> has a default RPC URL <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> returns a PublicClient with the cortex chain <span class="test-dur">(0.5ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> returns a WalletClient with an account <span class="test-dur">(16.4ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> STACK_IDENTITY_ABI is a non-empty array <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> BANDWIDTH_TOKEN_ABI is a non-empty array <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> RESIDUE_REGISTRY_ABI is a non-empty array <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> NEEDLECAST_ROUTER_ABI is a non-empty array <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> QUELLIST_TREASURY_ABI is a non-empty array <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> TRIPARTITE_GAME_ABI is a non-empty array <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> EPOCH_ANCHOR_ABI is a non-empty array <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> STACK_IDENTITY_ABI has mintStack function <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> BANDWIDTH_TOKEN_ABI has spend function <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> EPOCH_ANCHOR_ABI has commitAnchor function <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> TRIPARTITE_GAME_ABI has all game functions <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> maps Compute to 0 <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> maps Storage to 1 <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> maps Bandwidth to 2 <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> constructs with default URL <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> constructs with custom URL <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> has all required methods <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> constructs with default URL <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> constructs with custom URL <span class="test-dur">(0.0ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> has all required methods <span class="test-dur">(0.0ms)</span></div></div><div class="suite-summary pass"><span>25/25 passed</span><span class="suite-dur">0.17s</span></div></div>
+</section>
+<section class="phase" id="suite-04">
+<div class="phase-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="phase-num">04</span>
+  <h2>🏗️ @ecca/service-base</h2>
+  <span class="phase-status pass">10/10</span>
+  <span class="phase-toggle">&#x25BC;</span>
+</div>
+<div class="phase-body"><p class="phase-desc">Fastify bootstrap, health/readiness probes, CORS, graceful shutdown. Every TypeScript service uses this foundation.</p><div class="detail-box detail-what"><span class="detail-label">WHAT IS TESTED</span>Fastify server bootstrap, /healthz and /readyz probe endpoints, CORS configuration, graceful SIGTERM/SIGINT shutdown, daemon mode for workers.</div><div class="detail-box detail-how"><span class="detail-label">HOW IT WORKS</span>Fastify inject() to test HTTP endpoints without binding a port, CORS header verification, signal handler registration, listen on port 0 (OS-assigned).</div><div class="detail-box detail-why"><span class="detail-label">WHY IT MATTERS</span>Every TypeScript service (siyana-api, thalamus-router, etc.) and every worker uses createService() or daemon(). If bootstrap breaks, nothing starts.</div><div class="detail-box detail-when"><span class="detail-label">WHEN TO RUN</span>On build. Fast tests (~100ms) that verify the foundation all services stand on.</div><div class="svc-grid"><div class="service-tag"><span class="svc-name">ALL services use createService()</span></div><div class="service-tag"><span class="svc-name">ALL workers use daemon()</span></div></div><div class="verify-box"><span class="detail-label">WHERE TO LOOK</span><code>packages/service-base/src/index.ts — createService(), listen(), wireShutdown(), daemon(), createLogger()</code></div><div class="test-list"><div class="test pass"><span class="indicator">&#x2713;</span> returns a pino logger with the given name <span class="test-dur">(1.4ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> creates a Fastify instance <span class="test-dur">(7.9ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> registers /healthz endpoint <span class="test-dur">(5.8ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> registers /readyz endpoint <span class="test-dur">(1.7ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> uses cors by default <span class="test-dur">(1.3ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> can disable cors <span class="test-dur">(0.8ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> binds to a port <span class="test-dur">(3.9ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> registers signal handlers without error <span class="test-dur">(1.5ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> accepts an extra cleanup callback <span class="test-dur">(1.7ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> is a function <span class="test-dur">(0.1ms)</span></div></div><div class="suite-summary pass"><span>10/10 passed</span><span class="suite-dur">0.12s</span></div></div>
+</section>
+<section class="phase" id="suite-05">
+<div class="phase-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="phase-num">05</span>
+  <h2>🧭 @ecca/semantic-address</h2>
+  <span class="phase-status pass">17/17</span>
+  <span class="phase-toggle">&#x25BC;</span>
+</div>
+<div class="phase-body"><p class="phase-desc">Hierarchical content-derived addressing: 5-facet grammar (domain&gt;entity&gt;relation&gt;temporal&gt;qualifier), prefix queries, address book, NLP parser.</p><div class="detail-box detail-what"><span class="detail-label">WHAT IS TESTED</span>5-facet semantic grammar (domain &gt; entity &gt; relation &gt; temporal &gt; qualifier), deterministic normalization, 32-byte address derivation, partial prefix matching, address book with prefix queries, NLP description parser.</div><div class="detail-box detail-how"><span class="detail-label">HOW IT WORKS</span>Normalization order independence, case/whitespace invariance, multi-value sorting, depth encoding, prefix matching across different grammar levels, book query narrowing (domain→entity→relation).</div><div class="detail-box detail-why"><span class="detail-label">WHY IT MATTERS</span>Semantic addresses enable content-based routing in the hippocampus DAG. Without correct prefix derivation, memory recall returns wrong neighborhoods.</div><div class="detail-box detail-when"><span class="detail-label">WHEN TO RUN</span>On build. Pure functions — tests verify the addressing invariants that the entire memory system depends on.</div><div class="svc-grid"><div class="service-tag"><span class="svc-name">agent-runtime (memory addressing)</span></div><div class="service-tag"><span class="svc-name">hippocampus-dag (prefix-based storage)</span></div><div class="service-tag"><span class="svc-name">siyana-api (recall routing)</span></div></div><div class="verify-box"><span class="detail-label">WHERE TO LOOK</span><code>packages/semantic-address/src/grammar.ts, derive.ts, address.ts, book.ts</code></div><div class="test-list"><div class="test pass"><span class="indicator">&#x2713;</span> produces identical output regardless of input order <span class="test-dur">(0.3ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> normalizes case and whitespace <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> sorts multi-value facets <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> reports depth correctly <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> produces 32-byte addresses <span class="test-dur">(0.5ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> same grammar + same content = same address <span class="test-dur">(0.3ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> same grammar + different content = same prefix, different address <span class="test-dur">(0.5ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> encodes depth correctly <span class="test-dur">(0.2ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> produces prefix bytes equal to depth * 4 <span class="test-dur">(0.3ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> stops at first missing facet <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> partial prefix matches full address with same leading grammar <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> partial prefix does NOT match address with different domain <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> query by partial address returns matching entries <span class="test-dur">(0.3ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> hex prefix query works for partial address resolution <span class="test-dur">(0.1ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> extracts domain from natural language <span class="test-dur">(0.6ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> extracts temporal markers <span class="test-dur">(0.5ms)</span></div><div class="test pass"><span class="indicator">&#x2713;</span> same meaning different phrasing → same normalized address <span class="test-dur">(0.1ms)</span></div></div><div class="suite-summary pass"><span>17/17 passed</span><span class="suite-dur">0.05s</span></div></div>
+</section>
+<section class="phase" id="suite-06">
+<div class="phase-header" onclick="this.parentElement.classList.toggle('collapsed')">
+  <span class="phase-num">06</span>
+  <h2>📝 contracts</h2>
+  <span class="phase-status pass">135/135</span>
+  <span class="phase-toggle">&#x25BC;</span>
+</div>
+<div class="phase-body"><p class="phase-desc">Solidity smart contracts — StackIdentity, BandwidthToken, EpochAnchor, TripartiteGame, ResidueRegistry, NeedlecastRouter, QuellistTreasury, SleeveRegistry</p><div class="detail-box detail-what"><span class="detail-label">WHAT IS TESTED</span>StackIdentity NFT minting/CPV/EBC, BandwidthToken mint/spend/authorize/transferStack, EpochAnchor commitAnchor/verifyContinuity/verifyShardInclusion, TripartiteGame openGame/registerParty/consume/audit, ResidueRegistry detect/submitProof, NeedlecastRouter route, QuellistTreasury issue/claim, SleeveRegistry register/decommission.</div><div class="detail-box detail-how"><span class="detail-label">HOW IT WORKS</span>Hardhat local EVM with viem test helpers. Each contract gets a loadFixture deployment, then exercises every public function including access control, edge cases, and event emission.</div><div class="detail-box detail-why"><span class="detail-label">WHY IT MATTERS</span>Smart contracts are immutable once deployed. Bugs here cannot be patched — they require migration. 100% coverage of authorization, caps, and lifecycle transitions is critical.</div><div class="detail-box detail-when"><span class="detail-label">WHEN TO RUN</span>Before every deploy. Run with `npx hardhat test` in contracts/. Uses in-memory Hardhat Network (no Docker needed).</div><div class="svc-grid"><div class="service-tag"><span class="svc-name">cortex-evm (on-chain execution)</span></div><div class="service-tag"><span class="svc-name">siyana-api (calls StackIdentity, BandwidthToken)</span></div><div class="service-tag"><span class="svc-name">thalamus-router (calls EpochAnchor)</span></div><div class="service-tag"><span class="svc-name">quellist-treasury-svc (calls QuellistTreasury)</span></div></div><div class="verify-box"><span class="detail-label">WHERE TO LOOK</span><code>contracts/src/*.sol — 7 Solidity files. contracts/test/*.test.ts — 7 test files.</code></div><div class="test-list"><div class="test pass"><span class="indicator">&#x2713;</span> should have correct name and symbol for ComputeToken (337ms)</div><div class="test pass"><span class="indicator">&#x2713;</span> should have correct name and symbol for MemoryToken</div><div class="test pass"><span class="indicator">&#x2713;</span> should have 18 decimals — fine-grained cognitive capacity</div><div class="test pass"><span class="indicator">&#x2713;</span> should mint bandwidth to a stack — consciousness comes alive</div><div class="test pass"><span class="indicator">&#x2713;</span> should increase totalSupply on mint — more bandwidth in the system</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject mint from non-minter — only the treasury can issue bandwidth</div><div class="test pass"><span class="indicator">&#x2713;</span> should allow owner to change the minter — treasury upgrade</div><div class="test pass"><span class="indicator">&#x2713;</span> should allow stack owner to authorize a sleeve runtime</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject authorization from non-owner — you don't own that stack</div><div class="test pass"><span class="indicator">&#x2713;</span> should allow revoking sleeve authorization — decommission</div><div class="test pass"><span class="indicator">&#x2713;</span> should allow authorized sleeve to spend bandwidth</div><div class="test pass"><span class="indicator">&#x2713;</span> should allow stack owner to spend directly</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject spend from unauthorized address — no stealing bandwidth</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject overspend — insufficient bandwidth for cognitive op</div><div class="test pass"><span class="indicator">&#x2713;</span> should decrease totalSupply on spend — bandwidth consumed</div><div class="test pass"><span class="indicator">&#x2713;</span> should transfer bandwidth between stacks</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject transfer from non-owner — can't move someone else's bandwidth</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject transfer exceeding balance — can't overdraft consciousness</div><div class="test pass"><span class="indicator">&#x2713;</span> should allow owner to authorize a bridger — the needle operator</div><div class="test pass"><span class="indicator">&#x2713;</span> should allow owner to revoke bridger — decommissioning the needle</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject non-owner from setting bridger — CTAC-only authority</div><div class="test pass"><span class="indicator">&#x2713;</span> should commit an epoch anchor with all coherence roots</div><div class="test pass"><span class="indicator">&#x2713;</span> should advance the head epoch pointer — time marches forward</div><div class="test pass"><span class="indicator">&#x2713;</span> should allow multiple epoch commits in sequence — building the timeline</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject epoch regression — no time travel allowed</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject same epoch re-commit — each heartbeat is unique</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject commit from non-bridger — unauthorized needle transmission</div><div class="test pass"><span class="indicator">&#x2713;</span> should record timestamp — when the anchor was committed to the chain</div><div class="test pass"><span class="indicator">&#x2713;</span> should return zero-state for uncommitted epochs</div><div class="test pass"><span class="indicator">&#x2713;</span> should start with head at 0 — no epochs committed yet</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject an anchor whose medullaHeight is not strictly greater</div><div class="test pass"><span class="indicator">&#x2713;</span> should track lastMedullaHeight across commits</div><div class="test pass"><span class="indicator">&#x2713;</span> verifyContinuity returns (true, true) when both anchors exist and roots advanced</div><div class="test pass"><span class="indicator">&#x2713;</span> verifyContinuity returns (false, false) for the genesis epoch</div><div class="test pass"><span class="indicator">&#x2713;</span> verifyContinuity returns (false, false) for an epoch with no prior anchor</div><div class="test pass"><span class="indicator">&#x2713;</span> verifyShardInclusion accepts a valid Merkle proof for L0</div><div class="test pass"><span class="indicator">&#x2713;</span> verifyShardInclusion accepts a valid Merkle proof for L3 (right-right path)</div><div class="test pass"><span class="indicator">&#x2713;</span> verifyShardInclusion rejects a forged proof</div><div class="test pass"><span class="indicator">&#x2713;</span> verifyShardInclusion returns false for an unknown epoch</div><div class="test pass"><span class="indicator">&#x2713;</span> verifyShardInclusion returns false for a bad shard id</div><div class="test pass"><span class="indicator">&#x2713;</span> should allow anyone to anchor an epoch — mining is permissionless</div><div class="test pass"><span class="indicator">&#x2713;</span> should store anchor data — epoch, root, miner, timestamp</div><div class="test pass"><span class="indicator">&#x2713;</span> should accumulate anchors — building the coherence timeline</div><div class="test pass"><span class="indicator">&#x2713;</span> should route a needlecast for the stack owner</div><div class="test pass"><span class="indicator">&#x2713;</span> should track lastAnchorOf — linking stacks to their latest needlecast point</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject route from non-owner — can't needlecast someone else's stack</div><div class="test pass"><span class="indicator">&#x2713;</span> should allow owner to needlecast their own stack</div><div class="test pass"><span class="indicator">&#x2713;</span> should allow multiple needlecasts — consciousness can move many times</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject epoch regression in needlecast — no going back in time</div><div class="test pass"><span class="indicator">&#x2713;</span> should support complete flow: mine epoch, then needlecast through it</div><div class="test pass"><span class="indicator">&#x2713;</span> should issue ComputeToken to a stack — processing power granted</div><div class="test pass"><span class="indicator">&#x2713;</span> should issue MemoryToken — expanding recall capacity</div><div class="test pass"><span class="indicator">&#x2713;</span> should issue SyncToken — cross-chain coherence resources</div><div class="test pass"><span class="indicator">&#x2713;</span> should issue RoutingToken — needlecast routing capacity</div><div class="test pass"><span class="indicator">&#x2713;</span> should issue ResidueToken — bounty for resolving coordination residues</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject invalid token kind — only 5 bandwidth channels exist</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject issuance from non-owner — Quellist principles cannot be subverted</div><div class="test pass"><span class="indicator">&#x2713;</span> should claim epoch rewards — equal bandwidth across all four channels</div><div class="test pass"><span class="indicator">&#x2713;</span> should track lastClaimEpoch — preventing double claims</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject claim for same epoch — no double-dipping consciousness</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject claim for earlier epoch — time regression</div><div class="test pass"><span class="indicator">&#x2713;</span> should allow incremental claims — epoch by epoch progression</div><div class="test pass"><span class="indicator">&#x2713;</span> should allow owner to change emission rate</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject emission change from non-owner</div><div class="test pass"><span class="indicator">&#x2713;</span> should apply new emission rate to subsequent claims</div><div class="test pass"><span class="indicator">&#x2713;</span> should detect a StaleOrdering residue — routing lag artifact</div><div class="test pass"><span class="indicator">&#x2713;</span> should detect a SpeculativeDivergence residue — compute/memory mismatch</div><div class="test pass"><span class="indicator">&#x2713;</span> should detect a ReorgOrphan residue — medulla-pow chain reorg crossed anchor</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject duplicate residue detection — each glitch is unique</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject bounty exceeding MAX_BOUNTY — prevent economic overflow</div><div class="test pass"><span class="indicator">&#x2713;</span> should track residue count — how many ghosts haunt the system</div><div class="test pass"><span class="indicator">&#x2713;</span> should resolve a residue with valid proof — ghost exorcised</div><div class="test pass"><span class="indicator">&#x2713;</span> should mint ResidueToken as bounty to resolver — reward for fixing coherence</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject proof on non-existent residue — can't fix what isn't broken</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject double-resolution — first valid proof wins</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject proof from non-stack-owner — impersonation prevented</div><div class="test pass"><span class="indicator">&#x2713;</span> should store proofHash — keccak of the resolution evidence</div><div class="test pass"><span class="indicator">&#x2713;</span> should default to first-valid-proof model — meritocratic resolution</div><div class="test pass"><span class="indicator">&#x2713;</span> should allow owner to change payout model — governance decision</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject model change from non-owner — only governance can alter economics</div><div class="test pass"><span class="indicator">&#x2713;</span> should register a Human embodiment sleeve — organic body</div><div class="test pass"><span class="indicator">&#x2713;</span> should register an AI embodiment sleeve — digital construct</div><div class="test pass"><span class="indicator">&#x2713;</span> should register a Mining embodiment sleeve — proof-of-work body</div><div class="test pass"><span class="indicator">&#x2713;</span> should register a Memory embodiment sleeve — hippocampus storage</div><div class="test pass"><span class="indicator">&#x2713;</span> should store host ID — which machine runs this sleeve</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject duplicate registration — each sleeve is unique</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject registration from non-stack-owner — only you can clothe yourself</div><div class="test pass"><span class="indicator">&#x2713;</span> should add sleeve to stack's sleeve list — tracking all bodies</div><div class="test pass"><span class="indicator">&#x2713;</span> should decommission a sleeve — the body dies, but the stack lives on</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject decommission of already-dead sleeve — can't kill what's dead</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject decommission from non-owner — only you can retire your body</div><div class="test pass"><span class="indicator">&#x2713;</span> should allow a stack to have multiple active sleeves simultaneously</div><div class="test pass"><span class="indicator">&#x2713;</span> should keep decommissioned sleeves in the list — history is preserved</div><div class="test pass"><span class="indicator">&#x2713;</span> should return empty list for stack with no sleeves — a naked stack</div><div class="test pass"><span class="indicator">&#x2713;</span> should mint a cortical stack with correct identity pubkey</div><div class="test pass"><span class="indicator">&#x2713;</span> should assign sequential tokenIds like stack serial numbers</div><div class="test pass"><span class="indicator">&#x2713;</span> should emit StackMinted event — consciousness comes online</div><div class="test pass"><span class="indicator">&#x2713;</span> should store the Coherence Profile Vector (CPV) — cognitive personality matrix</div><div class="test pass"><span class="indicator">&#x2713;</span> should store Epoch Binding Curve — how fast memories decay</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject CPV coefficient &gt; 2.0 — no consciousness can exceed limits</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject decay rate &gt; 1.0 — binding cannot exceed unity</div><div class="test pass"><span class="indicator">&#x2713;</span> should allow owner to authorize a router contract</div><div class="test pass"><span class="indicator">&#x2713;</span> should allow owner to revoke router authorization</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject non-owner from authorizing routers — only CTAC has that power</div><div class="test pass"><span class="indicator">&#x2713;</span> should record a needlecast from an authorized router</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject needlecast from unauthorized sender — only sanctioned routes</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject epoch regression — time only moves forward</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject needlecast on non-existent stack — can't cast into void</div><div class="test pass"><span class="indicator">&#x2713;</span> should return zero-state for freshly minted stack</div><div class="test pass"><span class="indicator">&#x2713;</span> should let the referee open a new game</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject double-open of the same game</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject openGame from non-referee — no rogue notary</div><div class="test pass"><span class="indicator">&#x2713;</span> should let each party register itself with a per-epoch budget</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject registration by non-stack-owner — only the bearer</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject double-registration of the same party</div><div class="test pass"><span class="indicator">&#x2713;</span> should expose the full party roster to inspectors</div><div class="test pass"><span class="indicator">&#x2713;</span> should let a registered party consume compute within its budget</div><div class="test pass"><span class="indicator">&#x2713;</span> should let consumption accumulate up to the per-epoch cap</div><div class="test pass"><span class="indicator">&#x2713;</span> should revert when a single consume exceeds the per-epoch budget</div><div class="test pass"><span class="indicator">&#x2713;</span> should revert when accumulated consumption tips over the cap</div><div class="test pass"><span class="indicator">&#x2713;</span> should reset budgets per epoch — same cap applies in the next epoch</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject consume from a party that never registered</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject consume against an unknown game id</div><div class="test pass"><span class="indicator">&#x2713;</span> should reject consume with an out-of-range resource enum</div><div class="test pass"><span class="indicator">&#x2713;</span> should burn the underlying BandwidthToken on every consume</div><div class="test pass"><span class="indicator">&#x2713;</span> should fail if the underlying BandwidthToken balance is insufficient</div><div class="test pass"><span class="indicator">&#x2713;</span> verifyAllocationFair returns true when no party exceeds its cap</div><div class="test pass"><span class="indicator">&#x2713;</span> verifyAllocationFair returns true even with all parties at the exact cap</div><div class="test pass"><span class="indicator">&#x2713;</span> auditEpoch emits AllocationVerified(true) and returns true on a fair epoch</div><div class="test pass"><span class="indicator">&#x2713;</span> remainingBudget reports the unspent allowance per resource</div><div class="test pass"><span class="indicator">&#x2713;</span> remainingBudget for an unregistered party is 0</div><div class="test pass"><span class="indicator">&#x2713;</span> any inspector address can read verifyAllocationFair — view is permissionless</div><div class="test pass"><span class="indicator">&#x2713;</span> emits a Consumed event for every spend so inspectors can re-derive the ledger</div><div class="test pass"><span class="indicator">&#x2713;</span> makes overspend impossible: the cap is a hard property, not a guideline</div><div class="test pass"><span class="indicator">&#x2713;</span> supports many epochs of activity and remains auditable for each</div></div><div class="suite-summary pass"><span>135/135 passed</span></div></div>
+</section>
+<div class="result-banner all-pass">
+  <h2>ALL SYSTEMS NOMINAL</h2>
+  <p>275 assertions passed across 6 test suites &mdash; all packages verified</p>
+</div>
+<div class="lifecycle-grid">
+  <div class="lifecycle-item lc-pass"><span class="lc-label">📜 Proto Types</span><span class="lc-desc">35 schemas validated</span></div>
+  <div class="lifecycle-item lc-pass"><span class="lc-label">🔐 Cryptography</span><span class="lc-desc">53 primitives verified</span></div>
+  <div class="lifecycle-item lc-pass"><span class="lc-label">⛓️ Chain Clients</span><span class="lc-desc">25 ABIs + clients checked</span></div>
+  <div class="lifecycle-item lc-pass"><span class="lc-label">🏗️ Service Base</span><span class="lc-desc">10 bootstrap tests</span></div>
+  <div class="lifecycle-item lc-pass"><span class="lc-label">🧭 Addressing</span><span class="lc-desc">17 address ops verified</span></div>
+  <div class="lifecycle-item lc-pass"><span class="lc-label">📝 Contracts</span><span class="lc-desc">135 Solidity tests</span></div>
+</div>
+</div>
+<div class="footer">
+  ECCA STACK v3 &mdash; DISTRIBUTED HUMAN FRAMEWORK &mdash; UNIT TEST REPORT<br>
+  <span style="opacity:0.5">Generated by run-unit-tests.sh // All memory is sacred</span>
+</div>
+</body>
+</html>

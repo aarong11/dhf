@@ -1,14 +1,18 @@
 // Thalamus Router — cross-shard event arbiter.
 // Subscribes to all chain events, computes the per-epoch crossRoot, and
-// submits it to medulla-pow. Acts as the source of truth for "current epoch".
+// submits it to medulla-pow. Then bridges the anchor to the EpochAnchor
+// contract on cortex-evm so the coherence chain is verifiable on-chain.
 import { createService, listen, wireShutdown } from '@ecca/service-base';
 import { getBus } from '@ecca/bus';
 import { getDb } from '@ecca/db';
-import { merkleRoot, sha256hex, coherenceRoot } from '@ecca/crypto';
-import { MedullaClient } from '@ecca/chain';
+import { merkleRoot, sha256hex, coherenceRoot, bytesToHex } from '@ecca/crypto';
+import { MedullaClient, cortexPublic, cortexWallet, EPOCH_ANCHOR_ABI } from '@ecca/chain';
 import { EPOCH_INTERVAL_MS } from '@ecca/proto';
+import { type Hex, toHex, keccak256 } from 'viem';
 
 const PORT = Number(process.env.THALAMUS_PORT ?? 7072);
+const OPERATOR_PK = (process.env.OPERATOR_PRIVATE_KEY ?? '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80') as Hex;
+const EPOCH_ANCHOR_ADDR = process.env.EPOCH_ANCHOR_ADDRESS as Hex | undefined;
 
 async function main() {
   const app = await createService({ name: 'thalamus-router' });
@@ -16,6 +20,10 @@ async function main() {
   const bus = await getBus();
   const db = getDb();
   const medulla = new MedullaClient();
+
+  // Cortex EVM clients for bridging anchors on-chain.
+  const cortex = cortexPublic();
+  const wallet = cortexWallet(OPERATOR_PK);
 
   // Buffered event hashes per epoch — drained at each epoch tick.
   let currentEpoch = 0;
@@ -34,12 +42,13 @@ async function main() {
     if (ev?.txHash) evmHashes.push(ev.txHash);
   });
 
-  // Epoch tick — every EPOCH_INTERVAL_MS, fold buffers into a coherence root and submit.
+  // Epoch tick — every EPOCH_INTERVAL_MS, fold buffers into a coherence root,
+  // submit to medulla-pow, and bridge the anchor to cortex-evm EpochAnchor.
   async function tick() {
     try {
-      const evmRootHex = evmHashes.length ? merkleRoot(evmHashes.map(h => Buffer.from(h, 'hex'))) : '0'.repeat(64);
-      const ipfsRootHex = ipfsHashes.length ? merkleRoot(ipfsHashes.map(h => Buffer.from(h, 'hex'))) : '0'.repeat(64);
-      const sleevesRootHex = sleeveHashes.length ? merkleRoot(sleeveHashes.map(h => Buffer.from(h, 'hex'))) : '0'.repeat(64);
+      const evmRootHex = evmHashes.length ? merkleRoot(evmHashes) : '0'.repeat(64);
+      const ipfsRootHex = ipfsHashes.length ? merkleRoot(ipfsHashes) : '0'.repeat(64);
+      const sleevesRootHex = sleeveHashes.length ? merkleRoot(sleeveHashes) : '0'.repeat(64);
       const cross = coherenceRoot({ evm: evmRootHex, btc: '0'.repeat(64), ipfs: ipfsRootHex, sleeves: sleevesRootHex });
 
       const anchor = await medulla.submitCoherenceRoot({
@@ -48,6 +57,36 @@ async function main() {
 
       if (anchor) {
         currentEpoch = anchor.epoch ?? currentEpoch + 1;
+
+        // Retrieve the synaptic-field MMR root from medulla for the new block.
+        let synapticRoot = '0'.repeat(64);
+        try {
+          const proof = await medulla.getSynapticProof(anchor.blockHash);
+          synapticRoot = proof.root;
+        } catch { /* first block may not have proof yet */ }
+
+        // Bridge anchor to cortex-evm EpochAnchor contract.
+        if (EPOCH_ANCHOR_ADDR) {
+          try {
+            const pad = (hex: string): Hex => `0x${hex.replace(/^0x/, '').padStart(64, '0')}`;
+            const hash = await wallet.writeContract({
+              address: EPOCH_ANCHOR_ADDR,
+              abi: EPOCH_ANCHOR_ABI,
+              functionName: 'commitAnchor',
+              args: [
+                BigInt(currentEpoch),
+                pad(cross), pad(evmRootHex), pad(ipfsRootHex), pad(sleevesRootHex),
+                pad(synapticRoot), BigInt(anchor.height ?? 0),
+              ],
+              chain: wallet.chain!, account: wallet.account!,
+            });
+            await cortex.waitForTransactionReceipt({ hash });
+            log.info({ epoch: currentEpoch, txHash: hash }, 'EpochAnchor committed on cortex');
+          } catch (e: any) {
+            log.warn({ err: String(e) }, 'cortex EpochAnchor commit failed');
+          }
+        }
+
         await db.epoch.upsert({
           where: { number: currentEpoch },
           create: {

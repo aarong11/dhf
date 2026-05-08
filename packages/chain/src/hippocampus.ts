@@ -50,6 +50,30 @@ export class HippocampusClient {
   }
 
   /**
+   * Extend a pin lease until `untilEpoch`. Pins are leases, not permanent —
+   * a node falls back into the ±2 epoch drift gate once its lease expires.
+   * This is what makes long-term storage genuinely scarce.
+   */
+  async lease(cid: string, untilEpoch: number): Promise<{ ok: boolean; untilEpoch: number }> {
+    const r = await request(`${this.base}/pin/lease`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ cid, untilEpoch }),
+    });
+    if (r.statusCode >= 400) throw new Error(`lease failed: ${r.statusCode} ${await r.body.text()}`);
+    return (await r.body.json()) as { ok: boolean; untilEpoch: number };
+  }
+
+  /** Read whether a pin lease is currently active relative to `epoch`. */
+  async pinStatus(cid: string, epoch: number): Promise<{ cid: string; active: boolean; untilEpoch: number }> {
+    const r = await request(
+      `${this.base}/pin/status?cid=${encodeURIComponent(cid)}&epoch=${epoch}`,
+    );
+    if (r.statusCode >= 400) throw new Error(`pinStatus failed: ${r.statusCode}`);
+    return (await r.body.json()) as any;
+  }
+
+  /**
    * Token-gated traversal performed entirely server-side. The hippocampus
    * verifies (epoch, memoryToken) against on-chain balances before walking.
    */

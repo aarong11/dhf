@@ -4,6 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": { "test": "vitest run" },
+  "dependencies": {
+    "@ecca/chain": "workspace:*",
+    "viem": "^2.21.0"
+  },
   "devDependencies": {
     "vitest": "^2.0.5",
     "typescript": "^5.5.4",

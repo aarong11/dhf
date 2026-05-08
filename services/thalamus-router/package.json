@@ -16,7 +16,8 @@
     "@ecca/bus": "workspace:*",
     "@ecca/db": "workspace:*",
     "@ecca/chain": "workspace:*",
-    "fastify": "^4.28.1"
+    "fastify": "^4.28.1",
+    "viem": "^2.21.1"
   },
   "devDependencies": {
     "typescript": "^5.5.4",

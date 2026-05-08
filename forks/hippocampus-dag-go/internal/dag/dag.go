@@ -26,6 +26,15 @@ type Node struct {
 	Epoch      uint64   `json:"epoch"`
 	Kind       string   `json:"kind"`
 	Pinned     bool     `json:"pinned"`
+	// PinExpiry is the epoch at which a pin lease expires. Pins are *leases*,
+	// not permanent: the storage scarcity guarantee requires that long-lived
+	// data continues to consume MemoryToken over time. A node with PinExpiry
+	// strictly less than the caller's current epoch is treated as un-pinned
+	// for recall-gating purposes (epoch-drift check applies).
+	//
+	// PinExpiry == 0 means "no lease" (node is either unpinned, or was pinned
+	// before lease semantics existed — backwards compatible).
+	PinExpiry  uint64   `json:"pinExpiry,omitempty"`
 	StackID    string   `json:"stackId"`
 }
 
@@ -103,6 +112,47 @@ func (d *DAG) Pin(cid string) error {
 	return nil
 }
 
+// Lease pins a node with an epoch-bounded lease. The lease must be renewed
+// (Lease() called again) before the expiry epoch passes, otherwise the node
+// becomes subject to the normal ±2 epoch drift gate at recall time.
+//
+// `untilEpoch` must be strictly greater than the node's current PinExpiry —
+// callers cannot shorten a lease (that would let a party retroactively reduce
+// observed storage usage). Extending a lease consumes MemoryToken off-chain
+// at the service layer (the Hippocampus DAG itself is intentionally unaware
+// of the on-chain ledger).
+func (d *DAG) Lease(cid string, untilEpoch uint64) error {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	n, ok := d.nodes[cid]
+	if !ok {
+		return errors.New("not found")
+	}
+	if untilEpoch <= n.PinExpiry {
+		return errors.New("lease can only extend")
+	}
+	n.Pinned = true
+	n.PinExpiry = untilEpoch
+	d.pinned[cid] = struct{}{}
+	return nil
+}
+
+// LeaseActive returns true iff the node is pinned AND the lease has not
+// expired relative to `currentEpoch`. A node with PinExpiry == 0 is treated
+// as having an indefinite legacy pin (for backwards compatibility).
+func (d *DAG) LeaseActive(cid string, currentEpoch uint64) bool {
+	d.mu.RLock()
+	defer d.mu.RUnlock()
+	n, ok := d.nodes[cid]
+	if !ok || !n.Pinned {
+		return false
+	}
+	if n.PinExpiry == 0 {
+		return true
+	}
+	return n.PinExpiry >= currentEpoch
+}
+
 // Recall walks the DAG under (epoch, memoryToken) gates.
 //   - epochAlignment: |caller.epoch - node.epoch| <= 2 OR node.Pinned
 //   - depthAuthorization: memoryToken >= depth_from_root
@@ -151,7 +201,12 @@ func (d *DAG) Recall(r RecallReq) RecallResp {
 		if drift < 0 {
 			drift = -drift
 		}
-		if drift > 2 && !n.Pinned {
+		// A node bypasses the epoch-drift gate only if it is pinned AND its
+		// lease (if any) has not expired. Expired leases collapse the node
+		// back into the ±2-epoch drift window — this is what makes long-term
+		// storage *actually* scarce.
+		pinValid := n.Pinned && (n.PinExpiry == 0 || n.PinExpiry >= r.Epoch)
+		if drift > 2 && !pinValid {
 			out.Broken = append(out.Broken, fmt.Sprintf("%s#epoch_drift_%d", cid, drift))
 			return
 		}
