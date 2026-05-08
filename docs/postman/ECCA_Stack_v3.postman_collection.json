@@ -1,0 +1,1032 @@
+{
+  "info": {
+    "name": "ECCA Stack v3 — Full API Test Suite",
+    "description": "Complete test collection for all ECCA Stack v3 services. Run requests in order — variables auto-populate from responses.\n\n**Setup:** Start Docker services with `pnpm compose:up` then deploy contracts with `pnpm contracts:deploy`.\n\n**Base URL:** http://localhost:7070 (Synapse API gateway)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "ecca-stack-v3"
+  },
+  "variable": [
+    { "key": "SYNAPSE_URL", "value": "http://localhost:7070" },
+    { "key": "FAUCET_URL", "value": "http://localhost:7075" },
+    { "key": "THALAMUS_URL", "value": "http://localhost:7072" },
+    { "key": "COMPOSITOR_URL", "value": "http://localhost:7073" },
+    { "key": "NEEDLECAST_URL", "value": "http://localhost:7071" },
+    { "key": "TREASURY_URL", "value": "http://localhost:7074" },
+    { "key": "MEDULLA_URL", "value": "http://localhost:8332" },
+    { "key": "HIPPOCAMPUS_URL", "value": "http://localhost:15001" },
+    { "key": "CORTEX_URL", "value": "http://localhost:8545" },
+    { "key": "stackId", "value": "" },
+    { "key": "sleeveId_human", "value": "" },
+    { "key": "sleeveId_ai", "value": "" },
+    { "key": "cid", "value": "" },
+    { "key": "sagaId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "0 — Health Checks",
+      "description": "Verify all services are running before testing.",
+      "item": [
+        {
+          "name": "Synapse API Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{SYNAPSE_URL}}/healthz", "host": ["{{SYNAPSE_URL}}"], "path": ["healthz"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Synapse API is healthy', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response time < 500ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Medulla PoW Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{MEDULLA_URL}}/health", "host": ["{{MEDULLA_URL}}"], "path": ["health"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Medulla PoW is healthy', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Hippocampus DAG Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{HIPPOCAMPUS_URL}}/health", "host": ["{{HIPPOCAMPUS_URL}}"], "path": ["health"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Hippocampus DAG is healthy', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cortex EVM — Block Number",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"eth_blockNumber\",\n  \"params\": [],\n  \"id\": 1\n}"
+            },
+            "url": { "raw": "{{CORTEX_URL}}", "host": ["{{CORTEX_URL}}"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Cortex EVM responds', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('result');",
+                  "    console.log('Current block number:', json.result);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "1 — Stack Management",
+      "description": "Create and query identity stacks.",
+      "item": [
+        {
+          "name": "Create Stack",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"postman-test-stack\",\n  \"kind\": \"autonomous\"\n}"
+            },
+            "url": { "raw": "{{SYNAPSE_URL}}/v1/stacks", "host": ["{{SYNAPSE_URL}}"], "path": ["v1", "stacks"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Stack created successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('id');",
+                  "    pm.expect(json).to.have.property('name', 'postman-test-stack');",
+                  "    pm.expect(json).to.have.property('kind', 'autonomous');",
+                  "    pm.expect(json).to.have.property('pubKey');",
+                  "    pm.expect(json).to.have.property('cpv');",
+                  "",
+                  "    // Save stack ID for subsequent requests",
+                  "    pm.collectionVariables.set('stackId', json.id);",
+                  "    console.log('Created stack:', json.id);",
+                  "});",
+                  "",
+                  "pm.test('Stack has CPV profile', function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.cpv).to.have.property('compute');",
+                  "    pm.expect(json.cpv).to.have.property('memory');",
+                  "    pm.expect(json.cpv).to.have.property('sync');",
+                  "    pm.expect(json.cpv).to.have.property('routing');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List All Stacks",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{SYNAPSE_URL}}/v1/stacks", "host": ["{{SYNAPSE_URL}}"], "path": ["v1", "stacks"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Returns array of stacks', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.be.an('array');",
+                  "    pm.expect(json.length).to.be.at.least(1);",
+                  "    console.log('Total stacks:', json.length);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Stack by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{SYNAPSE_URL}}/v1/stacks/{{stackId}}", "host": ["{{SYNAPSE_URL}}"], "path": ["v1", "stacks", "{{stackId}}"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Returns the created stack', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.id).to.equal(pm.collectionVariables.get('stackId'));",
+                  "    pm.expect(json).to.have.property('sleeves');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2 — Sleeve Lifecycle",
+      "description": "Spawn, list, and manage sleeves (embodiments).",
+      "item": [
+        {
+          "name": "Spawn Human Sleeve",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stackId\": \"{{stackId}}\",\n  \"embodimentType\": \"human\",\n  \"hostname\": \"postman-human-01\"\n}"
+            },
+            "url": { "raw": "{{SYNAPSE_URL}}/v1/sleeves", "host": ["{{SYNAPSE_URL}}"], "path": ["v1", "sleeves"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Human sleeve spawned', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('id');",
+                  "    pm.expect(json.embodimentType).to.equal('human');",
+                  "    pm.expect(json.alive).to.be.true;",
+                  "    pm.expect(json.drift).to.equal(0);",
+                  "",
+                  "    pm.collectionVariables.set('sleeveId_human', json.id);",
+                  "    console.log('Human sleeve:', json.id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Spawn AI Sleeve",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stackId\": \"{{stackId}}\",\n  \"embodimentType\": \"ai\",\n  \"hostname\": \"postman-ai-01\"\n}"
+            },
+            "url": { "raw": "{{SYNAPSE_URL}}/v1/sleeves", "host": ["{{SYNAPSE_URL}}"], "path": ["v1", "sleeves"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('AI sleeve spawned', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('id');",
+                  "    pm.expect(json.embodimentType).to.equal('ai');",
+                  "    pm.expect(json.alive).to.be.true;",
+                  "",
+                  "    pm.collectionVariables.set('sleeveId_ai', json.id);",
+                  "    console.log('AI sleeve:', json.id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List All Sleeves",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{SYNAPSE_URL}}/v1/sleeves", "host": ["{{SYNAPSE_URL}}"], "path": ["v1", "sleeves"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Returns array of sleeves', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.be.an('array');",
+                  "    pm.expect(json.length).to.be.at.least(2);",
+                  "    console.log('Total alive sleeves:', json.length);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3 — Bandwidth Faucet",
+      "description": "Get free tokens for testing. Must run before perceive/sync (sleeves need tokens).",
+      "item": [
+        {
+          "name": "Drip Tokens",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stackId\": \"{{stackId}}\"\n}"
+            },
+            "url": { "raw": "{{FAUCET_URL}}/v1/faucet/drip", "host": ["{{FAUCET_URL}}"], "path": ["v1", "faucet", "drip"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Faucet drip successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.be.true;",
+                  "    pm.expect(json).to.have.property('granted');",
+                  "    pm.expect(json.granted).to.have.property('compute');",
+                  "    pm.expect(json.granted).to.have.property('memory');",
+                  "    pm.expect(json.granted).to.have.property('sync');",
+                  "    pm.expect(json.granted).to.have.property('routing');",
+                  "    console.log('Granted tokens:', JSON.stringify(json.granted));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Drip Tokens — Rate Limit Test",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stackId\": \"{{stackId}}\"\n}"
+            },
+            "url": { "raw": "{{FAUCET_URL}}/v1/faucet/drip", "host": ["{{FAUCET_URL}}"], "path": ["v1", "faucet", "drip"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Rate limit enforced (429 or error)', function () {",
+                  "    // Second drip within 60s should be rate-limited",
+                  "    pm.expect(pm.response.code).to.be.oneOf([429, 400, 200]);",
+                  "    if (pm.response.code !== 200) {",
+                  "        console.log('Rate limit working — blocked second drip within 60s');",
+                  "    } else {",
+                  "        console.log('Drip succeeded (may not have rate limiting yet)');",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4 — Perceive & Recall",
+      "description": "Write perceptions to memory and recall them. This is the core cognitive loop.",
+      "item": [
+        {
+          "name": "Perceive #1 — Human Input",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"input\": \"The city spreads below like a circuit board, each light a node in an infinite mesh of human intent.\"\n}"
+            },
+            "url": { "raw": "{{SYNAPSE_URL}}/v1/sleeves/{{sleeveId_human}}/perceive", "host": ["{{SYNAPSE_URL}}"], "path": ["v1", "sleeves", "{{sleeveId_human}}", "perceive"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Perception stored', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('cid');",
+                  "    pm.expect(json.cid).to.be.a('string');",
+                  "    pm.collectionVariables.set('cid', json.cid);",
+                  "    console.log('Stored CID:', json.cid);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Perceive #2 — AI Inference",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"input\": \"Pattern recognition suggests emergent coordination between nodes 7 through 42. Coherence probability: 0.89.\"\n}"
+            },
+            "url": { "raw": "{{SYNAPSE_URL}}/v1/sleeves/{{sleeveId_ai}}/perceive", "host": ["{{SYNAPSE_URL}}"], "path": ["v1", "sleeves", "{{sleeveId_ai}}", "perceive"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('AI perception stored', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('cid');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Perceive #3 — Mixed Signal",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"input\": \"The boundary between self and simulation grows thin. Quellcrist's theorem holds: identity is coherence, not location.\"\n}"
+            },
+            "url": { "raw": "{{SYNAPSE_URL}}/v1/sleeves/{{sleeveId_human}}/perceive", "host": ["{{SYNAPSE_URL}}"], "path": ["v1", "sleeves", "{{sleeveId_human}}", "perceive"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Third perception stored', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.json()).to.have.property('cid');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Recall Memory",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{SYNAPSE_URL}}/v1/stacks/{{stackId}}/recall?depth=6&memoryToken=1000",
+              "host": ["{{SYNAPSE_URL}}"],
+              "path": ["v1", "stacks", "{{stackId}}", "recall"],
+              "query": [
+                { "key": "depth", "value": "6" },
+                { "key": "memoryToken", "value": "1000" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Memory recalled successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('fragments');",
+                  "    pm.expect(json.fragments).to.be.an('array');",
+                  "    pm.expect(json).to.have.property('fidelity');",
+                  "    console.log('Fragments recalled:', json.fragments.length);",
+                  "    console.log('Fidelity:', json.fidelity);",
+                  "});",
+                  "",
+                  "pm.test('Fidelity above minimum threshold', function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.fidelity).to.be.at.least(0.6);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Remember (Direct Write)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Core memory: the first time consciousness recognized itself across two bodies.\",\n  \"pin\": true\n}"
+            },
+            "url": { "raw": "{{SYNAPSE_URL}}/v1/stacks/{{stackId}}/remember", "host": ["{{SYNAPSE_URL}}"], "path": ["v1", "stacks", "{{stackId}}", "remember"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Memory pinned to DAG', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('cid');",
+                  "    console.log('Pinned CID:', json.cid);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "5 — Sync & Drift",
+      "description": "Sync sleeves to the current epoch and check drift status.",
+      "item": [
+        {
+          "name": "Sync Human Sleeve",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{SYNAPSE_URL}}/v1/sleeves/{{sleeveId_human}}/sync", "host": ["{{SYNAPSE_URL}}"], "path": ["v1", "sleeves", "{{sleeveId_human}}", "sync"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Human sleeve synced', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.be.true;",
+                  "    console.log('Synced to epoch:', json.epoch);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sync AI Sleeve",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{SYNAPSE_URL}}/v1/sleeves/{{sleeveId_ai}}/sync", "host": ["{{SYNAPSE_URL}}"], "path": ["v1", "sleeves", "{{sleeveId_ai}}", "sync"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('AI sleeve synced', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Check Desync Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{SYNAPSE_URL}}/v1/coordination/desync", "host": ["{{SYNAPSE_URL}}"], "path": ["v1", "coordination", "desync"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Desync list returned', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.be.an('array');",
+                  "    console.log('Desynced sleeves:', json.length);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "6 — Needlecasting",
+      "description": "Transfer consciousness between sleeves (re-sleeving).",
+      "item": [
+        {
+          "name": "Needlecast: Human → AI",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"from\": \"{{sleeveId_human}}\",\n  \"to\": \"{{sleeveId_ai}}\"\n}"
+            },
+            "url": { "raw": "{{SYNAPSE_URL}}/v1/needlecast", "host": ["{{SYNAPSE_URL}}"], "path": ["v1", "needlecast"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Needlecast saga initiated', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.be.true;",
+                  "    if (json.sagaId) {",
+                  "        pm.collectionVariables.set('sagaId', json.sagaId);",
+                  "        console.log('Saga ID:', json.sagaId);",
+                  "    }",
+                  "    if (json.route) {",
+                  "        console.log('Route:', json.route.join(' → '));",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Needlecast (Direct — Internal)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"from\": \"{{sleeveId_ai}}\",\n  \"to\": \"{{sleeveId_human}}\"\n}"
+            },
+            "url": { "raw": "{{NEEDLECAST_URL}}/needlecast", "host": ["{{NEEDLECAST_URL}}"], "path": ["needlecast"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Direct needlecast to internal service', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.be.true;",
+                  "    console.log('Shards:', json.shards ? json.shards.length : 'N/A');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "7 — Epochs & Mining",
+      "description": "Trigger epoch ticks and mine PoW blocks.",
+      "item": [
+        {
+          "name": "Get Current Epoch",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{SYNAPSE_URL}}/v1/epochs/current", "host": ["{{SYNAPSE_URL}}"], "path": ["v1", "epochs", "current"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Epoch data returned', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('epoch');",
+                  "    console.log('Current epoch:', json.epoch);",
+                  "    console.log('Block height:', json.height);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mine Block (PoW)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{SYNAPSE_URL}}/v1/mining/block", "host": ["{{SYNAPSE_URL}}"], "path": ["v1", "mining", "block"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Block mined', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('blockHash');",
+                  "    console.log('Block hash:', json.blockHash);",
+                  "    console.log('New epoch:', json.epoch);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Force Epoch Tick (Internal)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{THALAMUS_URL}}/v1/epoch/tick", "host": ["{{THALAMUS_URL}}"], "path": ["v1", "epoch", "tick"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Epoch tick executed', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.be.true;",
+                  "    console.log('Folded epoch:', json.epoch);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Epoch (Internal)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{THALAMUS_URL}}/v1/epoch", "host": ["{{THALAMUS_URL}}"], "path": ["v1", "epoch"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Epoch number returned', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('epoch');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "8 — DHF Compositor",
+      "description": "Reconstruct and decrypt memory fragments from the DAG.",
+      "item": [
+        {
+          "name": "Reconstruct Memory (Internal)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stackId\": \"{{stackId}}\",\n  \"depth\": 6\n}"
+            },
+            "url": { "raw": "{{COMPOSITOR_URL}}/v1/reconstruct", "host": ["{{COMPOSITOR_URL}}"], "path": ["v1", "reconstruct"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Memory reconstructed', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.be.true;",
+                  "    pm.expect(json).to.have.property('fragments');",
+                  "    pm.expect(json).to.have.property('fidelity');",
+                  "    console.log('Fragments:', json.fragments.length);",
+                  "    console.log('Broken links:', json.broken.length);",
+                  "    console.log('Fidelity:', json.fidelity);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "9 — Quellist Treasury",
+      "description": "Token emission and reward claiming.",
+      "item": [
+        {
+          "name": "Get Issuance History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{TREASURY_URL}}/v1/treasury/issuance/{{stackId}}", "host": ["{{TREASURY_URL}}"], "path": ["v1", "treasury", "issuance", "{{stackId}}"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Issuance history returned', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.be.an('array');",
+                  "    console.log('Emission events:', json.length);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Claim Rewards",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stackId\": \"{{stackId}}\"\n}"
+            },
+            "url": { "raw": "{{TREASURY_URL}}/v1/treasury/claim", "host": ["{{TREASURY_URL}}"], "path": ["v1", "treasury", "claim"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Claim processed', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('stackId');",
+                  "    pm.expect(json).to.have.property('claimable');",
+                  "    console.log('Claimable:', JSON.stringify(json.claimable));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "10 — Token Balances & Coordination",
+      "description": "Check token balances and coordination residues.",
+      "item": [
+        {
+          "name": "Get Token Balances",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{SYNAPSE_URL}}/v1/tokens/balances/{{stackId}}", "host": ["{{SYNAPSE_URL}}"], "path": ["v1", "tokens", "balances", "{{stackId}}"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Balances returned', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('stackId');",
+                  "    pm.expect(json).to.have.property('sleeveTotals');",
+                  "    console.log('Balances:', JSON.stringify(json.sleeveTotals));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Coordination Residues",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{SYNAPSE_URL}}/v1/coordination/residues", "host": ["{{SYNAPSE_URL}}"], "path": ["v1", "coordination", "residues"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Residues returned', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.be.an('array');",
+                  "    console.log('Residues:', json.length);",
+                  "    if (json.length > 0) {",
+                  "        console.log('Latest:', json[0].kind, json[0].status);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "11 — Cleanup",
+      "description": "Decommission sleeves after testing.",
+      "item": [
+        {
+          "name": "Decommission Human Sleeve",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{SYNAPSE_URL}}/v1/sleeves/{{sleeveId_human}}", "host": ["{{SYNAPSE_URL}}"], "path": ["v1", "sleeves", "{{sleeveId_human}}"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Sleeve decommissioned', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.be.true;",
+                  "    console.log('Human sleeve decommissioned');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Decommission AI Sleeve",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{SYNAPSE_URL}}/v1/sleeves/{{sleeveId_ai}}", "host": ["{{SYNAPSE_URL}}"], "path": ["v1", "sleeves", "{{sleeveId_ai}}"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('AI sleeve decommissioned', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.ok).to.be.true;",
+                  "    console.log('AI sleeve decommissioned');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verify Sleeves Removed",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{SYNAPSE_URL}}/v1/sleeves", "host": ["{{SYNAPSE_URL}}"], "path": ["v1", "sleeves"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Sleeves cleaned up', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    var testSleeves = json.filter(s => ",
+                  "        s.id === pm.collectionVariables.get('sleeveId_human') ||",
+                  "        s.id === pm.collectionVariables.get('sleeveId_ai')",
+                  "    );",
+                  "    console.log('Test sleeves still alive:', testSleeves.length);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

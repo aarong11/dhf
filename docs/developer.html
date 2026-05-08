@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Developer Guide — ECCA Stack</title>
+  <meta name="description" content="Developer setup guide for ECCA Stack — clone, install, build, run Docker services, and test every endpoint with the Postman collection.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
+  <style>
+    .step-grid { display: grid; grid-template-columns: 48px 1fr; gap: 1.5rem; margin: 2rem 0; }
+    .step-num { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--neon-cyan); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 1.1rem; color: var(--neon-cyan); flex-shrink: 0; }
+    .step-body h4 { margin: 0 0 0.5rem; }
+    .endpoint-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 1.2rem 1.5rem; margin-bottom: 1rem; transition: border-color var(--transition-fast); }
+    .endpoint-card:hover { border-color: var(--border-glow); }
+    .endpoint-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+    .method-badge { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .method-badge.get { background: rgba(0, 255, 136, 0.15); color: var(--neon-green); border: 1px solid rgba(0, 255, 136, 0.3); }
+    .method-badge.post { background: rgba(0, 220, 255, 0.15); color: var(--neon-cyan); border: 1px solid rgba(0, 220, 255, 0.3); }
+    .method-badge.delete { background: rgba(255, 0, 229, 0.15); color: var(--neon-magenta); border: 1px solid rgba(255, 0, 229, 0.3); }
+    .endpoint-path { font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-primary); }
+    .endpoint-desc { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+    .service-section { margin-bottom: 3rem; }
+    .service-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .port-badge { font-family: var(--font-mono); font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 100px; background: rgba(0, 220, 255, 0.08); border: 1px solid var(--border-subtle); color: var(--neon-cyan); }
+    .req-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+    .req-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 1.2rem; text-align: center; }
+    .req-card .req-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .req-card h4 { margin: 0 0 0.25rem; font-size: 1rem; }
+    .req-card p { margin: 0; font-size: 0.85rem; color: var(--text-secondary); }
+    .copy-btn { background: transparent; border: 1px solid var(--border-subtle); color: var(--text-secondary); font-family: var(--font-mono); font-size: 0.75rem; padding: 0.3rem 0.6rem; border-radius: 4px; cursor: pointer; transition: all var(--transition-fast); margin-left: auto; }
+    .copy-btn:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); }
+    .code-block { position: relative; }
+    .code-block .copy-btn { position: absolute; top: 0.75rem; right: 0.75rem; }
+    .env-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    .env-table th { text-align: left; padding: 0.6rem 1rem; border-bottom: 2px solid var(--border-subtle); font-family: var(--font-display); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
+    .env-table td { padding: 0.6rem 1rem; border-bottom: 1px solid var(--border-subtle); font-size: 0.85rem; }
+    .env-table td:first-child { font-family: var(--font-mono); color: var(--neon-cyan); }
+    .dl-btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: linear-gradient(135deg, var(--neon-cyan), #0090a8); color: var(--bg-primary); font-family: var(--font-display); font-size: 0.85rem; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; text-transform: uppercase; letter-spacing: 0.05em; transition: all var(--transition-fast); }
+    .dl-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0, 220, 255, 0.3); color: var(--bg-primary); }
+    .callout { background: var(--bg-card); border-left: 3px solid var(--neon-cyan); border-radius: 0 8px 8px 0; padding: 1rem 1.5rem; margin: 1.5rem 0; }
+    .callout-warn { border-left-color: var(--neon-orange); }
+    .callout strong { color: var(--neon-cyan); }
+    .callout-warn strong { color: var(--neon-orange); }
+    .demo-flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+    .demo-step { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 1rem; text-align: center; position: relative; }
+    .demo-step::after { content: '→'; position: absolute; right: -0.75rem; top: 50%; transform: translateY(-50%); color: var(--neon-cyan); font-size: 1.2rem; }
+    .demo-step:last-child::after { display: none; }
+    .demo-step .demo-num { font-family: var(--font-display); font-size: 0.7rem; color: var(--neon-cyan); margin-bottom: 0.25rem; }
+    .demo-step .demo-label { font-size: 0.8rem; color: var(--text-primary); }
+  </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-gradient-top"></div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <span class="logo-icon">◈</span>
+      ECCA
+    </a>
+    <ul class="nav-links">
+      <li><a href="https://discord.gg/GXBS3dUT" target="_blank">Discord</a></li>
+      <li><a href="paper.pdf" target="_blank">Paper</a></li>
+      <li><a href="architecture.html">Architecture</a></li>
+      <li><a href="docs.html">Docs</a></li>
+      <li><a href="developer.html" class="active">Developers</a></li>
+      <li><a href="https://www.paypal.com/donate?business=rng%40infrasim.org&currency_code=USD" target="_blank" class="nav-cta" style="background:var(--accent,#00ffaa);color:#000;">♥ Donate</a></li>
+    </ul>
+    <button class="nav-mobile-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="content-wrapper">
+
+  <div class="container">
+    <div class="docs-layout">
+
+      <!-- Sidebar -->
+      <aside class="docs-sidebar">
+        <div class="docs-sidebar-section">
+          <h4>Setup</h4>
+          <ul>
+            <li><a href="#prerequisites" class="active">Prerequisites</a></li>
+            <li><a href="#clone-install">Clone &amp; Install</a></li>
+            <li><a href="#env-config">Environment Config</a></li>
+            <li><a href="#docker-start">Start Services</a></li>
+            <li><a href="#deploy-contracts">Deploy Contracts</a></li>
+            <li><a href="#verify">Verify Everything</a></li>
+          </ul>
+        </div>
+        <div class="docs-sidebar-section">
+          <h4>Run the Demo</h4>
+          <ul>
+            <li><a href="#demo-flow">Demo Flow</a></li>
+            <li><a href="#demo-run">Run the Script</a></li>
+          </ul>
+        </div>
+        <div class="docs-sidebar-section">
+          <h4>API Testing</h4>
+          <ul>
+            <li><a href="#postman">Testing Options</a></li>
+            <li><a href="test-runner.html" style="color:var(--neon-cyan);">▶ Open Test Runner</a></li>
+            <li><a href="#api-synapse">Synapse API</a></li>
+            <li><a href="#api-faucet">Bandwidth Faucet</a></li>
+            <li><a href="#api-thalamus">Thalamus Router</a></li>
+            <li><a href="#api-compositor">DHF Compositor</a></li>
+            <li><a href="#api-needlecast">Needlecast Router</a></li>
+            <li><a href="#api-treasury">Quellist Treasury</a></li>
+            <li><a href="#api-sleeve">Sleeve Runtime</a></li>
+          </ul>
+        </div>
+        <div class="docs-sidebar-section">
+          <h4>Ports &amp; Services</h4>
+          <ul>
+            <li><a href="#port-map">Port Map</a></li>
+            <li><a href="#infra-services">Infrastructure</a></li>
+            <li><a href="#observability">Observability</a></li>
+          </ul>
+        </div>
+        <div class="docs-sidebar-section">
+          <h4>Troubleshooting</h4>
+          <ul>
+            <li><a href="#common-issues">Common Issues</a></li>
+            <li><a href="#logs">Reading Logs</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="docs-content">
+
+        <!-- HERO -->
+        <div style="margin-bottom: 3rem; padding-top: 1rem;">
+          <span class="section-label">// developer guide</span>
+          <h1 style="font-size: clamp(1.8rem, 4vw, 2.8rem); margin: 0.5rem 0 1rem;">Get ECCA Running Locally</h1>
+          <p style="font-size: 1.1rem; color: var(--text-secondary); max-width: 700px;">Clone the repo, spin up all 24 services with Docker Compose, deploy contracts, and test every endpoint — in under 10 minutes.</p>
+        </div>
+
+        <!-- PREREQUISITES -->
+        <h2 id="prerequisites">Prerequisites</h2>
+        <div class="req-grid">
+          <div class="req-card">
+            <div class="req-icon">⬢</div>
+            <h4>Node.js ≥ 20.10</h4>
+            <p><a href="https://nodejs.org" target="_blank">nodejs.org</a></p>
+          </div>
+          <div class="req-card">
+            <div class="req-icon">📦</div>
+            <h4>pnpm ≥ 9.7</h4>
+            <p><code>npm i -g pnpm</code></p>
+          </div>
+          <div class="req-card">
+            <div class="req-icon">🐳</div>
+            <h4>Docker + Compose v2</h4>
+            <p><a href="https://docker.com" target="_blank">docker.com</a></p>
+          </div>
+          <div class="req-card">
+            <div class="req-icon">🔧</div>
+            <h4>Git</h4>
+            <p><a href="https://git-scm.com" target="_blank">git-scm.com</a></p>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>Optional:</strong> Go 1.22+ is only needed if you want to build the chain forks from source. Docker handles this automatically.
+        </div>
+
+        <hr class="neon-divider">
+
+        <!-- CLONE & INSTALL -->
+        <h2 id="clone-install">1 — Clone &amp; Install</h2>
+
+        <div class="step-grid">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Clone the repository</h4>
+            <div class="code-block">
+              <pre><code>git clone https://github.com/aarong11/dhf.git
+cd dhf</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-grid">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Install all dependencies</h4>
+            <div class="code-block">
+              <pre><code>pnpm install</code></pre>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">This installs all packages, services, and workers across the monorepo via pnpm workspaces.</p>
+          </div>
+        </div>
+
+        <div class="step-grid">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Build the TypeScript packages</h4>
+            <div class="code-block">
+              <pre><code>pnpm build</code></pre>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">Turborepo builds everything in dependency order: <code>proto → crypto → bus → db → chain → service-base → services → workers</code></p>
+          </div>
+        </div>
+
+        <hr class="neon-divider">
+
+        <!-- ENV CONFIG -->
+        <h2 id="env-config">2 — Environment Configuration</h2>
+        <p>Copy the example environment file and customize if needed:</p>
+        <div class="code-block">
+          <pre><code>cp .env.example .env</code></pre>
+        </div>
+
+        <div class="callout">
+          <strong>Defaults work out of the box.</strong> The <code>.env.example</code> ships with working values for local Docker development. You only need to edit it if you want to use OpenAI/Anthropic instead of Ollama, or change ports.
+        </div>
+
+        <h4>Key Environment Variables</h4>
+        <table class="env-table">
+          <thead>
+            <tr><th>Variable</th><th>Default</th><th>Purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>DATABASE_URL</td><td>postgresql://ecca:quellcrist@...</td><td>PostgreSQL connection</td></tr>
+            <tr><td>NATS_URL</td><td>nats://axonal-bus:4222</td><td>Event bus (JetStream)</td></tr>
+            <tr><td>REDIS_URL</td><td>redis://working-memory-cache:6379</td><td>Ephemeral cache</td></tr>
+            <tr><td>CORTEX_RPC</td><td>http://cortex-evm:8545</td><td>EVM chain RPC</td></tr>
+            <tr><td>MEDULLA_RPC</td><td>http://medulla-pow:8332</td><td>PoW chain RPC</td></tr>
+            <tr><td>HIPPOCAMPUS_API</td><td>http://hippocampus-dag:5001</td><td>DAG storage API</td></tr>
+            <tr><td>ECCA_EPOCH_INTERVAL_MS</td><td>4000</td><td>Epoch tick interval</td></tr>
+            <tr><td>ECCA_DRIFT_MAX</td><td>15</td><td>Max drift before desync</td></tr>
+            <tr><td>ECCA_FIDELITY_MIN</td><td>0.6</td><td>Minimum recall fidelity</td></tr>
+            <tr><td>SYNAPSE_PORT</td><td>7070</td><td>Main API port</td></tr>
+            <tr><td>LLM_PROVIDER</td><td>ollama</td><td>ollama | openai | anthropic</td></tr>
+          </tbody>
+        </table>
+
+        <hr class="neon-divider">
+
+        <!-- DOCKER START -->
+        <h2 id="docker-start">3 — Start All Services</h2>
+
+        <div class="step-grid">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Build and launch all 24 services</h4>
+            <div class="code-block">
+              <pre><code>pnpm compose:up</code></pre>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">This runs <code>docker compose up -d --build</code>. First build takes 3-5 minutes; subsequent starts are faster.</p>
+          </div>
+        </div>
+
+        <div class="step-grid">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Watch the logs (optional)</h4>
+            <div class="code-block">
+              <pre><code>pnpm compose:logs</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-grid">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Verify services are healthy</h4>
+            <div class="code-block">
+              <pre><code># Check all containers are running
+docker compose ps
+
+# Health checks
+curl http://localhost:7070/healthz       # Synapse API
+curl http://localhost:8332/health        # Medulla PoW
+curl http://localhost:15001/health       # Hippocampus DAG</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <hr class="neon-divider">
+
+        <!-- DEPLOY CONTRACTS -->
+        <h2 id="deploy-contracts">4 — Deploy Smart Contracts</h2>
+        <p>Once Cortex EVM is running on port 8545, deploy the 7 Solidity contracts:</p>
+        <div class="code-block">
+          <pre><code>pnpm contracts:deploy</code></pre>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-secondary);">This deploys StackIdentity, BandwidthToken, QuellistTreasury, ResidueRegistry, SleeveRegistry, EpochAnchor, and NeedlecastRouter to the local Cortex EVM chain. Contract addresses are written to <code>deployments/cortex.json</code>.</p>
+
+        <hr class="neon-divider">
+
+        <!-- VERIFY -->
+        <h2 id="verify">5 — Verify Everything Works</h2>
+        <div class="code-block">
+          <pre><code># Run the test suite
+pnpm test
+
+# Or run the full end-to-end demo
+pnpm demo</code></pre>
+        </div>
+
+        <div style="margin: 2rem 0; padding: 2rem; background: linear-gradient(135deg, rgba(0,220,255,0.08), rgba(0,255,136,0.05)); border: 1px solid rgba(0,220,255,0.25); border-radius: 12px; text-align: center;">
+          <h3 style="margin: 0 0 0.5rem; font-size: 1.3rem;">🧪 Run Tests in Your Browser</h3>
+          <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1.25rem;">Test every endpoint end-to-end with live request/response output, blockchain verification, and log guidance — no tools to install.</p>
+          <a href="test-runner.html" class="dl-btn" style="display: inline-flex; font-size: 0.9rem;">▶ Open Test Runner</a>
+        </div>
+
+        <hr class="neon-divider">
+
+        <!-- DEMO FLOW -->
+        <h2 id="demo-flow">Demo Flow</h2>
+        <p>The demo script exercises the full cognitive cycle:</p>
+        <div class="demo-flow">
+          <div class="demo-step"><div class="demo-num">01</div><div class="demo-label">Create Stack</div></div>
+          <div class="demo-step"><div class="demo-num">02</div><div class="demo-label">Spawn Sleeves</div></div>
+          <div class="demo-step"><div class="demo-num">03</div><div class="demo-label">Perceive ×5</div></div>
+          <div class="demo-step"><div class="demo-num">04</div><div class="demo-label">Sync</div></div>
+          <div class="demo-step"><div class="demo-num">05</div><div class="demo-label">Recall</div></div>
+          <div class="demo-step"><div class="demo-num">06</div><div class="demo-label">Needlecast</div></div>
+          <div class="demo-step"><div class="demo-num">07</div><div class="demo-label">Epoch Tick</div></div>
+          <div class="demo-step"><div class="demo-num">08</div><div class="demo-label">Balances</div></div>
+        </div>
+
+        <h3 id="demo-run">Run the Demo</h3>
+        <div class="code-block">
+          <pre><code>pnpm demo</code></pre>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-secondary);">This creates a Stack, spawns human + AI sleeves, writes 5 perceptions, syncs, recalls with fidelity check, needlecasts between sleeves, triggers an epoch, and prints token balances + residues.</p>
+
+        <hr class="neon-divider">
+
+        <!-- POSTMAN -->
+        <h2 id="postman">API Testing</h2>
+        <p>Two ways to test every endpoint against your local Docker services:</p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0;">
+          <a href="test-runner.html" style="display:block;padding:1.5rem;background:var(--bg-card);border:1px solid rgba(0,220,255,0.25);border-radius:12px;text-decoration:none;transition:all 0.2s ease;">
+            <div style="font-size:1.5rem;margin-bottom:0.5rem;">🧪</div>
+            <h4 style="margin:0 0 0.5rem;color:var(--neon-cyan);">Browser Test Runner</h4>
+            <p style="font-size:0.85rem;color:var(--text-secondary);margin:0;">Run all 25 tests end-to-end right here. See requests, responses, blockchain state, and where to check logs — zero install required.</p>
+          </a>
+          <div style="padding:1.5rem;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;">
+            <div style="font-size:1.5rem;margin-bottom:0.5rem;">📮</div>
+            <h4 style="margin:0 0 0.5rem;">Postman Collection</h4>
+            <p style="font-size:0.85rem;color:var(--text-secondary);margin:0 0 0.75rem;">30 requests with test scripts. Import into Postman desktop or web.</p>
+            <a href="postman/ECCA_Stack_v3.postman_collection.json" download class="dl-btn" style="font-size:0.75rem;padding:0.5rem 1rem;">↓ Download .json</a>
+          </div>
+        </div>
+
+        <h4 style="margin-top: 1.5rem;">How to Import</h4>
+        <div class="step-grid">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Open Postman</h4>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">Use the <a href="https://www.postman.com" target="_blank">desktop app</a> or <a href="https://web.postman.co" target="_blank">web.postman.co</a> (browser version).</p>
+          </div>
+        </div>
+        <div class="step-grid">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Import → Upload Files</h4>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">Click <strong>Import</strong> in the top-left, select the downloaded <code>.json</code> file.</p>
+          </div>
+        </div>
+        <div class="step-grid">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Run requests in order</h4>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">Start with <strong>Create Stack</strong> → <strong>Spawn Sleeve</strong> → <strong>Drip Faucet</strong> → then test perceive, recall, needlecast. Variables auto-populate from responses.</p>
+          </div>
+        </div>
+
+        <div class="callout callout-warn">
+          <strong>Browser Note:</strong> If using Postman Web, you'll need the <a href="https://www.postman.com/downloads/postman-agent/" target="_blank">Postman Desktop Agent</a> installed to send requests to <code>localhost</code>.
+        </div>
+
+        <hr class="neon-divider">
+
+        <!-- SYNAPSE API -->
+        <div class="service-section" id="api-synapse">
+          <div class="service-header">
+            <h2 style="margin:0;">Synapse API</h2>
+            <span class="port-badge">:7070</span>
+          </div>
+          <p style="color: var(--text-secondary);">The main gateway. All client requests go through Synapse.</p>
+
+          <h4>Stack Management</h4>
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge post">POST</span>
+              <span class="endpoint-path">/v1/stacks</span>
+            </div>
+            <p class="endpoint-desc">Create a new identity stack. Returns the stack ID, token ID, public key, and initial balances.</p>
+            <pre><code>// Request
+{ "name": "quellcrist-01", "kind": "autonomous" }
+
+// Response
+{ "id": "stk_...", "tokenId": 1, "name": "quellcrist-01",
+  "kind": "autonomous", "pubKey": "0xabc...", "epoch": 0,
+  "cpv": { "compute": 0.5, "memory": 0.3, "sync": 0.15, "routing": 0.05 },
+  "binding": "cortex-mainnet" }</code></pre>
+          </div>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge get">GET</span>
+              <span class="endpoint-path">/v1/stacks</span>
+            </div>
+            <p class="endpoint-desc">List all stacks with their sleeves.</p>
+          </div>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge get">GET</span>
+              <span class="endpoint-path">/v1/stacks/:id</span>
+            </div>
+            <p class="endpoint-desc">Get a single stack with sleeves and anchor history.</p>
+          </div>
+
+          <h4>Sleeve Lifecycle</h4>
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge post">POST</span>
+              <span class="endpoint-path">/v1/sleeves</span>
+            </div>
+            <p class="endpoint-desc">Spawn a new sleeve (embodiment) attached to a stack.</p>
+            <pre><code>// Request
+{ "stackId": "stk_...", "embodimentType": "human", "hostname": "local-01" }
+
+// Response
+{ "id": "slv_...", "stackId": "stk_...", "embodimentType": "human",
+  "alive": true, "drift": 0, "syncEpoch": 0,
+  "tokens": { "compute": 1000, "memory": 1000, "sync": 500, "routing": 500 } }</code></pre>
+          </div>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge get">GET</span>
+              <span class="endpoint-path">/v1/sleeves</span>
+            </div>
+            <p class="endpoint-desc">List all alive sleeves.</p>
+          </div>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge delete">DELETE</span>
+              <span class="endpoint-path">/v1/sleeves/:id</span>
+            </div>
+            <p class="endpoint-desc">Decommission a sleeve. Marks it as not alive.</p>
+          </div>
+
+          <h4>Perceive &amp; Recall</h4>
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge post">POST</span>
+              <span class="endpoint-path">/v1/sleeves/:id/perceive</span>
+            </div>
+            <p class="endpoint-desc">Write a perception to memory. Costs 0.5 compute tokens and increments drift by 1.</p>
+            <pre><code>// Request
+{ "input": "The sunset cast long shadows across the rooftops of Harlan's World." }
+
+// Response
+{ "cid": "bafk...", "thought": "perception stored" }</code></pre>
+          </div>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge get">GET</span>
+              <span class="endpoint-path">/v1/stacks/:id/recall</span>
+            </div>
+            <p class="endpoint-desc">Reconstruct memory from the DAG. Traverses depth levels and decrypts fragments.</p>
+            <pre><code>// Query params: ?depth=6&memoryToken=1000
+
+// Response
+{ "fragments": ["decrypted memory text...", ...],
+  "broken": [],
+  "fidelity": 0.95 }</code></pre>
+          </div>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge post">POST</span>
+              <span class="endpoint-path">/v1/sleeves/:id/sync</span>
+            </div>
+            <p class="endpoint-desc">Sync a sleeve to the current epoch. Resets drift to 0, costs 1 sync token.</p>
+          </div>
+
+          <h4>Needlecasting</h4>
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge post">POST</span>
+              <span class="endpoint-path">/v1/needlecast</span>
+            </div>
+            <p class="endpoint-desc">Transfer consciousness from one sleeve to another (re-sleeving). Runs a 6-step atomic saga.</p>
+            <pre><code>// Request
+{ "from": "slv_source", "to": "slv_target" }
+
+// Response (delegated to needlecast-router-svc)
+{ "ok": true, "sagaId": "saga_...", "route": [...], "shards": [...] }</code></pre>
+          </div>
+
+          <h4>Coordination &amp; Epochs</h4>
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge get">GET</span>
+              <span class="endpoint-path">/v1/epochs/current</span>
+            </div>
+            <p class="endpoint-desc">Get the current epoch number, block height, and chain tip.</p>
+          </div>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge post">POST</span>
+              <span class="endpoint-path">/v1/mining/block</span>
+            </div>
+            <p class="endpoint-desc">Trigger a Proof-of-Work block on Medulla. Returns the block hash and new epoch.</p>
+          </div>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge get">GET</span>
+              <span class="endpoint-path">/v1/coordination/desync</span>
+            </div>
+            <p class="endpoint-desc">List all sleeves with drift exceeding the threshold (default: 15).</p>
+          </div>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge get">GET</span>
+              <span class="endpoint-path">/v1/coordination/residues</span>
+            </div>
+            <p class="endpoint-desc">Get the last 50 coordination residues (errors as economic objects).</p>
+          </div>
+
+          <h4>Tokens</h4>
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge get">GET</span>
+              <span class="endpoint-path">/v1/tokens/balances/:stackId</span>
+            </div>
+            <p class="endpoint-desc">Get aggregated token balances across all alive sleeves for a stack.</p>
+          </div>
+        </div>
+
+        <!-- BANDWIDTH FAUCET -->
+        <div class="service-section" id="api-faucet">
+          <div class="service-header">
+            <h2 style="margin:0;">Bandwidth Faucet</h2>
+            <span class="port-badge">:7075</span>
+          </div>
+          <p style="color: var(--text-secondary);">Rate-limited token dispenser for development. Grants 100 of each token type per drip, with a 60-second cooldown.</p>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge post">POST</span>
+              <span class="endpoint-path">/v1/faucet/drip</span>
+            </div>
+            <p class="endpoint-desc">Request free tokens. Rate-limited to once per 60 seconds per stack.</p>
+            <pre><code>// Request
+{ "stackId": "stk_..." }
+
+// Response
+{ "ok": true, "granted": { "compute": 100, "memory": 100, "sync": 100, "routing": 100 },
+  "sleeves": ["slv_..."] }</code></pre>
+          </div>
+        </div>
+
+        <!-- THALAMUS ROUTER -->
+        <div class="service-section" id="api-thalamus">
+          <div class="service-header">
+            <h2 style="margin:0;">Thalamus Router</h2>
+            <span class="port-badge">:7072</span>
+          </div>
+          <p style="color: var(--text-secondary);">Epoch tick engine. Folds all chain roots into a single coherence root each epoch.</p>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge get">GET</span>
+              <span class="endpoint-path">/v1/epoch</span>
+            </div>
+            <p class="endpoint-desc">Get the current epoch number.</p>
+          </div>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge post">POST</span>
+              <span class="endpoint-path">/v1/epoch/tick</span>
+            </div>
+            <p class="endpoint-desc">Force an epoch fold. Computes the coherence root from EVM, IPFS, and sleeve Merkle roots and anchors it to Medulla.</p>
+          </div>
+        </div>
+
+        <!-- DHF COMPOSITOR -->
+        <div class="service-section" id="api-compositor">
+          <div class="service-header">
+            <h2 style="margin:0;">DHF Compositor</h2>
+            <span class="port-badge">:7073</span>
+          </div>
+          <p style="color: var(--text-secondary);">Memory reconstruction engine. Walks the DAG and decrypts fragments using epoch keys.</p>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge post">POST</span>
+              <span class="endpoint-path">/v1/reconstruct</span>
+            </div>
+            <p class="endpoint-desc">Reconstruct memory for a stack. Decrypts all DAG nodes within the given depth.</p>
+            <pre><code>// Request
+{ "stackId": "stk_...", "sleeveId": "slv_...", "depth": 6 }
+
+// Response
+{ "ok": true, "fragments": ["memory text...", ...],
+  "broken": [], "fidelity": 0.92 }</code></pre>
+          </div>
+        </div>
+
+        <!-- NEEDLECAST ROUTER -->
+        <div class="service-section" id="api-needlecast">
+          <div class="service-header">
+            <h2 style="margin:0;">Needlecast Router</h2>
+            <span class="port-badge">:7071</span>
+          </div>
+          <p style="color: var(--text-secondary);">Atomic re-sleeving saga. Handles the 6-step consciousness transfer between sleeves.</p>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge post">POST</span>
+              <span class="endpoint-path">/needlecast</span>
+            </div>
+            <p class="endpoint-desc">Initiate needlecast transfer. Runs: freeze → snapshot → shard → transmit → reassemble → activate.</p>
+            <pre><code>// Request
+{ "from": "slv_source", "to": "slv_target" }
+
+// Response
+{ "ok": true, "sagaId": "saga_...",
+  "route": ["freeze","snapshot","shard","transmit","reassemble","activate"],
+  "shards": ["shard_1", "shard_2", "shard_3"] }</code></pre>
+          </div>
+        </div>
+
+        <!-- QUELLIST TREASURY -->
+        <div class="service-section" id="api-treasury">
+          <div class="service-header">
+            <h2 style="margin:0;">Quellist Treasury</h2>
+            <span class="port-badge">:7074</span>
+          </div>
+          <p style="color: var(--text-secondary);">Token emission engine. Issues bandwidth tokens based on the CPV curve and epoch delta.</p>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge get">GET</span>
+              <span class="endpoint-path">/v1/treasury/issuance/:stackId</span>
+            </div>
+            <p class="endpoint-desc">Get the last 100 emission events for a stack.</p>
+          </div>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge post">POST</span>
+              <span class="endpoint-path">/v1/treasury/claim</span>
+            </div>
+            <p class="endpoint-desc">Claim pending token emissions for a stack.</p>
+            <pre><code>// Request
+{ "stackId": "stk_..." }
+
+// Response
+{ "stackId": "stk_...", "claimable": { "compute": 50, "memory": 30, "sync": 15, "routing": 5 } }</code></pre>
+          </div>
+        </div>
+
+        <!-- SLEEVE RUNTIME -->
+        <div class="service-section" id="api-sleeve">
+          <div class="service-header">
+            <h2 style="margin:0;">Sleeve Runtime</h2>
+            <span class="port-badge">:varies</span>
+          </div>
+          <p style="color: var(--text-secondary);">4-in-1 parametric embodiment. Each sleeve instance exposes its own identity endpoint.</p>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge get">GET</span>
+              <span class="endpoint-path">/identity</span>
+            </div>
+            <p class="endpoint-desc">Returns the sleeve's identity, kind, parent stack, and hostname.</p>
+            <pre><code>// Response
+{ "sleeveId": "slv_...", "kind": "human",
+  "stackId": "stk_...", "hostname": "local-01" }</code></pre>
+          </div>
+        </div>
+
+        <hr class="neon-divider">
+
+        <!-- PORT MAP -->
+        <h2 id="port-map">Port Map</h2>
+        <table class="comparison-table">
+          <thead>
+            <tr><th>Service</th><th>Port</th><th>Protocol</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Synapse API</td><td><code>7070</code></td><td>HTTP + WS</td><td>Main gateway</td></tr>
+            <tr><td>Needlecast Router</td><td><code>7071</code></td><td>HTTP</td><td>Internal</td></tr>
+            <tr><td>Thalamus Router</td><td><code>7072</code></td><td>HTTP</td><td>Internal</td></tr>
+            <tr><td>DHF Compositor</td><td><code>7073</code></td><td>HTTP</td><td>Internal</td></tr>
+            <tr><td>Quellist Treasury</td><td><code>7074</code></td><td>HTTP</td><td>Internal</td></tr>
+            <tr><td>Bandwidth Faucet</td><td><code>7075</code></td><td>HTTP</td><td>Public</td></tr>
+            <tr><td>Cortex EVM</td><td><code>8545</code></td><td>JSON-RPC</td><td>Ethereum-compatible</td></tr>
+            <tr><td>Medulla PoW</td><td><code>8332</code></td><td>HTTP</td><td>Custom PoW chain</td></tr>
+            <tr><td>Hippocampus DAG</td><td><code>15001</code></td><td>HTTP</td><td>Content-addressed store</td></tr>
+            <tr><td>PostgreSQL</td><td><code>5432</code></td><td>TCP</td><td>Main database</td></tr>
+            <tr><td>Redis</td><td><code>6380</code></td><td>TCP</td><td>Cache (mapped 6380→6379)</td></tr>
+            <tr><td>NATS</td><td><code>4222</code></td><td>TCP</td><td>Event bus</td></tr>
+            <tr><td>MinIO</td><td><code>9000</code></td><td>HTTP</td><td>S3-compatible object store</td></tr>
+            <tr><td>Grafana</td><td><code>3030</code></td><td>HTTP</td><td>Dashboards</td></tr>
+            <tr><td>Prometheus</td><td><code>9090</code></td><td>HTTP</td><td>Metrics</td></tr>
+            <tr><td>Jaeger</td><td><code>16686</code></td><td>HTTP</td><td>Traces</td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="infra-services">Infrastructure Services</h3>
+        <p style="color: var(--text-secondary);">These are started automatically by Docker Compose and don't need manual setup:</p>
+        <ul>
+          <li><strong>PostgreSQL</strong> — Stack/sleeve/epoch registry (<code>ecca_registry</code> database)</li>
+          <li><strong>Redis</strong> — Ephemeral working memory cache</li>
+          <li><strong>NATS JetStream</strong> — Axonal event bus for inter-service communication</li>
+          <li><strong>MinIO</strong> — S3-compatible shard storage for Hippocampus</li>
+        </ul>
+
+        <h3 id="observability">Observability</h3>
+        <p style="color: var(--text-secondary);">Full observability stack is included:</p>
+        <ul>
+          <li><a href="http://localhost:3030" target="_blank"><strong>Grafana</strong></a> — Dashboards at <code>:3030</code> (admin/admin)</li>
+          <li><a href="http://localhost:9090" target="_blank"><strong>Prometheus</strong></a> — Metrics at <code>:9090</code></li>
+          <li><a href="http://localhost:16686" target="_blank"><strong>Jaeger</strong></a> — Distributed traces at <code>:16686</code></li>
+          <li><strong>Loki</strong> — Log aggregation at <code>:3100</code></li>
+        </ul>
+
+        <hr class="neon-divider">
+
+        <!-- TROUBLESHOOTING -->
+        <h2 id="common-issues">Common Issues</h2>
+
+        <div class="endpoint-card">
+          <div class="endpoint-header">
+            <span class="method-badge delete" style="background:rgba(255,107,0,0.15);color:var(--neon-orange);border-color:rgba(255,107,0,0.3);">FIX</span>
+            <span class="endpoint-path">Port already in use</span>
+          </div>
+          <p class="endpoint-desc">Another process is using a required port. Stop it or change the port in <code>.env</code>.</p>
+          <pre><code># Find what's using port 7070
+lsof -i :7070        # macOS/Linux
+netstat -ano | findstr :7070  # Windows</code></pre>
+        </div>
+
+        <div class="endpoint-card">
+          <div class="endpoint-header">
+            <span class="method-badge delete" style="background:rgba(255,107,0,0.15);color:var(--neon-orange);border-color:rgba(255,107,0,0.3);">FIX</span>
+            <span class="endpoint-path">Database connection refused</span>
+          </div>
+          <p class="endpoint-desc">PostgreSQL may not be ready yet. Wait a few seconds or check the container:</p>
+          <pre><code>docker compose logs cortical-registry-db</code></pre>
+        </div>
+
+        <div class="endpoint-card">
+          <div class="endpoint-header">
+            <span class="method-badge delete" style="background:rgba(255,107,0,0.15);color:var(--neon-orange);border-color:rgba(255,107,0,0.3);">FIX</span>
+            <span class="endpoint-path">Contracts deploy fails</span>
+          </div>
+          <p class="endpoint-desc">Make sure Cortex EVM is fully initialized before deploying. The geth init + mining takes ~10 seconds.</p>
+          <pre><code># Check cortex is ready
+curl http://localhost:8545 -X POST -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'</code></pre>
+        </div>
+
+        <div class="endpoint-card">
+          <div class="endpoint-header">
+            <span class="method-badge delete" style="background:rgba(255,107,0,0.15);color:var(--neon-orange);border-color:rgba(255,107,0,0.3);">FIX</span>
+            <span class="endpoint-path">Full reset</span>
+          </div>
+          <p class="endpoint-desc">Nuclear option — tear down everything and start fresh:</p>
+          <pre><code>pnpm compose:down   # removes containers + volumes
+pnpm compose:up     # rebuild from scratch</code></pre>
+        </div>
+
+        <h3 id="logs">Reading Logs</h3>
+        <div class="code-block">
+          <pre><code># All services
+pnpm compose:logs
+
+# Single service
+docker compose logs -f synapse-api
+
+# Last 50 lines of a service
+docker compose logs --tail 50 thalamus-router</code></pre>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer" style="margin-top: 4rem;">
+    <div class="container">
+      <div class="footer-inner">
+        <div>
+          <div class="nav-logo" style="margin-bottom: 0.5rem;">
+            <span class="logo-icon">◈</span>
+            ECCA Stack
+          </div>
+          <p class="footer-copy">Eternal Coherence over Cryptographic Anchors</p>
+        </div>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="architecture.html">Architecture</a></li>
+          <li><a href="tokenomics.html">Tokenomics</a></li>
+          <li><a href="https://github.com/aarong11/dhf" target="_blank">GitHub</a></li>
+          <li><a href="https://www.paypal.com/donate?business=rng%40infrasim.org&currency_code=USD" target="_blank" style="color:var(--accent,#00ffaa);font-weight:600;">♥ Donate</a></li>
+        </ul>
+        <p class="footer-copy">&copy; 2026 ECCA Protocol. MIT License.</p>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<script src="js/main.js"></script>
+<script>
+  const sidebarLinks = document.querySelectorAll('.docs-sidebar a');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        sidebarLinks.forEach(l => l.classList.remove('active'));
+        const link = document.querySelector(`.docs-sidebar a[href="#${entry.target.id}"]`);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  document.querySelectorAll('.docs-content h2[id]').forEach(h => observer.observe(h));
+</script>
+</body>
+</html>
