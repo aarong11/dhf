@@ -21,6 +21,7 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    if: "!contains(github.event.head_commit.message, '[skip e2e]')"
 
     steps:
       - name: Checkout
@@ -135,7 +136,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/e2e-report.html
-          git diff --cached --quiet || git commit -m "chore: update e2e test report [skip ci]"
+          git diff --cached --quiet || git commit -m "chore: update e2e test report [skip e2e]"
           git push
 
       - name: Collect logs on failure
