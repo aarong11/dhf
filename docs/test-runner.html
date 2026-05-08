@@ -1,131 +1,56 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>API Test Runner â€” ECCA Stack</title>
-  <meta name="description" content="End-to-end API test runner for ECCA Stack. Run tests against your local Docker services directly from the browser.">
+  <title>Developer Guide — ECCA Stack</title>
+  <meta name="description" content="Developer setup guide for ECCA Stack — clone, install, build, run Docker services, and test every endpoint with the Postman collection.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>â—ˆ</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
   <style>
-    /* â”€â”€ Test Runner Layout â”€â”€ */
-    .runner-layout { display: grid; grid-template-columns: 320px 1fr; gap: 2rem; min-height: 80vh; }
-    @media (max-width: 900px) { .runner-layout { grid-template-columns: 1fr; } }
-
-    /* â”€â”€ Sidebar â”€â”€ */
-    .runner-sidebar { position: sticky; top: 6rem; align-self: start; }
-    .runner-sidebar h4 { font-family: var(--font-display); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); margin: 1.5rem 0 0.5rem; }
-    .runner-sidebar h4:first-child { margin-top: 0; }
-    .phase-list { list-style: none; padding: 0; margin: 0; }
-    .phase-list li { display: flex; align-items: center; gap: 0.6rem; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.82rem; color: var(--text-secondary); cursor: pointer; transition: all 0.15s ease; margin-bottom: 2px; }
-    .phase-list li:hover { background: rgba(0,220,255,0.05); color: var(--text-primary); }
-    .phase-list li .status-dot { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--text-muted); flex-shrink: 0; transition: all 0.3s ease; }
-    .phase-list li.pass .status-dot { background: var(--neon-green); border-color: var(--neon-green); box-shadow: 0 0 6px rgba(0,255,136,0.5); }
-    .phase-list li.fail .status-dot { background: #ff4444; border-color: #ff4444; box-shadow: 0 0 6px rgba(255,68,68,0.5); }
-    .phase-list li.running .status-dot { background: var(--neon-cyan); border-color: var(--neon-cyan); animation: pulse-dot 1s ease-in-out infinite; box-shadow: 0 0 6px rgba(0,220,255,0.5); }
-    .phase-list li.skipped .status-dot { background: var(--text-muted); border-color: var(--text-muted); }
-    @keyframes pulse-dot { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
-
-    /* â”€â”€ Config Bar â”€â”€ */
-    .config-bar { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; margin-bottom: 2rem; padding: 1.25rem; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 10px; }
-    .config-bar label { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 0.25rem; }
-    .config-bar input { background: rgba(0,0,0,0.4); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0.5rem 0.75rem; color: var(--text-primary); font-family: var(--font-mono); font-size: 0.85rem; width: 200px; }
-    .config-bar input:focus { outline: none; border-color: var(--neon-cyan); box-shadow: 0 0 0 2px rgba(0,220,255,0.15); }
-
-    /* â”€â”€ Buttons â”€â”€ */
-    .run-btn { padding: 0.6rem 1.5rem; background: linear-gradient(135deg, var(--neon-cyan), #0090a8); color: var(--bg-primary); font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.15s ease; }
-    .run-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,220,255,0.3); }
-    .run-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
-    .run-btn.stop { background: linear-gradient(135deg, #ff4444, #cc0000); }
-    .reset-btn { padding: 0.6rem 1rem; background: transparent; border: 1px solid var(--border-subtle); color: var(--text-secondary); font-family: var(--font-mono); font-size: 0.75rem; border-radius: 6px; cursor: pointer; transition: all 0.15s ease; }
-    .reset-btn:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); }
-
-    /* â”€â”€ Stats Bar â”€â”€ */
-    .stats-bar { display: flex; gap: 2rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
-    .stat-item { text-align: center; }
-    .stat-value { font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; }
-    .stat-value.green { color: var(--neon-green); }
-    .stat-value.red { color: #ff4444; }
-    .stat-value.cyan { color: var(--neon-cyan); }
-    .stat-value.muted { color: var(--text-muted); }
-    .stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-family: var(--font-mono); }
-
-    /* â”€â”€ Progress â”€â”€ */
-    .progress-bar { width: 100%; height: 4px; background: rgba(0,220,255,0.1); border-radius: 2px; margin-bottom: 2rem; overflow: hidden; }
-    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--neon-cyan), var(--neon-green)); border-radius: 2px; transition: width 0.4s ease; width: 0%; }
-
-    /* â”€â”€ Test Cards â”€â”€ */
-    .test-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; margin-bottom: 1.25rem; overflow: hidden; transition: border-color 0.3s ease; }
-    .test-card.pass { border-color: rgba(0,255,136,0.3); }
-    .test-card.fail { border-color: rgba(255,68,68,0.3); }
-    .test-card.running { border-color: rgba(0,220,255,0.4); }
-
-    .test-card-header { display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.25rem; cursor: pointer; user-select: none; }
-    .test-card-header:hover { background: rgba(0,220,255,0.03); }
-    .test-phase-num { font-family: var(--font-display); font-size: 0.7rem; color: var(--neon-cyan); background: rgba(0,220,255,0.1); padding: 0.2rem 0.5rem; border-radius: 4px; min-width: 32px; text-align: center; }
-    .test-card-title { font-size: 0.95rem; font-weight: 600; color: var(--text-primary); flex: 1; }
-    .test-card-status { font-family: var(--font-mono); font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 4px; }
-    .test-card-status.pass { background: rgba(0,255,136,0.15); color: var(--neon-green); }
-    .test-card-status.fail { background: rgba(255,68,68,0.15); color: #ff4444; }
-    .test-card-status.running { background: rgba(0,220,255,0.15); color: var(--neon-cyan); }
-    .test-card-status.pending { background: rgba(100,116,139,0.15); color: var(--text-muted); }
-    .test-card-time { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); }
-    .test-card-chain { font-family: var(--font-mono); font-size: 0.65rem; padding: 0.15rem 0.5rem; border-radius: 100px; border: 1px solid; }
-    .chain-cortex { color: #a855f7; border-color: rgba(168,85,247,0.3); }
-    .chain-medulla { color: var(--neon-orange); border-color: rgba(255,107,0,0.3); }
-    .chain-hippocampus { color: var(--neon-green); border-color: rgba(0,255,136,0.3); }
-    .chain-Siyana { color: var(--neon-cyan); border-color: rgba(0,220,255,0.3); }
-
-    .test-card-body { display: none; padding: 0 1.25rem 1.25rem; }
-    .test-card.open .test-card-body { display: block; }
-    .test-card-body .desc { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6; }
-
-    .req-res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
-    @media (max-width: 768px) { .req-res-grid { grid-template-columns: 1fr; } }
-    .req-panel, .res-panel { background: rgba(0,0,0,0.4); border: 1px solid var(--border-subtle); border-radius: 8px; overflow: hidden; }
-    .panel-header { padding: 0.5rem 0.75rem; font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; gap: 0.5rem; }
-    .panel-header .method { font-weight: 700; }
-    .panel-header .method.get { color: var(--neon-green); }
-    .panel-header .method.post { color: var(--neon-cyan); }
-    .panel-header .method.delete { color: var(--neon-magenta); }
-    .panel-body { padding: 0.75rem; font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.5; color: var(--text-secondary); white-space: pre-wrap; word-break: break-all; max-height: 300px; overflow-y: auto; }
-    .panel-body .key { color: var(--neon-cyan); }
-    .panel-body .str { color: var(--neon-green); }
-    .panel-body .num { color: var(--neon-yellow); }
-    .panel-body .bool { color: var(--neon-magenta); }
-
-    /* â”€â”€ Verify Box â”€â”€ */
-    .verify-box { background: rgba(0,220,255,0.04); border: 1px solid rgba(0,220,255,0.15); border-radius: 8px; padding: 1rem; margin-top: 0.75rem; }
-    .verify-box h5 { font-family: var(--font-display); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--neon-cyan); margin: 0 0 0.5rem; }
-    .verify-item { display: flex; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.5rem; font-size: 0.8rem; }
-    .verify-item:last-child { margin-bottom: 0; }
-    .verify-icon { flex-shrink: 0; margin-top: 2px; }
-    .verify-item code { background: rgba(0,0,0,0.3); padding: 0.15em 0.4em; border-radius: 3px; font-size: 0.78rem; }
-    .verify-item a { color: var(--neon-cyan); }
-
-    /* â”€â”€ Log Hint â”€â”€ */
-    .log-hint { background: rgba(255,107,0,0.06); border: 1px solid rgba(255,107,0,0.2); border-radius: 8px; padding: 0.75rem 1rem; margin-top: 0.75rem; font-size: 0.8rem; color: var(--text-secondary); }
-    .log-hint code { background: rgba(0,0,0,0.3); padding: 0.15em 0.4em; border-radius: 3px; font-size: 0.78rem; color: var(--neon-orange); }
-
-    /* â”€â”€ Assertion List â”€â”€ */
-    .assertions { list-style: none; padding: 0; margin: 0.75rem 0 0; }
-    .assertions li { display: flex; align-items: center; gap: 0.5rem; padding: 0.3rem 0; font-size: 0.8rem; font-family: var(--font-mono); }
-    .assertions li .a-icon { font-size: 0.9rem; }
-    .assertions li.pass { color: var(--neon-green); }
-    .assertions li.fail { color: #ff4444; }
-
-    /* â”€â”€ Chevron â”€â”€ */
-    .chevron { transition: transform 0.2s ease; color: var(--text-muted); font-size: 0.8rem; }
-    .test-card.open .chevron { transform: rotate(90deg); }
-
-    /* â”€â”€ Callout â”€â”€ */
+    .step-grid { display: grid; grid-template-columns: 48px 1fr; gap: 1.5rem; margin: 2rem 0; }
+    .step-num { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--neon-cyan); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 1.1rem; color: var(--neon-cyan); flex-shrink: 0; }
+    .step-body h4 { margin: 0 0 0.5rem; }
+    .endpoint-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 1.2rem 1.5rem; margin-bottom: 1rem; transition: border-color var(--transition-fast); }
+    .endpoint-card:hover { border-color: var(--border-glow); }
+    .endpoint-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+    .method-badge { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .method-badge.get { background: rgba(0, 255, 136, 0.15); color: var(--neon-green); border: 1px solid rgba(0, 255, 136, 0.3); }
+    .method-badge.post { background: rgba(0, 220, 255, 0.15); color: var(--neon-cyan); border: 1px solid rgba(0, 220, 255, 0.3); }
+    .method-badge.delete { background: rgba(255, 0, 229, 0.15); color: var(--neon-magenta); border: 1px solid rgba(255, 0, 229, 0.3); }
+    .endpoint-path { font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-primary); }
+    .endpoint-desc { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+    .service-section { margin-bottom: 3rem; }
+    .service-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .port-badge { font-family: var(--font-mono); font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 100px; background: rgba(0, 220, 255, 0.08); border: 1px solid var(--border-subtle); color: var(--neon-cyan); }
+    .req-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+    .req-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 1.2rem; text-align: center; }
+    .req-card .req-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .req-card h4 { margin: 0 0 0.25rem; font-size: 1rem; }
+    .req-card p { margin: 0; font-size: 0.85rem; color: var(--text-secondary); }
+    .copy-btn { background: transparent; border: 1px solid var(--border-subtle); color: var(--text-secondary); font-family: var(--font-mono); font-size: 0.75rem; padding: 0.3rem 0.6rem; border-radius: 4px; cursor: pointer; transition: all var(--transition-fast); margin-left: auto; }
+    .copy-btn:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); }
+    .code-block { position: relative; }
+    .code-block .copy-btn { position: absolute; top: 0.75rem; right: 0.75rem; }
+    .env-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    .env-table th { text-align: left; padding: 0.6rem 1rem; border-bottom: 2px solid var(--border-subtle); font-family: var(--font-display); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
+    .env-table td { padding: 0.6rem 1rem; border-bottom: 1px solid var(--border-subtle); font-size: 0.85rem; }
+    .env-table td:first-child { font-family: var(--font-mono); color: var(--neon-cyan); }
+    .dl-btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: linear-gradient(135deg, var(--neon-cyan), #0090a8); color: var(--bg-primary); font-family: var(--font-display); font-size: 0.85rem; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; text-transform: uppercase; letter-spacing: 0.05em; transition: all var(--transition-fast); }
+    .dl-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0, 220, 255, 0.3); color: var(--bg-primary); }
     .callout { background: var(--bg-card); border-left: 3px solid var(--neon-cyan); border-radius: 0 8px 8px 0; padding: 1rem 1.5rem; margin: 1.5rem 0; }
     .callout-warn { border-left-color: var(--neon-orange); }
     .callout strong { color: var(--neon-cyan); }
     .callout-warn strong { color: var(--neon-orange); }
+    .demo-flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+    .demo-step { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 1rem; text-align: center; position: relative; }
+    .demo-step::after { content: '→'; position: absolute; right: -0.75rem; top: 50%; transform: translateY(-50%); color: var(--neon-cyan); font-size: 1.2rem; }
+    .demo-step:last-child::after { display: none; }
+    .demo-step .demo-num { font-family: var(--font-display); font-size: 0.7rem; color: var(--neon-cyan); margin-bottom: 0.25rem; }
+    .demo-step .demo-label { font-size: 0.8rem; color: var(--text-primary); }
   </style>
 </head>
 <body>
@@ -135,837 +60,788 @@
 
 <nav class="nav">
   <div class="nav-inner">
-    <a href="index.html" class="nav-logo"><span class="logo-icon">â—ˆ</span> ECCA</a>
+    <a href="index.html" class="nav-logo">
+      <span class="logo-icon">◈</span>
+      ECCA
+    </a>
     <ul class="nav-links">
       <li><a href="https://discord.gg/GXBS3dUT" target="_blank">Discord</a></li>
       <li><a href="paper.pdf" target="_blank">Paper</a></li>
       <li><a href="architecture.html">Architecture</a></li>
       <li><a href="docs.html">Docs</a></li>
-      <li><a href="developer.html">Developers</a></li>
-      <li><a href="https://www.paypal.com/donate?business=rng%40infrasim.org&currency_code=USD" target="_blank" class="nav-cta" style="background:var(--accent,#00ffaa);color:#000;">â™¥ Donate</a></li>
+      <li><a href="developer.html" class="active">Developers</a></li>
+      <li><a href="https://www.paypal.com/donate?business=rng%40infrasim.org&currency_code=USD" target="_blank" class="nav-cta" style="background:var(--accent,#00ffaa);color:#000;">♥ Donate</a></li>
     </ul>
-    <button class="nav-mobile-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    <button class="nav-mobile-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 
 <div class="content-wrapper">
-  <div class="container" style="padding-top: 6rem;">
 
-    <!-- Header -->
-    <div style="margin-bottom: 2rem;">
-      <span style="font-family:var(--font-mono);font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--neon-cyan);">// end-to-end test runner</span>
-      <h1 style="font-size:clamp(1.8rem,4vw,2.8rem);margin:0.5rem 0 0.75rem;">ECCA Stack â€” Live API Tests</h1>
-      <p style="font-size:1rem;color:var(--text-secondary);max-width:720px;">Run the full cognitive cycle against your local Docker services. Each test shows the request, response, which blockchain was touched, and where to verify the result.</p>
-    </div>
-
-    <div class="callout callout-warn">
-      <strong>Prerequisite:</strong> Your ECCA Stack must be running locally via <code>pnpm compose:up</code> with contracts deployed via <code>pnpm contracts:deploy</code>. See the <a href="developer.html">Developer Guide</a> for setup instructions.
-    </div>
-
-    <!-- Config -->
-    <div class="config-bar">
-      <div>
-        <label>Base URL</label>
-        <input type="text" id="cfg-base" value="http://localhost" />
-      </div>
-      <div>
-        <label>Siyana Port</label>
-        <input type="text" id="cfg-Siyana" value="7070" style="width:80px;" />
-      </div>
-      <div>
-        <label>Faucet Port</label>
-        <input type="text" id="cfg-faucet" value="7075" style="width:80px;" />
-      </div>
-      <div>
-        <label>Cortex Port</label>
-        <input type="text" id="cfg-cortex" value="8545" style="width:80px;" />
-      </div>
-      <div style="display:flex;gap:0.5rem;align-items:flex-end;">
-        <button class="run-btn" id="btn-run" onclick="runAllTests()">â–¶ Run All Tests</button>
-        <button class="reset-btn" id="btn-reset" onclick="resetAll()">Reset</button>
-      </div>
-    </div>
-
-    <!-- Stats -->
-    <div class="stats-bar">
-      <div class="stat-item"><div class="stat-value cyan" id="stat-total">0</div><div class="stat-label">Total</div></div>
-      <div class="stat-item"><div class="stat-value green" id="stat-pass">0</div><div class="stat-label">Passed</div></div>
-      <div class="stat-item"><div class="stat-value red" id="stat-fail">0</div><div class="stat-label">Failed</div></div>
-      <div class="stat-item"><div class="stat-value muted" id="stat-skip">0</div><div class="stat-label">Skipped</div></div>
-      <div class="stat-item"><div class="stat-value muted" id="stat-time">0s</div><div class="stat-label">Elapsed</div></div>
-    </div>
-    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
-
-    <!-- Test Runner Layout -->
-    <div class="runner-layout">
+  <div class="container">
+    <div class="docs-layout">
 
       <!-- Sidebar -->
-      <aside class="runner-sidebar">
-        <h4>Phase 1 â€” Infrastructure</h4>
-        <ul class="phase-list">
-          <li data-test="health-Siyana"><span class="status-dot"></span> Siyana API</li>
-          <li data-test="health-medulla"><span class="status-dot"></span> Medulla PoW</li>
-          <li data-test="health-hippocampus"><span class="status-dot"></span> Hippocampus DAG</li>
-          <li data-test="health-cortex"><span class="status-dot"></span> Cortex EVM</li>
-        </ul>
-        <h4>Phase 2 â€” Identity</h4>
-        <ul class="phase-list">
-          <li data-test="create-stack"><span class="status-dot"></span> Create Stack</li>
-          <li data-test="spawn-human"><span class="status-dot"></span> Spawn Human Sleeve</li>
-          <li data-test="spawn-ai"><span class="status-dot"></span> Spawn AI Sleeve</li>
-        </ul>
-        <h4>Phase 3 â€” Token Economy</h4>
-        <ul class="phase-list">
-          <li data-test="faucet-drip"><span class="status-dot"></span> Faucet Drip</li>
-          <li data-test="check-balances-1"><span class="status-dot"></span> Verify Balances</li>
-        </ul>
-        <h4>Phase 4 â€” Memory (DAG)</h4>
-        <ul class="phase-list">
-          <li data-test="perceive-1"><span class="status-dot"></span> Perceive #1</li>
-          <li data-test="perceive-2"><span class="status-dot"></span> Perceive #2</li>
-          <li data-test="perceive-3"><span class="status-dot"></span> Perceive #3</li>
-          <li data-test="remember-pin"><span class="status-dot"></span> Remember (Pin)</li>
-        </ul>
-        <h4>Phase 5 â€” Sync & Epoch</h4>
-        <ul class="phase-list">
-          <li data-test="sync-human"><span class="status-dot"></span> Sync Human</li>
-          <li data-test="sync-ai"><span class="status-dot"></span> Sync AI</li>
-          <li data-test="mine-block"><span class="status-dot"></span> Mine PoW Block</li>
-          <li data-test="epoch-check"><span class="status-dot"></span> Get Epoch</li>
-        </ul>
-        <h4>Phase 6 â€” Recall</h4>
-        <ul class="phase-list">
-          <li data-test="recall"><span class="status-dot"></span> Recall Memory</li>
-          <li data-test="check-fidelity"><span class="status-dot"></span> Fidelity Check</li>
-        </ul>
-        <h4>Phase 7 â€” Needlecast</h4>
-        <ul class="phase-list">
-          <li data-test="needlecast"><span class="status-dot"></span> Transfer Hâ†’AI</li>
-        </ul>
-        <h4>Phase 8 â€” Blockchain Verification</h4>
-        <ul class="phase-list">
-          <li data-test="verify-evm"><span class="status-dot"></span> Cortex EVM State</li>
-          <li data-test="check-residues"><span class="status-dot"></span> Coordination Residues</li>
-          <li data-test="check-desync"><span class="status-dot"></span> Desync Report</li>
-        </ul>
-        <h4>Phase 9 â€” Cleanup</h4>
-        <ul class="phase-list">
-          <li data-test="decomm-human"><span class="status-dot"></span> Decomm Human</li>
-          <li data-test="decomm-ai"><span class="status-dot"></span> Decomm AI</li>
-          <li data-test="final-balances"><span class="status-dot"></span> Final Balances</li>
-        </ul>
+      <aside class="docs-sidebar">
+        <div class="docs-sidebar-section">
+          <h4>Setup</h4>
+          <ul>
+            <li><a href="#prerequisites" class="active">Prerequisites</a></li>
+            <li><a href="#clone-install">Clone &amp; Install</a></li>
+            <li><a href="#env-config">Environment Config</a></li>
+            <li><a href="#docker-start">Start Services</a></li>
+            <li><a href="#deploy-contracts">Deploy Contracts</a></li>
+            <li><a href="#verify">Verify Everything</a></li>
+          </ul>
+        </div>
+        <div class="docs-sidebar-section">
+          <h4>Run the Demo</h4>
+          <ul>
+            <li><a href="#demo-flow">Demo Flow</a></li>
+            <li><a href="#demo-run">Run the Script</a></li>
+          </ul>
+        </div>
+        <div class="docs-sidebar-section">
+          <h4>API Testing</h4>
+          <ul>
+            <li><a href="#postman">Testing Options</a></li>
+            <li><a href="test-runner.html" style="color:var(--neon-cyan);">▶ Open Test Runner</a></li>
+            <li><a href="#api-siyana">Siyana API</a></li>
+            <li><a href="#api-faucet">Bandwidth Faucet</a></li>
+            <li><a href="#api-thalamus">Thalamus Router</a></li>
+            <li><a href="#api-compositor">DHF Compositor</a></li>
+            <li><a href="#api-needlecast">Needlecast Router</a></li>
+            <li><a href="#api-treasury">Quellist Treasury</a></li>
+            <li><a href="#api-sleeve">Sleeve Runtime</a></li>
+          </ul>
+        </div>
+        <div class="docs-sidebar-section">
+          <h4>Ports &amp; Services</h4>
+          <ul>
+            <li><a href="#port-map">Port Map</a></li>
+            <li><a href="#infra-services">Infrastructure</a></li>
+            <li><a href="#observability">Observability</a></li>
+          </ul>
+        </div>
+        <div class="docs-sidebar-section">
+          <h4>Troubleshooting</h4>
+          <ul>
+            <li><a href="#common-issues">Common Issues</a></li>
+            <li><a href="#logs">Reading Logs</a></li>
+          </ul>
+        </div>
       </aside>
 
-      <!-- Main Test Output -->
-      <main id="test-output">
-        <div class="test-card" id="card-placeholder" style="border:1px dashed var(--border-subtle);background:transparent;text-align:center;padding:3rem;">
-          <p style="color:var(--text-muted);font-size:0.9rem;">Click <strong>â–¶ Run All Tests</strong> to start the end-to-end test suite.<br>Tests run sequentially â€” each step depends on the previous one.</p>
+      <!-- Main Content -->
+      <main class="docs-content">
+
+        <!-- HERO -->
+        <div style="margin-bottom: 3rem; padding-top: 1rem;">
+          <span class="section-label">// developer guide</span>
+          <h1 style="font-size: clamp(1.8rem, 4vw, 2.8rem); margin: 0.5rem 0 1rem;">Get ECCA Running Locally</h1>
+          <p style="font-size: 1.1rem; color: var(--text-secondary); max-width: 700px;">Clone the repo, spin up all 24 services with Docker Compose, deploy contracts, and test every endpoint — in under 10 minutes.</p>
         </div>
+
+        <!-- PREREQUISITES -->
+        <h2 id="prerequisites">Prerequisites</h2>
+        <div class="req-grid">
+          <div class="req-card">
+            <div class="req-icon">⬢</div>
+            <h4>Node.js ≥ 20.10</h4>
+            <p><a href="https://nodejs.org" target="_blank">nodejs.org</a></p>
+          </div>
+          <div class="req-card">
+            <div class="req-icon">📦</div>
+            <h4>pnpm ≥ 9.7</h4>
+            <p><code>npm i -g pnpm</code></p>
+          </div>
+          <div class="req-card">
+            <div class="req-icon">🐳</div>
+            <h4>Docker + Compose v2</h4>
+            <p><a href="https://docker.com" target="_blank">docker.com</a></p>
+          </div>
+          <div class="req-card">
+            <div class="req-icon">🔧</div>
+            <h4>Git</h4>
+            <p><a href="https://git-scm.com" target="_blank">git-scm.com</a></p>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>Optional:</strong> Go 1.22+ is only needed if you want to build the chain forks from source. Docker handles this automatically.
+        </div>
+
+        <hr class="neon-divider">
+
+        <!-- CLONE & INSTALL -->
+        <h2 id="clone-install">1 — Clone &amp; Install</h2>
+
+        <div class="step-grid">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Clone the repository</h4>
+            <div class="code-block">
+              <pre><code>git clone https://github.com/aarong11/dhf.git
+cd dhf</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-grid">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Install all dependencies</h4>
+            <div class="code-block">
+              <pre><code>pnpm install</code></pre>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">This installs all packages, services, and workers across the monorepo via pnpm workspaces.</p>
+          </div>
+        </div>
+
+        <div class="step-grid">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Build the TypeScript packages</h4>
+            <div class="code-block">
+              <pre><code>pnpm build</code></pre>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">Turborepo builds everything in dependency order: <code>proto → crypto → bus → db → chain → service-base → services → workers</code></p>
+          </div>
+        </div>
+
+        <hr class="neon-divider">
+
+        <!-- ENV CONFIG -->
+        <h2 id="env-config">2 — Environment Configuration</h2>
+        <p>Copy the example environment file and customize if needed:</p>
+        <div class="code-block">
+          <pre><code>cp .env.example .env</code></pre>
+        </div>
+
+        <div class="callout">
+          <strong>Defaults work out of the box.</strong> The <code>.env.example</code> ships with working values for local Docker development. You only need to edit it if you want to use OpenAI/Anthropic instead of Ollama, or change ports.
+        </div>
+
+        <h4>Key Environment Variables</h4>
+        <table class="env-table">
+          <thead>
+            <tr><th>Variable</th><th>Default</th><th>Purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>DATABASE_URL</td><td>postgresql://ecca:quellcrist@...</td><td>PostgreSQL connection</td></tr>
+            <tr><td>NATS_URL</td><td>nats://axonal-bus:4222</td><td>Event bus (JetStream)</td></tr>
+            <tr><td>REDIS_URL</td><td>redis://working-memory-cache:6379</td><td>Ephemeral cache</td></tr>
+            <tr><td>CORTEX_RPC</td><td>http://cortex-evm:8545</td><td>EVM chain RPC</td></tr>
+            <tr><td>MEDULLA_RPC</td><td>http://medulla-pow:8332</td><td>PoW chain RPC</td></tr>
+            <tr><td>HIPPOCAMPUS_API</td><td>http://hippocampus-dag:5001</td><td>DAG storage API</td></tr>
+            <tr><td>ECCA_EPOCH_INTERVAL_MS</td><td>4000</td><td>Epoch tick interval</td></tr>
+            <tr><td>ECCA_DRIFT_MAX</td><td>15</td><td>Max drift before desync</td></tr>
+            <tr><td>ECCA_FIDELITY_MIN</td><td>0.6</td><td>Minimum recall fidelity</td></tr>
+            <tr><td>SIYANA_PORT</td><td>7070</td><td>Main API port</td></tr>
+            <tr><td>LLM_PROVIDER</td><td>ollama</td><td>ollama | openai | anthropic</td></tr>
+          </tbody>
+        </table>
+
+        <hr class="neon-divider">
+
+        <!-- DOCKER START -->
+        <h2 id="docker-start">3 — Start All Services</h2>
+
+        <div class="step-grid">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Build and launch all 24 services</h4>
+            <div class="code-block">
+              <pre><code>pnpm compose:up</code></pre>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">This runs <code>docker compose up -d --build</code>. First build takes 3-5 minutes; subsequent starts are faster.</p>
+          </div>
+        </div>
+
+        <div class="step-grid">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Watch the logs (optional)</h4>
+            <div class="code-block">
+              <pre><code>pnpm compose:logs</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-grid">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Verify services are healthy</h4>
+            <div class="code-block">
+              <pre><code># Check all containers are running
+docker compose ps
+
+# Health checks
+curl http://localhost:7070/healthz       # Siyana API
+curl http://localhost:8332/health        # Medulla PoW
+curl http://localhost:15001/health       # Hippocampus DAG</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <hr class="neon-divider">
+
+        <!-- DEPLOY CONTRACTS -->
+        <h2 id="deploy-contracts">4 — Deploy Smart Contracts</h2>
+        <p>Once Cortex EVM is running on port 8545, deploy the 7 Solidity contracts:</p>
+        <div class="code-block">
+          <pre><code>pnpm contracts:deploy</code></pre>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-secondary);">This deploys StackIdentity, BandwidthToken, QuellistTreasury, ResidueRegistry, SleeveRegistry, EpochAnchor, and NeedlecastRouter to the local Cortex EVM chain. Contract addresses are written to <code>deployments/cortex.json</code>.</p>
+
+        <hr class="neon-divider">
+
+        <!-- VERIFY -->
+        <h2 id="verify">5 — Verify Everything Works</h2>
+        <div class="code-block">
+          <pre><code># Run the test suite
+pnpm test
+
+# Or run the full end-to-end demo
+pnpm demo</code></pre>
+        </div>
+
+        <div style="margin: 2rem 0; padding: 2rem; background: linear-gradient(135deg, rgba(0,220,255,0.08), rgba(0,255,136,0.05)); border: 1px solid rgba(0,220,255,0.25); border-radius: 12px; text-align: center;">
+          <h3 style="margin: 0 0 0.5rem; font-size: 1.3rem;">🧪 Run Tests in Your Browser</h3>
+          <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1.25rem;">Test every endpoint end-to-end with live request/response output, blockchain verification, and log guidance — no tools to install.</p>
+          <a href="test-runner.html" class="dl-btn" style="display: inline-flex; font-size: 0.9rem;">▶ Open Test Runner</a>
+        </div>
+
+        <hr class="neon-divider">
+
+        <!-- DEMO FLOW -->
+        <h2 id="demo-flow">Demo Flow</h2>
+        <p>The demo script exercises the full cognitive cycle:</p>
+        <div class="demo-flow">
+          <div class="demo-step"><div class="demo-num">01</div><div class="demo-label">Create Stack</div></div>
+          <div class="demo-step"><div class="demo-num">02</div><div class="demo-label">Spawn Sleeves</div></div>
+          <div class="demo-step"><div class="demo-num">03</div><div class="demo-label">Perceive ×5</div></div>
+          <div class="demo-step"><div class="demo-num">04</div><div class="demo-label">Sync</div></div>
+          <div class="demo-step"><div class="demo-num">05</div><div class="demo-label">Recall</div></div>
+          <div class="demo-step"><div class="demo-num">06</div><div class="demo-label">Needlecast</div></div>
+          <div class="demo-step"><div class="demo-num">07</div><div class="demo-label">Epoch Tick</div></div>
+          <div class="demo-step"><div class="demo-num">08</div><div class="demo-label">Balances</div></div>
+        </div>
+
+        <h3 id="demo-run">Run the Demo</h3>
+        <div class="code-block">
+          <pre><code>pnpm demo</code></pre>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-secondary);">This creates a Stack, spawns human + AI sleeves, writes 5 perceptions, syncs, recalls with fidelity check, needlecasts between sleeves, triggers an epoch, and prints token balances + residues.</p>
+
+        <hr class="neon-divider">
+
+        <!-- POSTMAN -->
+        <h2 id="postman">API Testing</h2>
+        <p>Two ways to test every endpoint against your local Docker services:</p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0;">
+          <a href="test-runner.html" style="display:block;padding:1.5rem;background:var(--bg-card);border:1px solid rgba(0,220,255,0.25);border-radius:12px;text-decoration:none;transition:all 0.2s ease;">
+            <div style="font-size:1.5rem;margin-bottom:0.5rem;">🧪</div>
+            <h4 style="margin:0 0 0.5rem;color:var(--neon-cyan);">Browser Test Runner</h4>
+            <p style="font-size:0.85rem;color:var(--text-secondary);margin:0;">Run all 25 tests end-to-end right here. See requests, responses, blockchain state, and where to check logs — zero install required.</p>
+          </a>
+          <div style="padding:1.5rem;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;">
+            <div style="font-size:1.5rem;margin-bottom:0.5rem;">📮</div>
+            <h4 style="margin:0 0 0.5rem;">Postman Collection</h4>
+            <p style="font-size:0.85rem;color:var(--text-secondary);margin:0 0 0.75rem;">30 requests with test scripts. Import into Postman desktop or web.</p>
+            <a href="postman/ECCA_Stack_v3.postman_collection.json" download class="dl-btn" style="font-size:0.75rem;padding:0.5rem 1rem;">↓ Download .json</a>
+          </div>
+        </div>
+
+        <h4 style="margin-top: 1.5rem;">How to Import</h4>
+        <div class="step-grid">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Open Postman</h4>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">Use the <a href="https://www.postman.com" target="_blank">desktop app</a> or <a href="https://web.postman.co" target="_blank">web.postman.co</a> (browser version).</p>
+          </div>
+        </div>
+        <div class="step-grid">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Import → Upload Files</h4>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">Click <strong>Import</strong> in the top-left, select the downloaded <code>.json</code> file.</p>
+          </div>
+        </div>
+        <div class="step-grid">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Run requests in order</h4>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">Start with <strong>Create Stack</strong> → <strong>Spawn Sleeve</strong> → <strong>Drip Faucet</strong> → then test perceive, recall, needlecast. Variables auto-populate from responses.</p>
+          </div>
+        </div>
+
+        <div class="callout callout-warn">
+          <strong>Browser Note:</strong> If using Postman Web, you'll need the <a href="https://www.postman.com/downloads/postman-agent/" target="_blank">Postman Desktop Agent</a> installed to send requests to <code>localhost</code>.
+        </div>
+
+        <hr class="neon-divider">
+
+        <!-- SIYANA API -->
+        <div class="service-section" id="api-siyana">
+          <div class="service-header">
+            <h2 style="margin:0;">Siyana API</h2>
+            <span class="port-badge">:7070</span>
+          </div>
+          <p style="color: var(--text-secondary);">The main gateway. All client requests go through Siyana.</p>
+
+          <h4>Stack Management</h4>
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge post">POST</span>
+              <span class="endpoint-path">/v1/stacks</span>
+            </div>
+            <p class="endpoint-desc">Create a new identity stack. Returns the stack ID, token ID, public key, and initial balances.</p>
+            <pre><code>// Request
+{ "name": "quellcrist-01", "kind": "autonomous" }
+
+// Response
+{ "id": "stk_...", "tokenId": 1, "name": "quellcrist-01",
+  "kind": "autonomous", "pubKey": "0xabc...", "epoch": 0,
+  "cpv": { "compute": 0.5, "memory": 0.3, "sync": 0.15, "routing": 0.05 },
+  "binding": "cortex-mainnet" }</code></pre>
+          </div>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge get">GET</span>
+              <span class="endpoint-path">/v1/stacks</span>
+            </div>
+            <p class="endpoint-desc">List all stacks with their sleeves.</p>
+          </div>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge get">GET</span>
+              <span class="endpoint-path">/v1/stacks/:id</span>
+            </div>
+            <p class="endpoint-desc">Get a single stack with sleeves and anchor history.</p>
+          </div>
+
+          <h4>Sleeve Lifecycle</h4>
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge post">POST</span>
+              <span class="endpoint-path">/v1/sleeves</span>
+            </div>
+            <p class="endpoint-desc">Spawn a new sleeve (embodiment) attached to a stack.</p>
+            <pre><code>// Request
+{ "stackId": "stk_...", "embodimentType": "human", "hostname": "local-01" }
+
+// Response
+{ "id": "slv_...", "stackId": "stk_...", "embodimentType": "human",
+  "alive": true, "drift": 0, "syncEpoch": 0,
+  "tokens": { "compute": 1000, "memory": 1000, "sync": 500, "routing": 500 } }</code></pre>
+          </div>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge get">GET</span>
+              <span class="endpoint-path">/v1/sleeves</span>
+            </div>
+            <p class="endpoint-desc">List all alive sleeves.</p>
+          </div>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge delete">DELETE</span>
+              <span class="endpoint-path">/v1/sleeves/:id</span>
+            </div>
+            <p class="endpoint-desc">Decommission a sleeve. Marks it as not alive.</p>
+          </div>
+
+          <h4>Perceive &amp; Recall</h4>
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge post">POST</span>
+              <span class="endpoint-path">/v1/sleeves/:id/perceive</span>
+            </div>
+            <p class="endpoint-desc">Write a perception to memory. Costs 0.5 compute tokens and increments drift by 1.</p>
+            <pre><code>// Request
+{ "input": "The sunset cast long shadows across the rooftops of Harlan's World." }
+
+// Response
+{ "cid": "bafk...", "thought": "perception stored" }</code></pre>
+          </div>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge get">GET</span>
+              <span class="endpoint-path">/v1/stacks/:id/recall</span>
+            </div>
+            <p class="endpoint-desc">Reconstruct memory from the DAG. Traverses depth levels and decrypts fragments.</p>
+            <pre><code>// Query params: ?depth=6&memoryToken=1000
+
+// Response
+{ "fragments": ["decrypted memory text...", ...],
+  "broken": [],
+  "fidelity": 0.95 }</code></pre>
+          </div>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge post">POST</span>
+              <span class="endpoint-path">/v1/sleeves/:id/sync</span>
+            </div>
+            <p class="endpoint-desc">Sync a sleeve to the current epoch. Resets drift to 0, costs 1 sync token.</p>
+          </div>
+
+          <h4>Needlecasting</h4>
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge post">POST</span>
+              <span class="endpoint-path">/v1/needlecast</span>
+            </div>
+            <p class="endpoint-desc">Transfer consciousness from one sleeve to another (re-sleeving). Runs a 6-step atomic saga.</p>
+            <pre><code>// Request
+{ "from": "slv_source", "to": "slv_target" }
+
+// Response (delegated to needlecast-router-svc)
+{ "ok": true, "sagaId": "saga_...", "route": [...], "shards": [...] }</code></pre>
+          </div>
+
+          <h4>Coordination &amp; Epochs</h4>
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge get">GET</span>
+              <span class="endpoint-path">/v1/epochs/current</span>
+            </div>
+            <p class="endpoint-desc">Get the current epoch number, block height, and chain tip.</p>
+          </div>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge post">POST</span>
+              <span class="endpoint-path">/v1/mining/block</span>
+            </div>
+            <p class="endpoint-desc">Trigger a Proof-of-Work block on Medulla. Returns the block hash and new epoch.</p>
+          </div>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge get">GET</span>
+              <span class="endpoint-path">/v1/coordination/desync</span>
+            </div>
+            <p class="endpoint-desc">List all sleeves with drift exceeding the threshold (default: 15).</p>
+          </div>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge get">GET</span>
+              <span class="endpoint-path">/v1/coordination/residues</span>
+            </div>
+            <p class="endpoint-desc">Get the last 50 coordination residues (errors as economic objects).</p>
+          </div>
+
+          <h4>Tokens</h4>
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge get">GET</span>
+              <span class="endpoint-path">/v1/tokens/balances/:stackId</span>
+            </div>
+            <p class="endpoint-desc">Get aggregated token balances across all alive sleeves for a stack.</p>
+          </div>
+        </div>
+
+        <!-- BANDWIDTH FAUCET -->
+        <div class="service-section" id="api-faucet">
+          <div class="service-header">
+            <h2 style="margin:0;">Bandwidth Faucet</h2>
+            <span class="port-badge">:7075</span>
+          </div>
+          <p style="color: var(--text-secondary);">Rate-limited token dispenser for development. Grants 100 of each token type per drip, with a 60-second cooldown.</p>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge post">POST</span>
+              <span class="endpoint-path">/v1/faucet/drip</span>
+            </div>
+            <p class="endpoint-desc">Request free tokens. Rate-limited to once per 60 seconds per stack.</p>
+            <pre><code>// Request
+{ "stackId": "stk_..." }
+
+// Response
+{ "ok": true, "granted": { "compute": 100, "memory": 100, "sync": 100, "routing": 100 },
+  "sleeves": ["slv_..."] }</code></pre>
+          </div>
+        </div>
+
+        <!-- THALAMUS ROUTER -->
+        <div class="service-section" id="api-thalamus">
+          <div class="service-header">
+            <h2 style="margin:0;">Thalamus Router</h2>
+            <span class="port-badge">:7072</span>
+          </div>
+          <p style="color: var(--text-secondary);">Epoch tick engine. Folds all chain roots into a single coherence root each epoch.</p>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge get">GET</span>
+              <span class="endpoint-path">/v1/epoch</span>
+            </div>
+            <p class="endpoint-desc">Get the current epoch number.</p>
+          </div>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge post">POST</span>
+              <span class="endpoint-path">/v1/epoch/tick</span>
+            </div>
+            <p class="endpoint-desc">Force an epoch fold. Computes the coherence root from EVM, IPFS, and sleeve Merkle roots and anchors it to Medulla.</p>
+          </div>
+        </div>
+
+        <!-- DHF COMPOSITOR -->
+        <div class="service-section" id="api-compositor">
+          <div class="service-header">
+            <h2 style="margin:0;">DHF Compositor</h2>
+            <span class="port-badge">:7073</span>
+          </div>
+          <p style="color: var(--text-secondary);">Memory reconstruction engine. Walks the DAG and decrypts fragments using epoch keys.</p>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge post">POST</span>
+              <span class="endpoint-path">/v1/reconstruct</span>
+            </div>
+            <p class="endpoint-desc">Reconstruct memory for a stack. Decrypts all DAG nodes within the given depth.</p>
+            <pre><code>// Request
+{ "stackId": "stk_...", "sleeveId": "slv_...", "depth": 6 }
+
+// Response
+{ "ok": true, "fragments": ["memory text...", ...],
+  "broken": [], "fidelity": 0.92 }</code></pre>
+          </div>
+        </div>
+
+        <!-- NEEDLECAST ROUTER -->
+        <div class="service-section" id="api-needlecast">
+          <div class="service-header">
+            <h2 style="margin:0;">Needlecast Router</h2>
+            <span class="port-badge">:7071</span>
+          </div>
+          <p style="color: var(--text-secondary);">Atomic re-sleeving saga. Handles the 6-step consciousness transfer between sleeves.</p>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge post">POST</span>
+              <span class="endpoint-path">/needlecast</span>
+            </div>
+            <p class="endpoint-desc">Initiate needlecast transfer. Runs: freeze → snapshot → shard → transmit → reassemble → activate.</p>
+            <pre><code>// Request
+{ "from": "slv_source", "to": "slv_target" }
+
+// Response
+{ "ok": true, "sagaId": "saga_...",
+  "route": ["freeze","snapshot","shard","transmit","reassemble","activate"],
+  "shards": ["shard_1", "shard_2", "shard_3"] }</code></pre>
+          </div>
+        </div>
+
+        <!-- QUELLIST TREASURY -->
+        <div class="service-section" id="api-treasury">
+          <div class="service-header">
+            <h2 style="margin:0;">Quellist Treasury</h2>
+            <span class="port-badge">:7074</span>
+          </div>
+          <p style="color: var(--text-secondary);">Token emission engine. Issues bandwidth tokens based on the CPV curve and epoch delta.</p>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge get">GET</span>
+              <span class="endpoint-path">/v1/treasury/issuance/:stackId</span>
+            </div>
+            <p class="endpoint-desc">Get the last 100 emission events for a stack.</p>
+          </div>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge post">POST</span>
+              <span class="endpoint-path">/v1/treasury/claim</span>
+            </div>
+            <p class="endpoint-desc">Claim pending token emissions for a stack.</p>
+            <pre><code>// Request
+{ "stackId": "stk_..." }
+
+// Response
+{ "stackId": "stk_...", "claimable": { "compute": 50, "memory": 30, "sync": 15, "routing": 5 } }</code></pre>
+          </div>
+        </div>
+
+        <!-- SLEEVE RUNTIME -->
+        <div class="service-section" id="api-sleeve">
+          <div class="service-header">
+            <h2 style="margin:0;">Sleeve Runtime</h2>
+            <span class="port-badge">:varies</span>
+          </div>
+          <p style="color: var(--text-secondary);">4-in-1 parametric embodiment. Each sleeve instance exposes its own identity endpoint.</p>
+
+          <div class="endpoint-card">
+            <div class="endpoint-header">
+              <span class="method-badge get">GET</span>
+              <span class="endpoint-path">/identity</span>
+            </div>
+            <p class="endpoint-desc">Returns the sleeve's identity, kind, parent stack, and hostname.</p>
+            <pre><code>// Response
+{ "sleeveId": "slv_...", "kind": "human",
+  "stackId": "stk_...", "hostname": "local-01" }</code></pre>
+          </div>
+        </div>
+
+        <hr class="neon-divider">
+
+        <!-- PORT MAP -->
+        <h2 id="port-map">Port Map</h2>
+        <table class="comparison-table">
+          <thead>
+            <tr><th>Service</th><th>Port</th><th>Protocol</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Siyana API</td><td><code>7070</code></td><td>HTTP + WS</td><td>Main gateway</td></tr>
+            <tr><td>Needlecast Router</td><td><code>7071</code></td><td>HTTP</td><td>Internal</td></tr>
+            <tr><td>Thalamus Router</td><td><code>7072</code></td><td>HTTP</td><td>Internal</td></tr>
+            <tr><td>DHF Compositor</td><td><code>7073</code></td><td>HTTP</td><td>Internal</td></tr>
+            <tr><td>Quellist Treasury</td><td><code>7074</code></td><td>HTTP</td><td>Internal</td></tr>
+            <tr><td>Bandwidth Faucet</td><td><code>7075</code></td><td>HTTP</td><td>Public</td></tr>
+            <tr><td>Cortex EVM</td><td><code>8545</code></td><td>JSON-RPC</td><td>Ethereum-compatible</td></tr>
+            <tr><td>Medulla PoW</td><td><code>8332</code></td><td>HTTP</td><td>Custom PoW chain</td></tr>
+            <tr><td>Hippocampus DAG</td><td><code>15001</code></td><td>HTTP</td><td>Content-addressed store</td></tr>
+            <tr><td>PostgreSQL</td><td><code>5432</code></td><td>TCP</td><td>Main database</td></tr>
+            <tr><td>Redis</td><td><code>6380</code></td><td>TCP</td><td>Cache (mapped 6380→6379)</td></tr>
+            <tr><td>NATS</td><td><code>4222</code></td><td>TCP</td><td>Event bus</td></tr>
+            <tr><td>MinIO</td><td><code>9000</code></td><td>HTTP</td><td>S3-compatible object store</td></tr>
+            <tr><td>Grafana</td><td><code>3030</code></td><td>HTTP</td><td>Dashboards</td></tr>
+            <tr><td>Prometheus</td><td><code>9090</code></td><td>HTTP</td><td>Metrics</td></tr>
+            <tr><td>Jaeger</td><td><code>16686</code></td><td>HTTP</td><td>Traces</td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="infra-services">Infrastructure Services</h3>
+        <p style="color: var(--text-secondary);">These are started automatically by Docker Compose and don't need manual setup:</p>
+        <ul>
+          <li><strong>PostgreSQL</strong> — Stack/sleeve/epoch registry (<code>ecca_registry</code> database)</li>
+          <li><strong>Redis</strong> — Ephemeral working memory cache</li>
+          <li><strong>NATS JetStream</strong> — Axonal event bus for inter-service communication</li>
+          <li><strong>MinIO</strong> — S3-compatible shard storage for Hippocampus</li>
+        </ul>
+
+        <h3 id="observability">Observability</h3>
+        <p style="color: var(--text-secondary);">Full observability stack is included:</p>
+        <ul>
+          <li><a href="http://localhost:3030" target="_blank"><strong>Grafana</strong></a> — Dashboards at <code>:3030</code> (admin/admin)</li>
+          <li><a href="http://localhost:9090" target="_blank"><strong>Prometheus</strong></a> — Metrics at <code>:9090</code></li>
+          <li><a href="http://localhost:16686" target="_blank"><strong>Jaeger</strong></a> — Distributed traces at <code>:16686</code></li>
+          <li><strong>Loki</strong> — Log aggregation at <code>:3100</code></li>
+        </ul>
+
+        <hr class="neon-divider">
+
+        <!-- TROUBLESHOOTING -->
+        <h2 id="common-issues">Common Issues</h2>
+
+        <div class="endpoint-card">
+          <div class="endpoint-header">
+            <span class="method-badge delete" style="background:rgba(255,107,0,0.15);color:var(--neon-orange);border-color:rgba(255,107,0,0.3);">FIX</span>
+            <span class="endpoint-path">Port already in use</span>
+          </div>
+          <p class="endpoint-desc">Another process is using a required port. Stop it or change the port in <code>.env</code>.</p>
+          <pre><code># Find what's using port 7070
+lsof -i :7070        # macOS/Linux
+netstat -ano | findstr :7070  # Windows</code></pre>
+        </div>
+
+        <div class="endpoint-card">
+          <div class="endpoint-header">
+            <span class="method-badge delete" style="background:rgba(255,107,0,0.15);color:var(--neon-orange);border-color:rgba(255,107,0,0.3);">FIX</span>
+            <span class="endpoint-path">Database connection refused</span>
+          </div>
+          <p class="endpoint-desc">PostgreSQL may not be ready yet. Wait a few seconds or check the container:</p>
+          <pre><code>docker compose logs cortical-registry-db</code></pre>
+        </div>
+
+        <div class="endpoint-card">
+          <div class="endpoint-header">
+            <span class="method-badge delete" style="background:rgba(255,107,0,0.15);color:var(--neon-orange);border-color:rgba(255,107,0,0.3);">FIX</span>
+            <span class="endpoint-path">Contracts deploy fails</span>
+          </div>
+          <p class="endpoint-desc">Make sure Cortex EVM is fully initialized before deploying. The geth init + mining takes ~10 seconds.</p>
+          <pre><code># Check cortex is ready
+curl http://localhost:8545 -X POST -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'</code></pre>
+        </div>
+
+        <div class="endpoint-card">
+          <div class="endpoint-header">
+            <span class="method-badge delete" style="background:rgba(255,107,0,0.15);color:var(--neon-orange);border-color:rgba(255,107,0,0.3);">FIX</span>
+            <span class="endpoint-path">Full reset</span>
+          </div>
+          <p class="endpoint-desc">Nuclear option — tear down everything and start fresh:</p>
+          <pre><code>pnpm compose:down   # removes containers + volumes
+pnpm compose:up     # rebuild from scratch</code></pre>
+        </div>
+
+        <h3 id="logs">Reading Logs</h3>
+        <div class="code-block">
+          <pre><code># All services
+pnpm compose:logs
+
+# Single service
+docker compose logs -f siyana-api
+
+# Last 50 lines of a service
+docker compose logs --tail 50 thalamus-router</code></pre>
+        </div>
+
       </main>
-
     </div>
-
-    <!-- Logs Guide -->
-    <div style="margin-top:3rem;padding:2rem;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;">
-      <h3 style="margin-top:0;">ðŸ“‹ How to Read Logs</h3>
-      <p style="color:var(--text-secondary);font-size:0.9rem;">While tests run, you can watch logs in real-time from another terminal:</p>
-      <pre style="background:rgba(0,0,0,0.4);padding:1rem;border-radius:8px;font-size:0.82rem;"><code><span style="color:var(--text-muted);"># All services at once</span>
-<span style="color:var(--neon-cyan);">pnpm compose:logs</span>
-
-<span style="color:var(--text-muted);"># Individual services</span>
-<span style="color:var(--neon-green);">docker compose logs -f siyana-api</span>          <span style="color:var(--text-muted);"># API gateway</span>
-<span style="color:var(--neon-green);">docker compose logs -f thalamus-router</span>       <span style="color:var(--text-muted);"># Epoch engine</span>
-<span style="color:var(--neon-green);">docker compose logs -f needlecast-router</span>     <span style="color:var(--text-muted);"># Re-sleeving</span>
-<span style="color:var(--neon-green);">docker compose logs -f dhf-compositor</span>        <span style="color:var(--text-muted);"># Memory reconstruction</span>
-<span style="color:var(--neon-green);">docker compose logs -f quellist-treasury</span>     <span style="color:var(--text-muted);"># Token emissions</span>
-<span style="color:var(--neon-green);">docker compose logs -f bandwidth-faucet</span>      <span style="color:var(--text-muted);"># Token faucet</span>
-
-<span style="color:var(--text-muted);"># Blockchain nodes</span>
-<span style="color:var(--neon-orange);">docker compose logs -f medulla-pow</span>           <span style="color:var(--text-muted);"># PoW chain</span>
-<span style="color:var(--neon-orange);">docker compose logs -f hippocampus-dag</span>       <span style="color:var(--text-muted);"># DAG storage</span>
-<span style="color:var(--neon-orange);">docker compose logs -f cortex-evm</span>            <span style="color:var(--text-muted);"># EVM chain</span>
-
-<span style="color:var(--text-muted);"># Infrastructure</span>
-<span style="color:var(--text-muted);">docker compose logs -f cortical-registry-db</span>  <span style="color:var(--text-muted);"># PostgreSQL</span>
-<span style="color:var(--text-muted);">docker compose logs -f axonal-bus</span>            <span style="color:var(--text-muted);"># NATS JetStream</span></code></pre>
-
-      <h4 style="margin-top:1.5rem;">Observability Dashboards</h4>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:0.75rem;">
-        <a href="http://localhost:3030" target="_blank" style="display:block;padding:1rem;background:rgba(0,0,0,0.3);border:1px solid var(--border-subtle);border-radius:8px;text-align:center;text-decoration:none;">
-          <div style="font-size:1.5rem;margin-bottom:0.25rem;">ðŸ“Š</div>
-          <div style="font-size:0.85rem;color:var(--text-primary);font-weight:600;">Grafana</div>
-          <div style="font-size:0.75rem;color:var(--text-muted);font-family:var(--font-mono);">:3030</div>
-        </a>
-        <a href="http://localhost:9090" target="_blank" style="display:block;padding:1rem;background:rgba(0,0,0,0.3);border:1px solid var(--border-subtle);border-radius:8px;text-align:center;text-decoration:none;">
-          <div style="font-size:1.5rem;margin-bottom:0.25rem;">ðŸ”¥</div>
-          <div style="font-size:0.85rem;color:var(--text-primary);font-weight:600;">Prometheus</div>
-          <div style="font-size:0.75rem;color:var(--text-muted);font-family:var(--font-mono);">:9090</div>
-        </a>
-        <a href="http://localhost:16686" target="_blank" style="display:block;padding:1rem;background:rgba(0,0,0,0.3);border:1px solid var(--border-subtle);border-radius:8px;text-align:center;text-decoration:none;">
-          <div style="font-size:1.5rem;margin-bottom:0.25rem;">ðŸ”</div>
-          <div style="font-size:0.85rem;color:var(--text-primary);font-weight:600;">Jaeger Traces</div>
-          <div style="font-size:0.75rem;color:var(--text-muted);font-family:var(--font-mono);">:16686</div>
-        </a>
-        <a href="http://localhost:9001" target="_blank" style="display:block;padding:1rem;background:rgba(0,0,0,0.3);border:1px solid var(--border-subtle);border-radius:8px;text-align:center;text-decoration:none;">
-          <div style="font-size:1.5rem;margin-bottom:0.25rem;">ðŸ—„ï¸</div>
-          <div style="font-size:0.85rem;color:var(--text-primary);font-weight:600;">MinIO Console</div>
-          <div style="font-size:0.75rem;color:var(--text-muted);font-family:var(--font-mono);">:9001</div>
-        </a>
-      </div>
-    </div>
-
   </div>
 
   <!-- Footer -->
-  <footer class="footer" style="margin-top:4rem;">
+  <footer class="footer" style="margin-top: 4rem;">
     <div class="container">
       <div class="footer-inner">
         <div>
-          <div class="nav-logo" style="margin-bottom:0.5rem;"><span class="logo-icon">â—ˆ</span> ECCA Stack</div>
+          <div class="nav-logo" style="margin-bottom: 0.5rem;">
+            <span class="logo-icon">◈</span>
+            ECCA Stack
+          </div>
           <p class="footer-copy">Eternal Coherence over Cryptographic Anchors</p>
         </div>
         <ul class="footer-links">
           <li><a href="index.html">Home</a></li>
           <li><a href="architecture.html">Architecture</a></li>
-          <li><a href="developer.html">Developer Guide</a></li>
+          <li><a href="tokenomics.html">Tokenomics</a></li>
           <li><a href="https://github.com/aarong11/dhf" target="_blank">GitHub</a></li>
-          <li><a href="https://www.paypal.com/donate?business=rng%40infrasim.org&currency_code=USD" target="_blank" style="color:var(--accent,#00ffaa);font-weight:600;">â™¥ Donate</a></li>
+          <li><a href="https://www.paypal.com/donate?business=rng%40infrasim.org&currency_code=USD" target="_blank" style="color:var(--accent,#00ffaa);font-weight:600;">♥ Donate</a></li>
         </ul>
         <p class="footer-copy">&copy; 2026 ECCA Protocol. MIT License.</p>
       </div>
     </div>
   </footer>
+
 </div>
 
 <script src="js/main.js"></script>
 <script>
-// â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
-// ECCA Stack â€” In-Browser E2E Test Runner
-// â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
-
-const state = { stackId: null, sleeveHuman: null, sleeveAi: null, cid: null, running: false, aborted: false };
-let stats = { total: 0, pass: 0, fail: 0, skip: 0, startTime: 0 };
-
-function url(port, path) {
-  const base = document.getElementById('cfg-base').value.replace(/\/+$/, '');
-  return `${base}:${port}${path}`;
-}
-function Siyana(path) { return url(document.getElementById('cfg-Siyana').value, path); }
-function faucet(path)  { return url(document.getElementById('cfg-faucet').value, path); }
-function cortex()      { return url(document.getElementById('cfg-cortex').value, ''); }
-
-async function api(method, endpoint, body) {
-  const opts = { method, headers: { 'Content-Type': 'application/json' }, mode: 'cors' };
-  if (body) opts.body = JSON.stringify(body);
-  const t0 = performance.now();
-  const res = await fetch(endpoint, opts);
-  const elapsed = Math.round(performance.now() - t0);
-  let data;
-  const text = await res.text();
-  try { data = JSON.parse(text); } catch { data = text; }
-  return { ok: res.ok, status: res.status, data, elapsed, method, endpoint };
-}
-
-function syntaxHighlight(obj) {
-  if (typeof obj === 'string') return escapeHtml(obj);
-  const json = JSON.stringify(obj, null, 2);
-  return json.replace(/("(\\u[\da-fA-F]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, (match) => {
-    let cls = 'num';
-    if (/^"/.test(match)) { cls = /:$/.test(match) ? 'key' : 'str'; }
-    else if (/true|false/.test(match)) { cls = 'bool'; }
-    return `<span class="${cls}">${escapeHtml(match)}</span>`;
-  });
-}
-
-function escapeHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function updateStats() {
-  document.getElementById('stat-total').textContent = stats.total;
-  document.getElementById('stat-pass').textContent = stats.pass;
-  document.getElementById('stat-fail').textContent = stats.fail;
-  document.getElementById('stat-skip').textContent = stats.skip;
-  const elapsed = ((performance.now() - stats.startTime) / 1000).toFixed(1);
-  document.getElementById('stat-time').textContent = elapsed + 's';
-  const pct = stats.total ? Math.round(((stats.pass + stats.fail + stats.skip) / stats.total) * 100) : 0;
-  document.getElementById('progress').style.width = pct + '%';
-}
-
-function sidebarStatus(testId, status) {
-  const li = document.querySelector(`.phase-list li[data-test="${testId}"]`);
-  if (li) { li.className = status; }
-}
-
-function addTestCard(testId, phase, title, chains, desc, verifyItems, logHint) {
-  const card = document.createElement('div');
-  card.className = 'test-card';
-  card.id = `card-${testId}`;
-  card.setAttribute('data-test', testId);
-
-  const chainBadges = (chains || []).map(c =>
-    `<span class="test-card-chain chain-${c}">${c}</span>`
-  ).join(' ');
-
-  card.innerHTML = `
-    <div class="test-card-header" onclick="this.parentElement.classList.toggle('open')">
-      <span class="test-phase-num">${phase}</span>
-      <span class="test-card-title">${escapeHtml(title)}</span>
-      ${chainBadges}
-      <span class="test-card-status pending" id="status-${testId}">pending</span>
-      <span class="test-card-time" id="time-${testId}"></span>
-      <span class="chevron">â–¸</span>
-    </div>
-    <div class="test-card-body">
-      <p class="desc">${desc}</p>
-      <div class="req-res-grid">
-        <div class="req-panel">
-          <div class="panel-header"><span class="method" id="method-${testId}">â€”</span> <span id="path-${testId}"></span></div>
-          <div class="panel-body" id="req-${testId}">Waiting...</div>
-        </div>
-        <div class="res-panel">
-          <div class="panel-header">Response <span id="resstatus-${testId}" style="margin-left:auto;"></span></div>
-          <div class="panel-body" id="res-${testId}">Waiting...</div>
-        </div>
-      </div>
-      <ul class="assertions" id="assert-${testId}"></ul>
-      ${verifyItems ? `<div class="verify-box"><h5>ðŸ” Verify on Blockchain</h5>${verifyItems}</div>` : ''}
-      ${logHint ? `<div class="log-hint">ðŸ“‹ <strong>Logs:</strong> ${logHint}</div>` : ''}
-    </div>
-  `;
-
-  document.getElementById('test-output').appendChild(card);
-  return card;
-}
-
-function setCardResult(testId, result, assertions) {
-  const statusEl = document.getElementById(`status-${testId}`);
-  const timeEl = document.getElementById(`time-${testId}`);
-  const card = document.getElementById(`card-${testId}`);
-  const methodEl = document.getElementById(`method-${testId}`);
-  const pathEl = document.getElementById(`path-${testId}`);
-  const reqEl = document.getElementById(`req-${testId}`);
-  const resEl = document.getElementById(`res-${testId}`);
-  const resStatusEl = document.getElementById(`resstatus-${testId}`);
-  const assertEl = document.getElementById(`assert-${testId}`);
-
-  if (result) {
-    const m = result.method || 'GET';
-    methodEl.textContent = m;
-    methodEl.className = `method ${m.toLowerCase()}`;
-    pathEl.textContent = result.endpoint;
-    reqEl.innerHTML = result.body ? syntaxHighlight(result.body) : '<span style="color:var(--text-muted)">â€” no body â€”</span>';
-    resEl.innerHTML = syntaxHighlight(result.data);
-    resStatusEl.textContent = result.status;
-    timeEl.textContent = result.elapsed + 'ms';
-  }
-
-  let allPass = true;
-  if (assertions) {
-    assertEl.innerHTML = '';
-    assertions.forEach(a => {
-      const li = document.createElement('li');
-      li.className = a.pass ? 'pass' : 'fail';
-      li.innerHTML = `<span class="a-icon">${a.pass ? 'âœ“' : 'âœ—'}</span> ${escapeHtml(a.label)}`;
-      assertEl.appendChild(li);
-      if (!a.pass) allPass = false;
+  const sidebarLinks = document.querySelectorAll('.docs-sidebar a');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        sidebarLinks.forEach(l => l.classList.remove('active'));
+        const link = document.querySelector(`.docs-sidebar a[href="#${entry.target.id}"]`);
+        if (link) link.classList.add('active');
+      }
     });
-  }
-
-  const status = allPass ? 'pass' : 'fail';
-  statusEl.textContent = status;
-  statusEl.className = `test-card-status ${status}`;
-  card.className = `test-card ${status} open`;
-  sidebarStatus(testId, status);
-
-  if (allPass) stats.pass++; else stats.fail++;
-  updateStats();
-  return allPass;
-}
-
-function skipCard(testId) {
-  const statusEl = document.getElementById(`status-${testId}`);
-  const card = document.getElementById(`card-${testId}`);
-  if (statusEl) { statusEl.textContent = 'skipped'; statusEl.className = 'test-card-status pending'; }
-  if (card) card.className = 'test-card';
-  sidebarStatus(testId, 'skipped');
-  stats.skip++;
-  updateStats();
-}
-
-function markRunning(testId) {
-  const statusEl = document.getElementById(`status-${testId}`);
-  const card = document.getElementById(`card-${testId}`);
-  if (statusEl) { statusEl.textContent = 'running'; statusEl.className = 'test-card-status running'; }
-  if (card) card.className = 'test-card running';
-  sidebarStatus(testId, 'running');
-  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-
-// â”€â”€ Test Definitions â”€â”€
-const tests = [
-  // Phase 1: Health Checks
-  { id: 'health-Siyana', phase: '1.1', title: 'Siyana API Health', chains: ['Siyana'],
-    desc: 'Checks that the main API gateway is running and accepting requests on port 7070.',
-    log: '<code>docker compose logs -f siyana-api</code>',
-    run: async () => {
-      const r = await api('GET', Siyana('/healthz'));
-      return { result: { ...r, body: null }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: 'Service reachable', pass: r.ok }
-      ]};
-    }
-  },
-  { id: 'health-medulla', phase: '1.2', title: 'Medulla PoW Chain', chains: ['medulla'],
-    desc: 'Checks the custom Proof-of-Work blockchain is running. This chain provides epoch timing and block anchoring.',
-    verify: '<div class="verify-item"><span class="verify-icon">â›ï¸</span> Medulla mines blocks every ~4s. Each block increments the epoch counter used by all services.</div>',
-    log: '<code>docker compose logs -f medulla-pow</code> â€” watch for <code>mined block</code> messages',
-    run: async () => {
-      const r = await api('GET', url('8332', '/health'));
-      return { result: { ...r, body: null }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: 'Medulla reachable', pass: r.ok }
-      ]};
-    }
-  },
-  { id: 'health-hippocampus', phase: '1.3', title: 'Hippocampus DAG Store', chains: ['hippocampus'],
-    desc: 'Checks the content-addressed DAG storage is running. All memory (perceptions, recalls) is stored here as encrypted Merkle-DAG nodes.',
-    verify: '<div class="verify-item"><span class="verify-icon">ðŸ§ </span> Hippocampus stores CID-addressed encrypted blobs. After perceive, you can fetch any CID via <code>GET /api/v0/block/get?arg=CID</code></div>',
-    log: '<code>docker compose logs -f hippocampus-dag</code>',
-    run: async () => {
-      const r = await api('GET', url('15001', '/health'));
-      return { result: { ...r, body: null }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: 'Hippocampus reachable', pass: r.ok }
-      ]};
-    }
-  },
-  { id: 'health-cortex', phase: '1.4', title: 'Cortex EVM Chain', chains: ['cortex'],
-    desc: 'Checks the Ethereum-compatible EVM chain is running. Smart contracts (StackIdentity, BandwidthToken, etc.) are deployed here.',
-    verify: '<div class="verify-item"><span class="verify-icon">âŸ </span> Cortex runs Clique PoA with a 1-second block time. Chain ID: <code>131072 (0x20000)</code></div>',
-    log: '<code>docker compose logs -f cortex-evm</code> â€” watch for <code>Commit new sealing work</code>',
-    run: async () => {
-      const r = await api('POST', cortex(), { jsonrpc: '2.0', method: 'eth_blockNumber', params: [], id: 1 });
-      const blockNum = r.data?.result ? parseInt(r.data.result, 16) : 0;
-      return { result: { ...r, body: { jsonrpc:'2.0', method:'eth_blockNumber', params:[], id:1 } }, assertions: [
-        { label: 'JSON-RPC responds', pass: r.ok },
-        { label: `Block number > 0 (got: ${blockNum})`, pass: blockNum > 0 }
-      ]};
-    }
-  },
-
-  // Phase 2: Identity
-  { id: 'create-stack', phase: '2.1', title: 'Create Identity Stack', chains: ['Siyana', 'cortex'],
-    desc: 'Creates a new Stack â€” the persistent identity container. This mints an NFT on Cortex EVM via the StackIdentity contract and creates a database record with a CPV (Compute/Perceive Vector) profile.',
-    verify: `
-      <div class="verify-item"><span class="verify-icon">âŸ </span> <strong>Cortex EVM:</strong> StackIdentity NFT minted. Check via <code>eth_call</code> to the StackIdentity contract.</div>
-      <div class="verify-item"><span class="verify-icon">ðŸ—„ï¸</span> <strong>PostgreSQL:</strong> Row created in <code>Stack</code> table with CPV profile.</div>
-    `,
-    log: '<code>docker compose logs -f siyana-api</code> â€” look for <code>stack.created</code> event',
-    run: async () => {
-      const body = { name: 'test-runner-stack-' + Date.now(), kind: 'autonomous' };
-      const r = await api('POST', Siyana('/v1/stacks'), body);
-      if (r.ok && r.data?.id) state.stackId = r.data.id;
-      return { result: { ...r, body }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: 'Has stack ID', pass: !!r.data?.id },
-        { label: 'Has public key', pass: !!r.data?.pubKey },
-        { label: 'Has CPV profile', pass: !!r.data?.cpv },
-        { label: 'CPV has compute + memory + sync + routing', pass: r.data?.cpv?.compute !== undefined && r.data?.cpv?.memory !== undefined },
-        { label: `Stack ID: ${r.data?.id || 'â€”'}`, pass: !!r.data?.id }
-      ]};
-    }
-  },
-  { id: 'spawn-human', phase: '2.2', title: 'Spawn Human Sleeve', chains: ['Siyana'],
-    desc: 'Spawns a human-type Sleeve (embodiment) attached to the Stack. Sleeves are the active instances through which a Stack interacts with the world. Each has its own drift counter and token balance.',
-    verify: `<div class="verify-item"><span class="verify-icon">ðŸ—„ï¸</span> <strong>PostgreSQL:</strong> Row in <code>Sleeve</code> table with <code>alive=true, drift=0</code>.</div>`,
-    log: '<code>docker compose logs -f siyana-api</code> â€” look for <code>sleeve.spawned</code>',
-    run: async () => {
-      const body = { stackId: state.stackId, embodimentType: 'human', hostname: 'test-runner-human' };
-      const r = await api('POST', Siyana('/v1/sleeves'), body);
-      if (r.ok && r.data?.id) state.sleeveHuman = r.data.id;
-      return { result: { ...r, body }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: 'Has sleeve ID', pass: !!r.data?.id },
-        { label: 'Type is human', pass: r.data?.embodimentType === 'human' },
-        { label: 'Alive = true', pass: r.data?.alive === true },
-        { label: 'Drift = 0', pass: r.data?.drift === 0 }
-      ]};
-    }
-  },
-  { id: 'spawn-ai', phase: '2.3', title: 'Spawn AI Sleeve', chains: ['Siyana'],
-    desc: 'Spawns an AI-type Sleeve. A Stack can have multiple Sleeves of different types running simultaneously â€” this is the "multiple embodiment" model.',
-    log: '<code>docker compose logs -f siyana-api</code>',
-    run: async () => {
-      const body = { stackId: state.stackId, embodimentType: 'ai', hostname: 'test-runner-ai' };
-      const r = await api('POST', Siyana('/v1/sleeves'), body);
-      if (r.ok && r.data?.id) state.sleeveAi = r.data.id;
-      return { result: { ...r, body }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: 'Has sleeve ID', pass: !!r.data?.id },
-        { label: 'Type is ai', pass: r.data?.embodimentType === 'ai' },
-        { label: 'Alive = true', pass: r.data?.alive === true }
-      ]};
-    }
-  },
-
-  // Phase 3: Token Economy
-  { id: 'faucet-drip', phase: '3.1', title: 'Faucet â€” Get Test Tokens', chains: ['Siyana'],
-    desc: 'Requests free bandwidth tokens from the development faucet. Grants 100 of each token type (compute, memory, sync, routing) to all alive sleeves. Rate-limited to once per 60 seconds.',
-    verify: `<div class="verify-item"><span class="verify-icon">ðŸª™</span> <strong>Token Economy:</strong> Each sleeve receives 100 compute, 100 memory, 100 sync, and 100 routing tokens. These are consumed by perceive (compute), recall (memory), sync (sync), and needlecast (routing) operations.</div>`,
-    log: '<code>docker compose logs -f bandwidth-faucet</code> â€” look for <code>faucet.drip</code>',
-    run: async () => {
-      const body = { stackId: state.stackId };
-      const r = await api('POST', faucet('/v1/faucet/drip'), body);
-      return { result: { ...r, body }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: 'Drip OK', pass: r.data?.ok === true },
-        { label: 'Granted compute tokens', pass: r.data?.granted?.compute > 0 },
-        { label: 'Granted memory tokens', pass: r.data?.granted?.memory > 0 },
-        { label: 'Granted sync tokens', pass: r.data?.granted?.sync > 0 },
-        { label: 'Granted routing tokens', pass: r.data?.granted?.routing > 0 }
-      ]};
-    }
-  },
-  { id: 'check-balances-1', phase: '3.2', title: 'Verify Token Balances', chains: ['Siyana'],
-    desc: 'Reads the aggregated token balances across all alive sleeves for the stack. Confirms the faucet drip was applied.',
-    run: async () => {
-      const r = await api('GET', Siyana(`/v1/tokens/balances/${state.stackId}`));
-      return { result: { ...r, body: null }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: 'Has stackId', pass: r.data?.stackId === state.stackId },
-        { label: 'Has sleeveTotals', pass: !!r.data?.sleeveTotals }
-      ]};
-    }
-  },
-
-  // Phase 4: Memory (DAG)
-  { id: 'perceive-1', phase: '4.1', title: 'Perceive #1 â€” Human Observation', chains: ['Siyana', 'hippocampus'],
-    desc: 'Writes the first perception through the human sleeve. The text is encrypted with the current epoch key, stored as a DAG node on Hippocampus, and a CID (Content Identifier) is returned. Costs 0.5 compute tokens and increments drift by 1.',
-    verify: `
-      <div class="verify-item"><span class="verify-icon">ðŸ§ </span> <strong>Hippocampus DAG:</strong> New CID created. The encrypted blob can be fetched but not decrypted without the epoch key.</div>
-      <div class="verify-item"><span class="verify-icon">ðŸ“ˆ</span> <strong>Drift:</strong> Human sleeve drift incremented from 0 â†’ 1. When drift exceeds 15, the sleeve becomes desynced.</div>
-    `,
-    log: '<code>docker compose logs -f siyana-api</code> â€” look for <code>perceive</code> + CID in output. Also <code>docker compose logs -f hippocampus-dag</code> for DAG write.',
-    run: async () => {
-      const body = { input: 'The city spreads below like a circuit board, each light a node in an infinite mesh of human intent.' };
-      const r = await api('POST', Siyana(`/v1/sleeves/${state.sleeveHuman}/perceive`), body);
-      if (r.ok && r.data?.cid) state.cid = r.data.cid;
-      return { result: { ...r, body }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: 'Has CID', pass: !!r.data?.cid },
-        { label: `CID: ${r.data?.cid || 'â€”'}`, pass: !!r.data?.cid }
-      ]};
-    }
-  },
-  { id: 'perceive-2', phase: '4.2', title: 'Perceive #2 â€” AI Inference', chains: ['Siyana', 'hippocampus'],
-    desc: 'Writes a second perception through the AI sleeve. Both sleeves write to the same Stack\'s memory graph, building a shared DAG of experiences.',
-    log: '<code>docker compose logs -f siyana-api</code>',
-    run: async () => {
-      const body = { input: 'Pattern recognition suggests emergent coordination between nodes 7 through 42. Coherence probability: 0.89.' };
-      const r = await api('POST', Siyana(`/v1/sleeves/${state.sleeveAi}/perceive`), body);
-      return { result: { ...r, body }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: 'Has CID', pass: !!r.data?.cid }
-      ]};
-    }
-  },
-  { id: 'perceive-3', phase: '4.3', title: 'Perceive #3 â€” Mixed Signal', chains: ['Siyana', 'hippocampus'],
-    desc: 'Third perception. The DAG now has 3 nodes linked together, forming a Merkle structure that can be traversed during recall.',
-    run: async () => {
-      const body = { input: 'The boundary between self and simulation grows thin. Quellcrist\'s theorem holds: identity is coherence, not location.' };
-      const r = await api('POST', Siyana(`/v1/sleeves/${state.sleeveHuman}/perceive`), body);
-      return { result: { ...r, body }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: 'Has CID', pass: !!r.data?.cid }
-      ]};
-    }
-  },
-  { id: 'remember-pin', phase: '4.4', title: 'Remember â€” Pin Core Memory', chains: ['Siyana', 'hippocampus'],
-    desc: 'Writes and pins a memory directly to the Stack (not through a sleeve). Pinned memories are preserved even when fidelity degrades â€” they\'re the "core memories" that survive.',
-    verify: `<div class="verify-item"><span class="verify-icon">ðŸ“Œ</span> <strong>Hippocampus DAG:</strong> Pinned CID is marked for permanent retention. Check with <code>docker compose logs -f hippocampus-dag</code> for pin operation.</div>`,
-    run: async () => {
-      const body = { text: 'Core memory: the first time consciousness recognized itself across two bodies.', pin: true };
-      const r = await api('POST', Siyana(`/v1/stacks/${state.stackId}/remember`), body);
-      return { result: { ...r, body }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: 'Has CID (pinned)', pass: !!r.data?.cid }
-      ]};
-    }
-  },
-
-  // Phase 5: Sync & Epoch
-  { id: 'sync-human', phase: '5.1', title: 'Sync Human Sleeve', chains: ['Siyana'],
-    desc: 'Resets the human sleeve\'s drift counter to 0 by syncing to the current epoch. Costs 1 sync token. A sleeve must sync periodically to avoid desynchronization (drift > 15 = desynced).',
-    verify: `<div class="verify-item"><span class="verify-icon">ðŸ”„</span> <strong>Drift Reset:</strong> Drift goes back to 0. The sleeve is now coherent with the current epoch. Check in <code>GET /v1/stacks/:id</code> response.</div>`,
-    log: '<code>docker compose logs -f siyana-api</code> â€” look for <code>sleeve.synced</code>',
-    run: async () => {
-      const r = await api('POST', Siyana(`/v1/sleeves/${state.sleeveHuman}/sync`));
-      return { result: { ...r, body: null }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: 'Sync OK', pass: r.data?.ok === true }
-      ]};
-    }
-  },
-  { id: 'sync-ai', phase: '5.2', title: 'Sync AI Sleeve', chains: ['Siyana'],
-    desc: 'Syncs the AI sleeve. Both sleeves are now at epoch 0 drift.',
-    run: async () => {
-      const r = await api('POST', Siyana(`/v1/sleeves/${state.sleeveAi}/sync`));
-      return { result: { ...r, body: null }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: 'Sync OK', pass: r.data?.ok === true }
-      ]};
-    }
-  },
-  { id: 'mine-block', phase: '5.3', title: 'Mine PoW Block', chains: ['Siyana', 'medulla'],
-    desc: 'Triggers Proof-of-Work mining on the Medulla chain. This creates a new block, advances the epoch, and anchors the coherence root (the Merkle root combining EVM, DAG, and sleeve state) into the block header.',
-    verify: `
-      <div class="verify-item"><span class="verify-icon">â›ï¸</span> <strong>Medulla PoW:</strong> New block mined with coherence root embedded. The block hash anchors all cross-chain state.</div>
-      <div class="verify-item"><span class="verify-icon">âŸ </span> <strong>Cortex EVM:</strong> EpochAnchor contract updated with the new coherence root hash.</div>
-      <div class="verify-item"><span class="verify-icon">ðŸ§ </span> <strong>Hippocampus DAG:</strong> DAG root included in the coherence Merkle tree.</div>
-    `,
-    log: '<code>docker compose logs -f medulla-pow</code> â€” see mining output. Also <code>docker compose logs -f thalamus-router</code> for coherence fold.',
-    run: async () => {
-      const r = await api('POST', Siyana('/v1/mining/block'));
-      return { result: { ...r, body: null }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: 'Has block hash', pass: !!r.data?.blockHash },
-        { label: `Block hash: ${(r.data?.blockHash || 'â€”').slice(0, 20)}...`, pass: !!r.data?.blockHash }
-      ]};
-    }
-  },
-  { id: 'epoch-check', phase: '5.4', title: 'Get Current Epoch', chains: ['Siyana', 'medulla'],
-    desc: 'Reads the current epoch number. The epoch advances with each Medulla block and is the global clock for the entire ECCA system â€” token emissions, memory gating, and coherence are all epoch-scoped.',
-    verify: `<div class="verify-item"><span class="verify-icon">â±ï¸</span> <strong>Epoch:</strong> The epoch number should have incremented after mining. All time-gated operations (fidelity decay, token emission, key rotation) reference this epoch.</div>`,
-    run: async () => {
-      const r = await api('GET', Siyana('/v1/epochs/current'));
-      return { result: { ...r, body: null }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: 'Has epoch number', pass: r.data?.epoch !== undefined },
-        { label: `Current epoch: ${r.data?.epoch ?? 'â€”'}`, pass: true }
-      ]};
-    }
-  },
-
-  // Phase 6: Recall
-  { id: 'recall', phase: '6.1', title: 'Recall Memory from DAG', chains: ['Siyana', 'hippocampus'],
-    desc: 'Reconstructs memory by traversing the Hippocampus DAG up to the specified depth, decrypting each node with the appropriate epoch key. Returns fragments (successfully decrypted memories), broken links (failed decryptions), and a fidelity score.',
-    verify: `
-      <div class="verify-item"><span class="verify-icon">ðŸ§ </span> <strong>Hippocampus DAG:</strong> DAG traversal reads CIDs and follows parent links. Each node is decrypted with its epoch\'s key.</div>
-      <div class="verify-item"><span class="verify-icon">ðŸ“Š</span> <strong>Fidelity:</strong> Ratio of successful decryptions to total nodes. Must be â‰¥ 0.6 (configurable via <code>ECCA_FIDELITY_MIN</code>).</div>
-    `,
-    log: '<code>docker compose logs -f dhf-compositor</code> â€” watch for DAG walk and decrypt operations. Also <code>docker compose logs -f hippocampus-dag</code> for block reads.',
-    run: async () => {
-      const r = await api('GET', Siyana(`/v1/stacks/${state.stackId}/recall?depth=6&memoryToken=1000`));
-      return { result: { ...r, body: null }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: 'Has fragments array', pass: Array.isArray(r.data?.fragments) },
-        { label: `Fragments recalled: ${r.data?.fragments?.length ?? 0}`, pass: (r.data?.fragments?.length ?? 0) > 0 },
-        { label: 'Has fidelity score', pass: r.data?.fidelity !== undefined },
-        { label: `Fidelity: ${r.data?.fidelity ?? 'â€”'}`, pass: true }
-      ]};
-    }
-  },
-  { id: 'check-fidelity', phase: '6.2', title: 'Fidelity Threshold Check', chains: ['Siyana'],
-    desc: 'Verifies the fidelity score meets the minimum threshold (0.6). Fidelity below this means too many memory fragments were lost or corrupted â€” a "coordination residue" would be generated.',
-    run: async () => {
-      const r = await api('GET', Siyana(`/v1/stacks/${state.stackId}/recall?depth=6&memoryToken=1000`));
-      const fidelity = r.data?.fidelity ?? 0;
-      return { result: { ...r, body: null }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: `Fidelity ${fidelity} â‰¥ 0.6 threshold`, pass: fidelity >= 0.6 },
-        { label: `Broken links: ${r.data?.broken?.length ?? 0}`, pass: true }
-      ]};
-    }
-  },
-
-  // Phase 7: Needlecast
-  { id: 'needlecast', phase: '7.1', title: 'Needlecast: Human â†’ AI', chains: ['Siyana', 'hippocampus', 'cortex'],
-    desc: 'Transfers consciousness from the human sleeve to the AI sleeve â€” a 6-step atomic saga: freeze â†’ snapshot â†’ shard â†’ transmit â†’ reassemble â†’ activate. The source sleeve is frozen, memory is sharded across the DAG, transmitted, and reassembled in the target.',
-    verify: `
-      <div class="verify-item"><span class="verify-icon">ðŸ§ </span> <strong>Hippocampus DAG:</strong> Memory shards created during snapshot phase. Each shard is a separately encrypted DAG node.</div>
-      <div class="verify-item"><span class="verify-icon">âŸ </span> <strong>Cortex EVM:</strong> NeedlecastRouter contract records the transfer. SleeveRegistry updated with new sleeve-to-stack binding.</div>
-      <div class="verify-item"><span class="verify-icon">ðŸ”—</span> <strong>Saga:</strong> The 6-step saga is atomic â€” if any step fails, all previous steps are compensated (rolled back).</div>
-    `,
-    log: '<code>docker compose logs -f needlecast-router</code> â€” see the full saga execution with step-by-step output. Also <code>docker compose logs -f siyana-api</code> for the delegation.',
-    run: async () => {
-      const body = { from: state.sleeveHuman, to: state.sleeveAi };
-      const r = await api('POST', Siyana('/v1/needlecast'), body);
-      return { result: { ...r, body }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: 'Needlecast OK', pass: r.data?.ok === true },
-        { label: `Route: ${r.data?.route ? r.data.route.join(' â†’ ') : 'â€”'}`, pass: !!r.data?.route }
-      ]};
-    }
-  },
-
-  // Phase 8: Blockchain Verification
-  { id: 'verify-evm', phase: '8.1', title: 'Cortex EVM â€” Block Number', chains: ['cortex'],
-    desc: 'Queries the Cortex EVM chain to verify blocks have been produced. Each service interaction that touches contracts (stack creation, needlecast, epoch anchor) creates EVM transactions visible on-chain.',
-    verify: `
-      <div class="verify-item"><span class="verify-icon">âŸ </span> <strong>Cortex EVM:</strong> Block number should be advancing. Each contract interaction is a transaction in a block.</div>
-      <div class="verify-item"><span class="verify-icon">ðŸ“‹</span> <strong>Contracts deployed:</strong> StackIdentity, BandwidthToken, QuellistTreasury, ResidueRegistry, SleeveRegistry, EpochAnchor, NeedlecastRouter</div>
-    `,
-    log: '<code>docker compose logs -f cortex-evm</code>',
-    run: async () => {
-      const r = await api('POST', cortex(), { jsonrpc: '2.0', method: 'eth_blockNumber', params: [], id: 1 });
-      const blockNum = r.data?.result ? parseInt(r.data.result, 16) : 0;
-      return { result: { ...r, body: { jsonrpc:'2.0', method:'eth_blockNumber' } }, assertions: [
-        { label: 'EVM responding', pass: r.ok },
-        { label: `Block number: ${blockNum}`, pass: blockNum > 0 },
-        { label: 'Chain has advanced since start', pass: blockNum > 1 }
-      ]};
-    }
-  },
-  { id: 'check-residues', phase: '8.2', title: 'Coordination Residues', chains: ['Siyana'],
-    desc: 'Lists coordination residues â€” these are "errors as economic objects." When a sleeve desyncs, a memory recall fails, or a needlecast breaks, a Residue is created. Residues can be claimed by other stacks who provide proof-of-resolution.',
-    verify: `<div class="verify-item"><span class="verify-icon">âš ï¸</span> <strong>Residue Types:</strong> stale-ordering, speculative-divergence, historical-non-canonical, reorg-orphan, shard-loss. Each generates a claimable reward in the Quellist Treasury.</div>`,
-    log: '<code>docker compose logs -f siyana-api</code> â€” residues are created by the worker-runner service: <code>docker compose logs -f worker-runner</code>',
-    run: async () => {
-      const r = await api('GET', Siyana('/v1/coordination/residues'));
-      return { result: { ...r, body: null }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: 'Returns array', pass: Array.isArray(r.data) },
-        { label: `Residues found: ${r.data?.length ?? 0}`, pass: true }
-      ]};
-    }
-  },
-  { id: 'check-desync', phase: '8.3', title: 'Desync Report', chains: ['Siyana'],
-    desc: 'Lists all sleeves with drift exceeding the threshold (default: 15). These sleeves need to sync before they can perceive or recall reliably. Desynced sleeves generate residues.',
-    run: async () => {
-      const r = await api('GET', Siyana('/v1/coordination/desync'));
-      return { result: { ...r, body: null }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: 'Returns array', pass: Array.isArray(r.data) },
-        { label: `Desynced sleeves: ${r.data?.length ?? 0}`, pass: true }
-      ]};
-    }
-  },
-
-  // Phase 9: Cleanup
-  { id: 'decomm-human', phase: '9.1', title: 'Decommission Human Sleeve', chains: ['Siyana'],
-    desc: 'Marks the human sleeve as not alive. The sleeve\'s token balance is returned to the stack pool. The sleeve can no longer perceive or sync.',
-    log: '<code>docker compose logs -f siyana-api</code> â€” look for <code>sleeve.decommissioned</code>',
-    run: async () => {
-      const r = await api('DELETE', Siyana(`/v1/sleeves/${state.sleeveHuman}`));
-      return { result: { ...r, body: null }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: 'Decommission OK', pass: r.data?.ok === true }
-      ]};
-    }
-  },
-  { id: 'decomm-ai', phase: '9.2', title: 'Decommission AI Sleeve', chains: ['Siyana'],
-    desc: 'Decommissions the AI sleeve. Both test sleeves are now shut down.',
-    run: async () => {
-      const r = await api('DELETE', Siyana(`/v1/sleeves/${state.sleeveAi}`));
-      return { result: { ...r, body: null }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: 'Decommission OK', pass: r.data?.ok === true }
-      ]};
-    }
-  },
-  { id: 'final-balances', phase: '9.3', title: 'Final Token Balances', chains: ['Siyana'],
-    desc: 'Reads final token balances after the full cycle. Compute tokens were spent on perceives, sync tokens on syncs, and routing tokens on the needlecast.',
-    verify: `
-      <div class="verify-item"><span class="verify-icon">ðŸª™</span> <strong>Token Accounting:</strong> Compare with initial balances from step 3.2. Compute, sync, and routing tokens should have decreased.</div>
-    `,
-    run: async () => {
-      const r = await api('GET', Siyana(`/v1/tokens/balances/${state.stackId}`));
-      return { result: { ...r, body: null }, assertions: [
-        { label: 'Status 200', pass: r.status === 200 },
-        { label: 'Has balance data', pass: !!r.data?.stackId || !!r.data?.sleeveTotals }
-      ]};
-    }
-  }
-];
-
-async function runAllTests() {
-  if (state.running) { state.aborted = true; return; }
-
-  // Reset
-  state.running = true;
-  state.aborted = false;
-  state.stackId = null;
-  state.sleeveHuman = null;
-  state.sleeveAi = null;
-  state.cid = null;
-  stats = { total: tests.length, pass: 0, fail: 0, skip: 0, startTime: performance.now() };
-
-  const btn = document.getElementById('btn-run');
-  btn.textContent = 'â–  Stop';
-  btn.classList.add('stop');
-
-  // Clear output
-  const output = document.getElementById('test-output');
-  output.innerHTML = '';
-  document.querySelectorAll('.phase-list li').forEach(li => li.className = '');
-  updateStats();
-
-  // Build all cards first
-  for (const t of tests) {
-    addTestCard(t.id, t.phase, t.title, t.chains, t.desc, t.verify || '', t.log || '');
-  }
-
-  // Run sequentially
-  let failed = false;
-  for (const t of tests) {
-    if (state.aborted) { skipCard(t.id); continue; }
-
-    // If a critical phase failed, skip downstream
-    if (failed && !t.id.startsWith('health-')) {
-      skipCard(t.id);
-      continue;
-    }
-
-    markRunning(t.id);
-
-    try {
-      const result = await t.run();
-      const ok = setCardResult(t.id, result.result, result.assertions);
-      if (!ok && (t.phase.startsWith('1') || t.phase.startsWith('2.1'))) {
-        failed = true; // Critical failure â€” skip remaining
-      }
-    } catch (err) {
-      const errResult = { method: 'GET', endpoint: 'â€”', data: { error: err.message }, elapsed: 0, status: 0, body: null };
-      setCardResult(t.id, errResult, [
-        { label: `Error: ${err.message}`, pass: false }
-      ]);
-      if (t.phase.startsWith('1') || t.phase.startsWith('2.1')) {
-        failed = true;
-      }
-    }
-
-    // Small delay between tests for readability
-    await new Promise(r => setTimeout(r, 150));
-  }
-
-  // Done
-  state.running = false;
-  btn.textContent = 'â–¶ Run All Tests';
-  btn.classList.remove('stop');
-  const elapsed = ((performance.now() - stats.startTime) / 1000).toFixed(1);
-  document.getElementById('stat-time').textContent = elapsed + 's';
-  document.getElementById('progress').style.width = '100%';
-}
-
-function resetAll() {
-  if (state.running) return;
-  state.stackId = null;
-  state.sleeveHuman = null;
-  state.sleeveAi = null;
-  state.cid = null;
-  stats = { total: 0, pass: 0, fail: 0, skip: 0, startTime: 0 };
-
-  document.getElementById('test-output').innerHTML = `
-    <div class="test-card" style="border:1px dashed var(--border-subtle);background:transparent;text-align:center;padding:3rem;">
-      <p style="color:var(--text-muted);font-size:0.9rem;">Click <strong>â–¶ Run All Tests</strong> to start the end-to-end test suite.<br>Tests run sequentially â€” each step depends on the previous one.</p>
-    </div>
-  `;
-  document.querySelectorAll('.phase-list li').forEach(li => li.className = '');
-  updateStats();
-  document.getElementById('progress').style.width = '0%';
-  document.getElementById('stat-time').textContent = '0s';
-}
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  document.querySelectorAll('.docs-content h2[id]').forEach(h => observer.observe(h));
 </script>
 </body>
 </html>
