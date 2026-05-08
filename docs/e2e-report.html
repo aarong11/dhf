@@ -464,15 +464,15 @@ body::after {
 <div class="header">
   <h1>ECCA // E2E</h1>
   <div class="subtitle">End-to-End Integration Test Report &mdash; Autonomous Agent Lifecycle</div>
-  <div class="timestamp">2026-05-08T17:18:13Z</div>
+  <div class="timestamp">2026-05-08T18:15:20Z</div>
 </div>
 <div class="stats-bar">
-  <div class="stat"><div class="stat-value pass-count">51</div><div class="stat-label">Passed</div></div>
-  <div class="stat"><div class="stat-value fail-count">2</div><div class="stat-label">Failed</div></div>
+  <div class="stat"><div class="stat-value pass-count">53</div><div class="stat-label">Passed</div></div>
+  <div class="stat"><div class="stat-value fail-count">0</div><div class="stat-label">Failed</div></div>
   <div class="stat"><div class="stat-value total-count">53</div><div class="stat-label">Total</div></div>
 </div>
 <div class="progress-container">
-  <div class="progress-bar"><div class="progress-fill has-fails" style="width: 96%"></div></div>
+  <div class="progress-bar"><div class="progress-fill all-pass" style="width: 100%"></div></div>
 </div>
 <div class="content">
 <section class="phase" id="phase-01">
@@ -483,9 +483,9 @@ body::after {
 </div>
 <div class="phase-body">
 <p class="phase-desc">Verify all infrastructure services are alive. The API gateway, memory DAG, and proof-of-work chain must all respond before any agent operations can begin.</p><div class="service-tag"><span class="svc-name">siyana-api</span><span class="svc-desc">port 7070 — REST/WebSocket API gateway</span></div><p class="info">Siyana is the single entry point for all agent operations.</p><p class="workflow"><span class="wf-icon">&#x2699;</span> An agent's first action on startup is to verify its API gateway is reachable.</p><div class="request"><span class="method method-GET">GET</span> <span class="url">http://localhost:7070/healthz</span></div><details class="response"><summary>Response</summary><pre>{
-  &quot;ok&quot;: true,
-  &quot;name&quot;: &quot;siyana-api&quot;,
-  &quot;ts&quot;: 1778260693603
+  "quot;ok"quot;: true,
+  "quot;name"quot;: "quot;siyana-api"quot;,
+  "quot;ts"quot;: 1778264120873
 }</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> siyana-api healthz</div><div class="test pass"><span class="indicator">&#x2713;</span> siyana-api name</div><div class="service-tag"><span class="svc-name">medulla-pow</span><span class="svc-desc">port 8332 — custom PoW blockchain (global clock)</span></div><p class="info">Medulla mines blocks every ~4s, advancing the epoch counter.</p><p class="workflow"><span class="wf-icon">&#x2699;</span> Agents need a decentralized clock. Medulla provides this without trusting any single server.</p><div class="request"><span class="method method-GET">GET</span> <span class="url">http://localhost:8332/health</span></div><div class="test pass"><span class="indicator">&#x2713;</span> medulla-pow health (HTTP 200)</div><div class="service-tag"><span class="svc-name">hippocampus-dag</span><span class="svc-desc">port 15001 — content-addressed DAG storage</span></div><p class="info">Hippocampus stores all agent memories as encrypted Merkle-DAG nodes.</p><p class="workflow"><span class="wf-icon">&#x2699;</span> This is the agent's long-term memory. Without it, the agent has amnesia.</p><div class="request"><span class="method method-GET">GET</span> <span class="url">http://localhost:15001/health</span></div><div class="test pass"><span class="indicator">&#x2713;</span> hippocampus-dag health (HTTP 200)</div></div></section><section class="phase" id="phase-02">
 <div class="phase-header" onclick="this.parentElement.classList.toggle('collapsed')">
   <span class="phase-num">02</span>
@@ -493,49 +493,49 @@ body::after {
   <span class="phase-toggle">&#x25BC;</span>
 </div>
 <div class="phase-body">
-<p class="phase-desc">Create a persistent identity container (Stack) for the AI agent. Mints an NFT on the Cortex EVM chain, generates ed25519 keys, and initializes token balances. The Stack is the agent's soul.</p><div class="service-tag"><span class="svc-name">siyana-api → cortex-evm</span><span class="svc-desc">Stack creation triggers StackIdentity.sol NFT mint</span></div><p class="info">POST /v1/stacks generates ed25519 keypair, CPV profile, and mints StackIdentity NFT.</p><p class="workflow"><span class="wf-icon">&#x2699;</span> Step 1 of deploying any AI agent: give it a cryptographically-verifiable identity.</p><div class="request"><span class="method method-POST">POST</span> <span class="url">http://localhost:7070/v1/stacks</span><pre class="req-body">{&quot;name&quot;:&quot;ci-test-agent&quot;}</pre></div><details class="response"><summary>Response</summary><pre>{
-  &quot;id&quot;: &quot;stack:human:5:c11db171b9ea&quot;,
-  &quot;tokenId&quot;: 5,
-  &quot;name&quot;: &quot;ci-test-agent&quot;,
-  &quot;kind&quot;: &quot;human&quot;,
-  &quot;pubKey&quot;: &quot;6cc9746111ff2bfe84dc9c7e8ea223cb9fa7f4a0f92857c6c63287c5c095b31b&quot;,
-  &quot;epoch&quot;: 0,
-  &quot;cpv&quot;: {
-    &quot;syncCoeff&quot;: 1,
-    &quot;memoryCoeff&quot;: 1,
-    &quot;computeCoeff&quot;: 1,
-    &quot;residueCoeff&quot;: 1,
-    &quot;routingCoeff&quot;: 1
+<p class="phase-desc">Create a persistent identity container (Stack) for the AI agent. Mints an NFT on the Cortex EVM chain, generates ed25519 keys, and initializes token balances. The Stack is the agent's soul.</p><div class="service-tag"><span class="svc-name">siyana-api → cortex-evm</span><span class="svc-desc">Stack creation triggers StackIdentity.sol NFT mint</span></div><p class="info">POST /v1/stacks generates ed25519 keypair, CPV profile, and mints StackIdentity NFT.</p><p class="workflow"><span class="wf-icon">&#x2699;</span> Step 1 of deploying any AI agent: give it a cryptographically-verifiable identity.</p><div class="request"><span class="method method-POST">POST</span> <span class="url">http://localhost:7070/v1/stacks</span><pre class="req-body">{"quot;name"quot;:"quot;ci-test-agent"quot;}</pre></div><details class="response"><summary>Response</summary><pre>{
+  "quot;id"quot;: "quot;stack:human:1:fa1af98b9fe5"quot;,
+  "quot;tokenId"quot;: 1,
+  "quot;name"quot;: "quot;ci-test-agent"quot;,
+  "quot;kind"quot;: "quot;human"quot;,
+  "quot;pubKey"quot;: "quot;85f96e3cbc96e8f12958a8ef8aca5c39a8fd8823d0410e5ed9e19e8f15bf6ea0"quot;,
+  "quot;epoch"quot;: 0,
+  "quot;cpv"quot;: {
+    "quot;syncCoeff"quot;: 1,
+    "quot;memoryCoeff"quot;: 1,
+    "quot;computeCoeff"quot;: 1,
+    "quot;residueCoeff"quot;: 1,
+    "quot;routingCoeff"quot;: 1
   },
-  &quot;binding&quot;: {
-    &quot;floor&quot;: 0.25,
-    &quot;decayRate&quot;: 0.05
+  "quot;binding"quot;: {
+    "quot;floor"quot;: 0.25,
+    "quot;decayRate"quot;: 0.05
   },
-  &quot;createdAt&quot;: &quot;2026-05-08T17:18:13.700Z&quot;,
-  &quot;episodicHead&quot;: null,
-  &quot;identityPriv&quot;: &quot;21cffeda21462edfc12327e2a2a1bbf053321a5107709b0164f1dd0bed12172e&quot;
-}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> stack created</div><div class="test pass"><span class="indicator">&#x2713;</span> stack kind</div><div class="test pass"><span class="indicator">&#x2713;</span> stack pubKey</div><div class="test pass"><span class="indicator">&#x2713;</span> stack identityPriv</div><p class="info">Retrieving stack by ID to verify persistence.</p><div class="request"><span class="method method-GET">GET</span> <span class="url">http://localhost:7070/v1/stacks/stack:human:5:c11db171b9ea</span></div><details class="response"><summary>Response</summary><pre>{
-  &quot;id&quot;: &quot;stack:human:5:c11db171b9ea&quot;,
-  &quot;tokenId&quot;: 5,
-  &quot;name&quot;: &quot;ci-test-agent&quot;,
-  &quot;kind&quot;: &quot;human&quot;,
-  &quot;pubKey&quot;: &quot;6cc9746111ff2bfe84dc9c7e8ea223cb9fa7f4a0f92857c6c63287c5c095b31b&quot;,
-  &quot;epoch&quot;: 0,
-  &quot;cpv&quot;: {
-    &quot;syncCoeff&quot;: 1,
-    &quot;memoryCoeff&quot;: 1,
-    &quot;computeCoeff&quot;: 1,
-    &quot;residueCoeff&quot;: 1,
-    &quot;routingCoeff&quot;: 1
+  "quot;createdAt"quot;: "quot;2026-05-08T18:15:21.067Z"quot;,
+  "quot;episodicHead"quot;: null,
+  "quot;identityPriv"quot;: "quot;f24e958852eece25c7a730223410ff1d9f702962c85c64be105a083f98cef2ff"quot;
+}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> stack created</div><div class="test pass"><span class="indicator">&#x2713;</span> stack kind</div><div class="test pass"><span class="indicator">&#x2713;</span> stack pubKey</div><div class="test pass"><span class="indicator">&#x2713;</span> stack identityPriv</div><p class="info">Retrieving stack by ID to verify persistence.</p><div class="request"><span class="method method-GET">GET</span> <span class="url">http://localhost:7070/v1/stacks/stack:human:1:fa1af98b9fe5</span></div><details class="response"><summary>Response</summary><pre>{
+  "quot;id"quot;: "quot;stack:human:1:fa1af98b9fe5"quot;,
+  "quot;tokenId"quot;: 1,
+  "quot;name"quot;: "quot;ci-test-agent"quot;,
+  "quot;kind"quot;: "quot;human"quot;,
+  "quot;pubKey"quot;: "quot;85f96e3cbc96e8f12958a8ef8aca5c39a8fd8823d0410e5ed9e19e8f15bf6ea0"quot;,
+  "quot;epoch"quot;: 0,
+  "quot;cpv"quot;: {
+    "quot;syncCoeff"quot;: 1,
+    "quot;memoryCoeff"quot;: 1,
+    "quot;computeCoeff"quot;: 1,
+    "quot;residueCoeff"quot;: 1,
+    "quot;routingCoeff"quot;: 1
   },
-  &quot;binding&quot;: {
-    &quot;floor&quot;: 0.25,
-    &quot;decayRate&quot;: 0.05
+  "quot;binding"quot;: {
+    "quot;floor"quot;: 0.25,
+    "quot;decayRate"quot;: 0.05
   },
-  &quot;createdAt&quot;: &quot;2026-05-08T17:18:13.700Z&quot;,
-  &quot;episodicHead&quot;: null,
-  &quot;sleeves&quot;: [],
-  &quot;anchors&quot;: []
+  "quot;createdAt"quot;: "quot;2026-05-08T18:15:21.067Z"quot;,
+  "quot;episodicHead"quot;: null,
+  "quot;sleeves"quot;: [],
+  "quot;anchors"quot;: []
 }</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> stack GET matches</div></div></section><section class="phase" id="phase-03">
 <div class="phase-header" onclick="this.parentElement.classList.toggle('collapsed')">
   <span class="phase-num">03</span>
@@ -543,55 +543,55 @@ body::after {
   <span class="phase-toggle">&#x25BC;</span>
 </div>
 <div class="phase-body">
-<p class="phase-desc">Spawn active embodiments (Sleeves) for the Stack. One identity can inhabit multiple bodies — a human interface and an AI inference engine — each with its own drift counter and token balance.</p><div class="service-tag"><span class="svc-name">siyana-api</span><span class="svc-desc">Sleeve records created in PostgreSQL, linked to Stack</span></div><p class="info">Spawning a human sleeve — the operator's interface.</p><p class="workflow"><span class="wf-icon">&#x2699;</span> A typical agent spawns a human sleeve for its operator and an AI sleeve for itself.</p><div class="request"><span class="method method-POST">POST</span> <span class="url">http://localhost:7070/v1/sleeves</span><pre class="req-body">{&quot;stackId&quot;:&quot;stack:human:5:c11db171b9ea&quot;,&quot;embodimentType&quot;:&quot;human&quot;}</pre></div><details class="response"><summary>Response</summary><pre>{
-  &quot;id&quot;: &quot;sleeve:human:1:be0fdc90&quot;,
-  &quot;stackId&quot;: &quot;stack:human:5:c11db171b9ea&quot;,
-  &quot;embodimentType&quot;: &quot;human&quot;,
-  &quot;alive&quot;: true,
-  &quot;drift&quot;: 0,
-  &quot;syncEpoch&quot;: 0,
-  &quot;lastSync&quot;: &quot;2026-05-08T17:18:13.816Z&quot;,
-  &quot;tokens&quot;: {
-    &quot;sync&quot;: 250,
-    &quot;memory&quot;: 250,
-    &quot;compute&quot;: 250,
-    &quot;residue&quot;: 0,
-    &quot;routing&quot;: 250
+<p class="phase-desc">Spawn active embodiments (Sleeves) for the Stack. One identity can inhabit multiple bodies — a human interface and an AI inference engine — each with its own drift counter and token balance.</p><div class="service-tag"><span class="svc-name">siyana-api</span><span class="svc-desc">Sleeve records created in PostgreSQL, linked to Stack</span></div><p class="info">Spawning a human sleeve — the operator's interface.</p><p class="workflow"><span class="wf-icon">&#x2699;</span> A typical agent spawns a human sleeve for its operator and an AI sleeve for itself.</p><div class="request"><span class="method method-POST">POST</span> <span class="url">http://localhost:7070/v1/sleeves</span><pre class="req-body">{"quot;stackId"quot;:"quot;stack:human:1:fa1af98b9fe5"quot;,"quot;embodimentType"quot;:"quot;human"quot;}</pre></div><details class="response"><summary>Response</summary><pre>{
+  "quot;id"quot;: "quot;sleeve:human:1:6ed01aad"quot;,
+  "quot;stackId"quot;: "quot;stack:human:1:fa1af98b9fe5"quot;,
+  "quot;embodimentType"quot;: "quot;human"quot;,
+  "quot;alive"quot;: true,
+  "quot;drift"quot;: 0,
+  "quot;syncEpoch"quot;: 0,
+  "quot;lastSync"quot;: "quot;2026-05-08T18:15:21.144Z"quot;,
+  "quot;tokens"quot;: {
+    "quot;sync"quot;: 250,
+    "quot;memory"quot;: 250,
+    "quot;compute"quot;: 250,
+    "quot;residue"quot;: 0,
+    "quot;routing"quot;: 250
   },
-  &quot;hostname&quot;: null,
-  &quot;createdAt&quot;: &quot;2026-05-08T17:18:13.816Z&quot;
-}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> human sleeve created</div><div class="test pass"><span class="indicator">&#x2713;</span> human sleeve type</div><div class="test pass"><span class="indicator">&#x2713;</span> human sleeve alive</div><p class="info">Spawning an AI sleeve — the autonomous worker.</p><div class="request"><span class="method method-POST">POST</span> <span class="url">http://localhost:7070/v1/sleeves</span><pre class="req-body">{&quot;stackId&quot;:&quot;stack:human:5:c11db171b9ea&quot;,&quot;embodimentType&quot;:&quot;ai&quot;}</pre></div><details class="response"><summary>Response</summary><pre>{
-  &quot;id&quot;: &quot;sleeve:ai:2:caafd6f3&quot;,
-  &quot;stackId&quot;: &quot;stack:human:5:c11db171b9ea&quot;,
-  &quot;embodimentType&quot;: &quot;ai&quot;,
-  &quot;alive&quot;: true,
-  &quot;drift&quot;: 0,
-  &quot;syncEpoch&quot;: 0,
-  &quot;lastSync&quot;: &quot;2026-05-08T17:18:13.884Z&quot;,
-  &quot;tokens&quot;: {
-    &quot;sync&quot;: 250,
-    &quot;memory&quot;: 250,
-    &quot;compute&quot;: 250,
-    &quot;residue&quot;: 0,
-    &quot;routing&quot;: 250
+  "quot;hostname"quot;: null,
+  "quot;createdAt"quot;: "quot;2026-05-08T18:15:21.144Z"quot;
+}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> human sleeve created</div><div class="test pass"><span class="indicator">&#x2713;</span> human sleeve type</div><div class="test pass"><span class="indicator">&#x2713;</span> human sleeve alive</div><p class="info">Spawning an AI sleeve — the autonomous worker.</p><div class="request"><span class="method method-POST">POST</span> <span class="url">http://localhost:7070/v1/sleeves</span><pre class="req-body">{"quot;stackId"quot;:"quot;stack:human:1:fa1af98b9fe5"quot;,"quot;embodimentType"quot;:"quot;ai"quot;}</pre></div><details class="response"><summary>Response</summary><pre>{
+  "quot;id"quot;: "quot;sleeve:ai:2:5c4c554b"quot;,
+  "quot;stackId"quot;: "quot;stack:human:1:fa1af98b9fe5"quot;,
+  "quot;embodimentType"quot;: "quot;ai"quot;,
+  "quot;alive"quot;: true,
+  "quot;drift"quot;: 0,
+  "quot;syncEpoch"quot;: 0,
+  "quot;lastSync"quot;: "quot;2026-05-08T18:15:21.187Z"quot;,
+  "quot;tokens"quot;: {
+    "quot;sync"quot;: 250,
+    "quot;memory"quot;: 250,
+    "quot;compute"quot;: 250,
+    "quot;residue"quot;: 0,
+    "quot;routing"quot;: 250
   },
-  &quot;hostname&quot;: null,
-  &quot;createdAt&quot;: &quot;2026-05-08T17:18:13.884Z&quot;
-}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> ai sleeve created</div><div class="test pass"><span class="indicator">&#x2713;</span> ai sleeve type</div><div class="request"><span class="method method-GET">GET</span> <span class="url">http://localhost:7070/v1/sleeves</span></div><div class="test pass"><span class="indicator">&#x2713;</span> sleeves list count &gt;= 2 (7)</div></div></section><section class="phase" id="phase-04">
+  "quot;hostname"quot;: null,
+  "quot;createdAt"quot;: "quot;2026-05-08T18:15:21.187Z"quot;
+}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> ai sleeve created</div><div class="test pass"><span class="indicator">&#x2713;</span> ai sleeve type</div><div class="request"><span class="method method-GET">GET</span> <span class="url">http://localhost:7070/v1/sleeves</span></div><div class="test pass"><span class="indicator">&#x2713;</span> sleeves list count >gt;= 2 (2)</div></div></section><section class="phase" id="phase-04">
 <div class="phase-header" onclick="this.parentElement.classList.toggle('collapsed')">
   <span class="phase-num">04</span>
   <h2>Token Balances</h2>
   <span class="phase-toggle">&#x25BC;</span>
 </div>
 <div class="phase-body">
-<p class="phase-desc">Verify the bandwidth token economy. Four token types (compute, memory, sync, routing) gate all operations. 2 sleeves &times; 250 each = 500 total per type.</p><div class="service-tag"><span class="svc-name">siyana-api</span><span class="svc-desc">Aggregated token balances from PostgreSQL</span></div><p class="info">With 2 sleeves at 250 each, we expect 500 of every token type.</p><p class="workflow"><span class="wf-icon">&#x2699;</span> Agents check their budget before starting operations to plan what they can afford.</p><div class="request"><span class="method method-GET">GET</span> <span class="url">http://localhost:7070/v1/tokens/balances/stack:human:5:c11db171b9ea</span></div><details class="response"><summary>Response</summary><pre>{
-  &quot;stackId&quot;: &quot;stack:human:5:c11db171b9ea&quot;,
-  &quot;sleeveTotals&quot;: {
-    &quot;compute&quot;: 500,
-    &quot;memory&quot;: 500,
-    &quot;sync&quot;: 500,
-    &quot;routing&quot;: 500,
-    &quot;residue&quot;: 0
+<p class="phase-desc">Verify the bandwidth token economy. Four token types (compute, memory, sync, routing) gate all operations. 2 sleeves &times; 250 each = 500 total per type.</p><div class="service-tag"><span class="svc-name">siyana-api</span><span class="svc-desc">Aggregated token balances from PostgreSQL</span></div><p class="info">With 2 sleeves at 250 each, we expect 500 of every token type.</p><p class="workflow"><span class="wf-icon">&#x2699;</span> Agents check their budget before starting operations to plan what they can afford.</p><div class="request"><span class="method method-GET">GET</span> <span class="url">http://localhost:7070/v1/tokens/balances/stack:human:1:fa1af98b9fe5</span></div><details class="response"><summary>Response</summary><pre>{
+  "quot;stackId"quot;: "quot;stack:human:1:fa1af98b9fe5"quot;,
+  "quot;sleeveTotals"quot;: {
+    "quot;compute"quot;: 500,
+    "quot;memory"quot;: 500,
+    "quot;sync"quot;: 500,
+    "quot;routing"quot;: 500,
+    "quot;residue"quot;: 0
   }
 }</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> balances stackId</div><div class="test pass"><span class="indicator">&#x2713;</span> compute tokens</div><div class="test pass"><span class="indicator">&#x2713;</span> memory tokens</div><div class="test pass"><span class="indicator">&#x2713;</span> sync tokens</div><div class="test pass"><span class="indicator">&#x2713;</span> routing tokens</div></div></section><section class="phase" id="phase-05">
 <div class="phase-header" onclick="this.parentElement.classList.toggle('collapsed')">
@@ -600,15 +600,15 @@ body::after {
   <span class="phase-toggle">&#x25BC;</span>
 </div>
 <div class="phase-body">
-<p class="phase-desc">Store observations into the agent's encrypted memory graph. Each perceive encrypts input with epoch-scoped AES-GCM, stores it on Hippocampus as a DAG node, and links it into the episodic chain. Costs 0.5 compute tokens.</p><div class="service-tag"><span class="svc-name">siyana-api → hippocampus-dag</span><span class="svc-desc">API encrypts, DAG stores, CID returned</span></div><p class="info">Perceive #1: Human sleeve stores an observation.</p><p class="workflow"><span class="wf-icon">&#x2699;</span> After reading a document, the agent stores its observation for future recall.</p><div class="request"><span class="method method-POST">POST</span> <span class="url">http://localhost:7070/v1/sleeves/sleeve:human:1:be0fdc90/perceive</span><pre class="req-body">{&quot;input&quot;:&quot;The quick brown fox jumped over the lazy dog&quot;}</pre></div><details class="response"><summary>Response</summary><pre>{
-  &quot;cid&quot;: &quot;ecca://42f8b7acacd6967e554ec10aed13b416f7ba00e535be7cd498ae06da0a60d121@0&quot;,
-  &quot;thought&quot;: &quot;[human@0fdc90] The quick brown fox jumped over the lazy dog&quot;
-}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> perceive 1 returns cid</div><div class="test pass"><span class="indicator">&#x2713;</span> perceive 1 returns thought</div><p class="info">Perceive #2: AI sleeve stores its own observation into the SAME memory graph.</p><div class="request"><span class="method method-POST">POST</span> <span class="url">http://localhost:7070/v1/sleeves/sleeve:ai:2:caafd6f3/perceive</span><pre class="req-body">{&quot;input&quot;:&quot;Artificial intelligence is transforming every industry&quot;}</pre></div><details class="response"><summary>Response</summary><pre>{
-  &quot;cid&quot;: &quot;ecca://31ad66cfd442554b97a78f8c8f5da605a382e23a32707f8bdf20b903c16400b7@999&quot;,
-  &quot;thought&quot;: &quot;[ai@afd6f3] Artificial intelligence is transforming every industry&quot;
-}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> perceive 2 returns cid</div><p class="info">Perceive #3: Another human observation. DAG now has 3 linked encrypted nodes.</p><div class="request"><span class="method method-POST">POST</span> <span class="url">http://localhost:7070/v1/sleeves/sleeve:human:1:be0fdc90/perceive</span><pre class="req-body">{&quot;input&quot;:&quot;Memory is the treasury of the mind&quot;}</pre></div><details class="response"><summary>Response</summary><pre>{
-  &quot;cid&quot;: &quot;ecca://075a848ced654bc749ef72508dd5b52bee0b776e42c81c64805c563097095f78@999&quot;,
-  &quot;thought&quot;: &quot;[human@0fdc90] Memory is the treasury of the mind&quot;
+<p class="phase-desc">Store observations into the agent's encrypted memory graph. Each perceive encrypts input with epoch-scoped AES-GCM, stores it on Hippocampus as a DAG node, and links it into the episodic chain. Costs 0.5 compute tokens.</p><div class="service-tag"><span class="svc-name">siyana-api → hippocampus-dag</span><span class="svc-desc">API encrypts, DAG stores, CID returned</span></div><p class="info">Perceive #1: Human sleeve stores an observation.</p><p class="workflow"><span class="wf-icon">&#x2699;</span> After reading a document, the agent stores its observation for future recall.</p><div class="request"><span class="method method-POST">POST</span> <span class="url">http://localhost:7070/v1/sleeves/sleeve:human:1:6ed01aad/perceive</span><pre class="req-body">{"quot;input"quot;:"quot;The quick brown fox jumped over the lazy dog"quot;}</pre></div><details class="response"><summary>Response</summary><pre>{
+  "quot;cid"quot;: "quot;ecca://66b23da60b9e5741ab2b07e9e877cf6f9cbe1e56fdc34e3ab38e335003a0f389@0"quot;,
+  "quot;thought"quot;: "quot;[human@d01aad] The quick brown fox jumped over the lazy dog"quot;
+}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> perceive 1 returns cid</div><div class="test pass"><span class="indicator">&#x2713;</span> perceive 1 returns thought</div><p class="info">Perceive #2: AI sleeve stores its own observation into the SAME memory graph.</p><div class="request"><span class="method method-POST">POST</span> <span class="url">http://localhost:7070/v1/sleeves/sleeve:ai:2:5c4c554b/perceive</span><pre class="req-body">{"quot;input"quot;:"quot;Artificial intelligence is transforming every industry"quot;}</pre></div><details class="response"><summary>Response</summary><pre>{
+  "quot;cid"quot;: "quot;ecca://c8346f2ccb50b7d75949becd2a194f1f2ec142530f35f3386a8587296b0802a1@0"quot;,
+  "quot;thought"quot;: "quot;[ai@4c554b] Artificial intelligence is transforming every industry"quot;
+}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> perceive 2 returns cid</div><p class="info">Perceive #3: Another human observation. DAG now has 3 linked encrypted nodes.</p><div class="request"><span class="method method-POST">POST</span> <span class="url">http://localhost:7070/v1/sleeves/sleeve:human:1:6ed01aad/perceive</span><pre class="req-body">{"quot;input"quot;:"quot;Memory is the treasury of the mind"quot;}</pre></div><details class="response"><summary>Response</summary><pre>{
+  "quot;cid"quot;: "quot;ecca://335059bd8714811cb98dac5e42aaa36d1bb07371fef50f91abc26d2db489dd45@0"quot;,
+  "quot;thought"quot;: "quot;[human@d01aad] Memory is the treasury of the mind"quot;
 }</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> perceive 3 returns cid</div><div class="test pass"><span class="indicator">&#x2713;</span> all CIDs are unique</div><div class="test pass"><span class="indicator">&#x2713;</span> CID has ecca:// prefix</div></div></section><section class="phase" id="phase-5b">
 <div class="phase-header" onclick="this.parentElement.classList.toggle('collapsed')">
   <span class="phase-num">5b</span>
@@ -616,8 +616,8 @@ body::after {
   <span class="phase-toggle">&#x25BC;</span>
 </div>
 <div class="phase-body">
-<p class="phase-desc">Pin a core memory directly to the Stack. Pinned memories survive fidelity decay — they are the agent's fundamental knowledge that must never be forgotten.</p><div class="service-tag"><span class="svc-name">siyana-api → hippocampus-dag</span><span class="svc-desc">Encrypted, stored, and pinned in the DAG</span></div><p class="info">Pinning a core memory that survives across epochs.</p><p class="workflow"><span class="wf-icon">&#x2699;</span> An agent pins its core directives, safety rules, and user preferences.</p><div class="request"><span class="method method-POST">POST</span> <span class="url">http://localhost:7070/v1/stacks/stack:human:5:c11db171b9ea/remember</span><pre class="req-body">{&quot;text&quot;:&quot;Pinned memory via remember endpoint&quot;,&quot;pin&quot;:true}</pre></div><details class="response"><summary>Response</summary><pre>{
-  &quot;cid&quot;: &quot;ecca://f0e376585e2053572b8c0b774bef06802eced8f6f752266c863f7ebce36073fb@999&quot;
+<p class="phase-desc">Pin a core memory directly to the Stack. Pinned memories survive fidelity decay — they are the agent's fundamental knowledge that must never be forgotten.</p><div class="service-tag"><span class="svc-name">siyana-api → hippocampus-dag</span><span class="svc-desc">Encrypted, stored, and pinned in the DAG</span></div><p class="info">Pinning a core memory that survives across epochs.</p><p class="workflow"><span class="wf-icon">&#x2699;</span> An agent pins its core directives, safety rules, and user preferences.</p><div class="request"><span class="method method-POST">POST</span> <span class="url">http://localhost:7070/v1/stacks/stack:human:1:fa1af98b9fe5/remember</span><pre class="req-body">{"quot;text"quot;:"quot;Pinned memory via remember endpoint"quot;,"quot;pin"quot;:true}</pre></div><details class="response"><summary>Response</summary><pre>{
+  "quot;cid"quot;: "quot;ecca://4506bcf56bbb6341f13a586cd9ddb771e71fdd371f9752736229733b0d8038d4@0"quot;
 }</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> remember returns cid</div></div></section><section class="phase" id="phase-06">
 <div class="phase-header" onclick="this.parentElement.classList.toggle('collapsed')">
   <span class="phase-num">06</span>
@@ -625,68 +625,79 @@ body::after {
   <span class="phase-toggle">&#x25BC;</span>
 </div>
 <div class="phase-body">
-<p class="phase-desc">Traverse the DAG, decrypting each node with epoch keys. Returns fragments, broken links, and fidelity score. Fidelity &lt; 0.6 triggers a coordination residue. This is RAG with cryptographic integrity.</p><div class="service-tag"><span class="svc-name">siyana-api → dhf-compositor → hippocampus-dag</span><span class="svc-desc">Compositor walks DAG, decrypts each node</span></div><p class="info">Recalling all memories. With 4 recent memories and no key rotation, fidelity should be 1.0.</p><p class="workflow"><span class="wf-icon">&#x2699;</span> Before responding to a user, an agent recalls memories for context.</p><div class="request"><span class="method method-GET">GET</span> <span class="url">http://localhost:7070/v1/stacks/stack:human:5:c11db171b9ea/recall</span></div><details class="response"><summary>Response</summary><pre>{
-  &quot;fragments&quot;: [
+<p class="phase-desc">Traverse the DAG, decrypting each node with epoch keys. Returns fragments, broken links, and fidelity score. Fidelity &lt; 0.6 triggers a coordination residue. This is RAG with cryptographic integrity.</p><div class="service-tag"><span class="svc-name">siyana-api → dhf-compositor → hippocampus-dag</span><span class="svc-desc">Compositor walks DAG, decrypts each node</span></div><p class="info">Recalling all memories. With 4 recent memories and no key rotation, fidelity should be 1.0.</p><p class="workflow"><span class="wf-icon">&#x2699;</span> Before responding to a user, an agent recalls memories for context.</p><div class="request"><span class="method method-GET">GET</span> <span class="url">http://localhost:7070/v1/stacks/stack:human:1:fa1af98b9fe5/recall</span></div><details class="response"><summary>Response</summary><pre>{
+  "quot;fragments"quot;: [
     {
-      &quot;cid&quot;: &quot;ecca://f0e376585e2053572b8c0b774bef06802eced8f6f752266c863f7ebce36073fb@999&quot;,
-      &quot;ciphertext&quot;: {
-        &quot;iv&quot;: &quot;144a09fac1392c24012d3539&quot;,
-        &quot;ct&quot;: &quot;d48fab983fdbdf2988597b563a326ea22c5056ca92e4e3c94ed6ce5833b71e3427baf6eca3d34437ef2e65bd9d921a17541c42&quot;,
-        &quot;v&quot;: 1
+      "quot;cid"quot;: "quot;ecca://4506bcf56bbb6341f13a586cd9ddb771e71fdd371f9752736229733b0d8038d4@0"quot;,
+      "quot;ciphertext"quot;: {
+        "quot;iv"quot;: "quot;0ab9fa189ffc42c7583a8bf5"quot;,
+        "quot;ct"quot;: "quot;dec32653881dd3e232de07af8b8cef6a9f262771253787fc90eb7223eec5c5ed279477960a7babd8b0da6ba3beba3bf29a626e"quot;,
+        "quot;v"quot;: 1
       },
-      &quot;links&quot;: [
-        &quot;ecca://075a848ced654bc749ef72508dd5b52bee0b776e42c81c64805c563097095f78@999&quot;
+      "quot;links"quot;: [
+        "quot;ecca://335059bd8714811cb98dac5e42aaa36d1bb07371fef50f91abc26d2db489dd45@0"quot;
       ],
-      &quot;epoch&quot;: 999,
-      &quot;kind&quot;: &quot;episodic&quot;,
-      &quot;pinned&quot;: true,
-      &quot;stackId&quot;: &quot;stack:human:5:c11db171b9ea&quot;
+      "quot;epoch"quot;: 0,
+      "quot;kind"quot;: "quot;episodic"quot;,
+      "quot;pinned"quot;: true,
+      "quot;stackId"quot;: "quot;stack:human:1:fa1af98b9fe5"quot;
     },
     {
-      &quot;cid&quot;: &quot;ecca://075a848ced654bc749ef72508dd5b52bee0b776e42c81c64805c563097095f78@999&quot;,
-      &quot;ciphertext&quot;: {
-        &quot;iv&quot;: &quot;9b629b028437aa36389eb702&quot;,
-        &quot;ct&quot;: &quot;836020fca094e16e4059c77ed8d0456c7f932d406e73941e667094d27fc95090b5d3c14718037f8c45a04cbb3d047585b6b3d3d3d9fa2b89139038f1455fb8c2aa&quot;,
-        &quot;v&quot;: 1
+      "quot;cid"quot;: "quot;ecca://335059bd8714811cb98dac5e42aaa36d1bb07371fef50f91abc26d2db489dd45@0"quot;,
+      "quot;ciphertext"quot;: {
+        "quot;iv"quot;: "quot;0a97c734ee6733d74b92b3c8"quot;,
+        "quot;ct"quot;: "quot;7314629be9e6bf2fbd517d30813713c3f343df2c4dd0c634f28081a747d68038c8e5bd37dd1d32488b40a51ec8ed28bcc4c7812983e77c364d7a2322416c33f578"quot;,
+        "quot;v"quot;: 1
       },
-      &quot;links&quot;: [
-        &quot;ecca://31ad66cfd442554b97a78f8c8f5da605a382e23a32707f8bdf20b903c16400b7@999&quot;
+      "quot;links"quot;: [
+        "quot;ecca://c8346f2ccb50b7d75949becd2a194f1f2ec142530f35f3386a8587296b0802a1@0"quot;
       ],
-      &quot;epoch&quot;: 999,
-      &quot;kind&quot;: &quot;episodic&quot;,
-      &quot;pinned&quot;: false,
-      &quot;stackId&quot;: &quot;stack:human:5:c11db171b9ea&quot;
+      "quot;epoch"quot;: 0,
+      "quot;kind"quot;: "quot;episodic"quot;,
+      "quot;pinned"quot;: false,
+      "quot;stackId"quot;: "quot;stack:human:1:fa1af98b9fe5"quot;
     },
     {
-      &quot;cid&quot;: &quot;ecca://31ad66cfd442554b97a78f8c8f5da605a382e23a32707f8bdf20b903c16400b7@999&quot;,
-      &quot;ciphertext&quot;: {
-        &quot;iv&quot;: &quot;861dad3faaa659f5e4719fde&quot;,
-        &quot;ct&quot;: &quot;f88b2b305d81e3186190f569055e7ddc54729e8ab14d441e650431cddf4a3e851b7cc29ca811f25e236f8ec0cd4a0d991850344ab4a451b3bd67f314b191b345d17ed91ad05d83f30c05a60277020dd12a0c&quot;,
-        &quot;v&quot;: 1
+      "quot;cid"quot;: "quot;ecca://c8346f2ccb50b7d75949becd2a194f1f2ec142530f35f3386a8587296b0802a1@0"quot;,
+      "quot;ciphertext"quot;: {
+        "quot;iv"quot;: "quot;50cc37245ef4ad24751de5d5"quot;,
+        "quot;ct"quot;: "quot;2ff6c611605598da9ff8538717180898d463cc94585a99ee6a3897a153e0cbc70f2abc04c7b9b4f9f0bd45e242e07893cc7ddec600683808bdfa3acaf9e9dfe826c38f192028046669f4a567aca9f4d36bf0"quot;,
+        "quot;v"quot;: 1
       },
-      &quot;links&quot;: [
-        &quot;ecca://42f8b7acacd6967e554ec10aed13b416f7ba00e535be7cd498ae06da0a60d121@0&quot;
+      "quot;links"quot;: [
+        "quot;ecca://66b23da60b9e5741ab2b07e9e877cf6f9cbe1e56fdc34e3ab38e335003a0f389@0"quot;
       ],
-      &quot;epoch&quot;: 999,
-      &quot;kind&quot;: &quot;episodic&quot;,
-      &quot;pinned&quot;: false,
-      &quot;stackId&quot;: &quot;stack:human:5:c11db171b9ea&quot;
+      "quot;epoch"quot;: 0,
+      "quot;kind"quot;: "quot;episodic"quot;,
+      "quot;pinned"quot;: false,
+      "quot;stackId"quot;: "quot;stack:human:1:fa1af98b9fe5"quot;
+    },
+    {
+      "quot;cid"quot;: "quot;ecca://66b23da60b9e5741ab2b07e9e877cf6f9cbe1e56fdc34e3ab38e335003a0f389@0"quot;,
+      "quot;ciphertext"quot;: {
+        "quot;iv"quot;: "quot;d5b412fa7571b0c507dac7f5"quot;,
+        "quot;ct"quot;: "quot;935a09c64a6ff7c58db8118847feaa63b54955d0ffb01dd1e37ca8a8a9dbeca6b778c8390af2437209fdf1fc7407dc729a51367e78565eb86f195a3798472369ed5537e6cca80cf20909b0"quot;,
+        "quot;v"quot;: 1
+      },
+      "quot;links"quot;: [],
+      "quot;epoch"quot;: 0,
+      "quot;kind"quot;: "quot;episodic"quot;,
+      "quot;pinned"quot;: false,
+      "quot;stackId"quot;: "quot;stack:human:1:fa1af98b9fe5"quot;
     }
   ],
-  &quot;broken&quot;: [
-    &quot;ecca://42f8b7acacd6967e554ec10aed13b416f7ba00e535be7cd498ae06da0a60d121@0#epoch_drift_999&quot;
-  ],
-  &quot;fidelity&quot;: 0.75
-}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> recall returns fragments (3)</div><div class="test fail"><span class="indicator">&#x2717;</span> recall fidelity <span class="fail-reason">expected 1, got 0.75</span></div><div class="test fail"><span class="indicator">&#x2717;</span> broken links <span class="fail-reason">1 broken</span></div></div></section><section class="phase" id="phase-07">
+  "quot;broken"quot;: [],
+  "quot;fidelity"quot;: 1
+}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> recall returns fragments (4)</div><div class="test pass"><span class="indicator">&#x2713;</span> recall fidelity = 1 (perfect)</div><div class="test pass"><span class="indicator">&#x2713;</span> no broken links</div></div></section><section class="phase" id="phase-07">
 <div class="phase-header" onclick="this.parentElement.classList.toggle('collapsed')">
   <span class="phase-num">07</span>
   <h2>Sleeve Sync</h2>
   <span class="phase-toggle">&#x25BC;</span>
 </div>
 <div class="phase-body">
-<p class="phase-desc">Reset drift counter by syncing to the current epoch. Operations increment drift; drift &gt; 15 = desynced. Costs 1 sync token.</p><div class="service-tag"><span class="svc-name">siyana-api</span><span class="svc-desc">Resets drift counter, deducts sync token</span></div><p class="info">Syncing human sleeve — drift was 3, reset to 0.</p><p class="workflow"><span class="wf-icon">&#x2699;</span> Agents schedule syncs between task batches to stay coherent.</p><div class="request"><span class="method method-POST">POST</span> <span class="url">http://localhost:7070/v1/sleeves/sleeve:human:1:be0fdc90/sync</span></div><details class="response"><summary>Response</summary><pre>{
-  &quot;ok&quot;: true,
-  &quot;epoch&quot;: 999
+<p class="phase-desc">Reset drift counter by syncing to the current epoch. Operations increment drift; drift &gt; 15 = desynced. Costs 1 sync token.</p><div class="service-tag"><span class="svc-name">siyana-api</span><span class="svc-desc">Resets drift counter, deducts sync token</span></div><p class="info">Syncing human sleeve — drift was 3, reset to 0.</p><p class="workflow"><span class="wf-icon">&#x2699;</span> Agents schedule syncs between task batches to stay coherent.</p><div class="request"><span class="method method-POST">POST</span> <span class="url">http://localhost:7070/v1/sleeves/sleeve:human:1:6ed01aad/sync</span></div><details class="response"><summary>Response</summary><pre>{
+  "quot;ok"quot;: true,
+  "quot;epoch"quot;: 0
 }</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> sync ok</div></div></section><section class="phase" id="phase-08">
 <div class="phase-header" onclick="this.parentElement.classList.toggle('collapsed')">
   <span class="phase-num">08</span>
@@ -695,136 +706,120 @@ body::after {
 </div>
 <div class="phase-body">
 <p class="phase-desc">Advance the global clock. Thalamus computes coherence root (cross-chain Merkle root), embeds it in the Medulla block header, updates EpochAnchor on Cortex, and triggers Treasury emissions.</p><div class="service-tag"><span class="svc-name">siyana-api → thalamus-router → medulla-pow</span><span class="svc-desc">Coherence root computed, block mined</span></div><div class="request"><span class="method method-GET">GET</span> <span class="url">http://localhost:7070/v1/epochs/current</span></div><details class="response"><summary>Response</summary><pre>{
-  &quot;epoch&quot;: 999,
-  &quot;height&quot;: 999,
-  &quot;tip&quot;: &quot;00006f7dbf3ba2acdc410ca16309e571d9bc5aaff817d09e3c3246d226b2a22f&quot;
+  "quot;epoch"quot;: 1,
+  "quot;height"quot;: 1,
+  "quot;tip"quot;: "quot;000044986992eed1506dd45c91b62501478b71d8035b4732a354f9bea3e6c972"quot;
 }</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> epoch number</div><div class="test pass"><span class="indicator">&#x2713;</span> chain height</div><div class="test pass"><span class="indicator">&#x2713;</span> chain tip</div><p class="info">Triggering PoW block mine. synapticFieldRoot = cross-chain Merkle root.</p><p class="workflow"><span class="wf-icon">&#x2699;</span> Mining anchors all agent activity into an immutable record.</p><div class="request"><span class="method method-POST">POST</span> <span class="url">http://localhost:7070/v1/mining/block</span></div><details class="response"><summary>Response</summary><pre>{
-  &quot;blockHash&quot;: &quot;00008e06265b784cf259473734027af41206f7633215633c4d61b8d3d42aee5d&quot;,
-  &quot;crossRoot&quot;: &quot;0000000000000000000000000000000000000000000000000000000000000000&quot;,
-  &quot;difficulty&quot;: 4,
-  &quot;epoch&quot;: 1000,
-  &quot;evmRoot&quot;: &quot;0000000000000000000000000000000000000000000000000000000000000000&quot;,
-  &quot;height&quot;: 0,
-  &quot;ipfsRoot&quot;: &quot;0000000000000000000000000000000000000000000000000000000000000000&quot;,
-  &quot;sleevesRoot&quot;: &quot;0000000000000000000000000000000000000000000000000000000000000000&quot;,
-  &quot;synapticFieldRoot&quot;: &quot;60acb1af595c0eb8c9c1f929cd74555fa31c6d2792c5c767c065c0496f275c36&quot;,
-  &quot;ts&quot;: 1778260694
+  "quot;blockHash"quot;: "quot;0000d99a78520ad2f83f4c6a77c49141b164b37bcb967562ec4cb17eec68acd9"quot;,
+  "quot;crossRoot"quot;: "quot;0000000000000000000000000000000000000000000000000000000000000000"quot;,
+  "quot;difficulty"quot;: 4,
+  "quot;epoch"quot;: 2,
+  "quot;evmRoot"quot;: "quot;0000000000000000000000000000000000000000000000000000000000000000"quot;,
+  "quot;height"quot;: 0,
+  "quot;ipfsRoot"quot;: "quot;0000000000000000000000000000000000000000000000000000000000000000"quot;,
+  "quot;sleevesRoot"quot;: "quot;0000000000000000000000000000000000000000000000000000000000000000"quot;,
+  "quot;synapticFieldRoot"quot;: "quot;4c634627016e6178bd9b00b8b931a7a38106ae30bc5ace42214d1ca4fede582a"quot;,
+  "quot;ts"quot;: 1778264121
 }</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> mined block hash</div><div class="test pass"><span class="indicator">&#x2713;</span> mined synapticFieldRoot</div><div class="request"><span class="method method-GET">GET</span> <span class="url">http://localhost:7070/v1/epochs/current</span></div><details class="response"><summary>Response</summary><pre>{
-  &quot;epoch&quot;: 1000,
-  &quot;height&quot;: 1000,
-  &quot;tip&quot;: &quot;00008e06265b784cf259473734027af41206f7633215633c4d61b8d3d42aee5d&quot;
-}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> height increased after mining (999 → 1000)</div></div></section><section class="phase" id="phase-09">
+  "quot;epoch"quot;: 2,
+  "quot;height"quot;: 2,
+  "quot;tip"quot;: "quot;0000d99a78520ad2f83f4c6a77c49141b164b37bcb967562ec4cb17eec68acd9"quot;
+}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> height increased after mining (1 → 2)</div></div></section><section class="phase" id="phase-09">
 <div class="phase-header" onclick="this.parentElement.classList.toggle('collapsed')">
   <span class="phase-num">09</span>
   <h2>Needlecast</h2>
   <span class="phase-toggle">&#x25BC;</span>
 </div>
 <div class="phase-body">
-<p class="phase-desc">Transfer consciousness between sleeves via 6-step atomic saga: FREEZE &rarr; SNAPSHOT &rarr; SHARD &rarr; TRANSMIT &rarr; REASSEMBLE &rarr; ACTIVATE. Compensates on failure. Costs 5 routing tokens.</p><div class="service-tag"><span class="svc-name">siyana-api → needlecast-router-svc → hippocampus-dag → cortex-evm</span><span class="svc-desc">Full cross-service saga</span></div><p class="info">Transferring consciousness from human sleeve → AI sleeve.</p><p class="workflow"><span class="wf-icon">&#x2699;</span> When an agent migrates hosts (edge→cloud), it needlecasts. Identity travels; only embodiment changes.</p><div class="request"><span class="method method-POST">POST</span> <span class="url">http://localhost:7070/v1/needlecast</span><pre class="req-body">{&quot;from&quot;:&quot;sleeve:human:1:be0fdc90&quot;,&quot;to&quot;:&quot;sleeve:ai:2:caafd6f3&quot;}</pre></div><details class="response"><summary>Response</summary><pre>{
-  &quot;ok&quot;: true,
-  &quot;sagaId&quot;: &quot;needle:8864baa5028b70c9&quot;,
-  &quot;route&quot;: &quot;dfe00f0cdcbedbb92e61664cfc2f61cf8d636bcc29e2a9490f8cd10cb9746dd0&quot;,
-  &quot;shards&quot;: 3
-}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> needlecast ok</div><div class="test pass"><span class="indicator">&#x2713;</span> needlecast sagaId</div><div class="test pass"><span class="indicator">&#x2713;</span> needlecast route</div><div class="test pass"><span class="indicator">&#x2713;</span> needlecast shards transferred (3)</div></div></section><section class="phase" id="phase-10">
+<p class="phase-desc">Transfer consciousness between sleeves via 6-step atomic saga: FREEZE &rarr; SNAPSHOT &rarr; SHARD &rarr; TRANSMIT &rarr; REASSEMBLE &rarr; ACTIVATE. Compensates on failure. Costs 5 routing tokens.</p><div class="service-tag"><span class="svc-name">siyana-api → needlecast-router-svc → hippocampus-dag → cortex-evm</span><span class="svc-desc">Full cross-service saga</span></div><p class="info">Transferring consciousness from human sleeve → AI sleeve.</p><p class="workflow"><span class="wf-icon">&#x2699;</span> When an agent migrates hosts (edge→cloud), it needlecasts. Identity travels; only embodiment changes.</p><div class="request"><span class="method method-POST">POST</span> <span class="url">http://localhost:7070/v1/needlecast</span><pre class="req-body">{"quot;from"quot;:"quot;sleeve:human:1:6ed01aad"quot;,"quot;to"quot;:"quot;sleeve:ai:2:5c4c554b"quot;}</pre></div><details class="response"><summary>Response</summary><pre>{
+  "quot;ok"quot;: true,
+  "quot;sagaId"quot;: "quot;needle:1e4892ca8a253e11"quot;,
+  "quot;route"quot;: "quot;b29f21f4f0d61a3039dcafed57c1b844fcb662a79f01aca3a22e6b86d015547c"quot;,
+  "quot;shards"quot;: 4
+}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> needlecast ok</div><div class="test pass"><span class="indicator">&#x2713;</span> needlecast sagaId</div><div class="test pass"><span class="indicator">&#x2713;</span> needlecast route</div><div class="test pass"><span class="indicator">&#x2713;</span> needlecast shards transferred (4)</div></div></section><section class="phase" id="phase-10">
 <div class="phase-header" onclick="this.parentElement.classList.toggle('collapsed')">
   <span class="phase-num">10</span>
   <h2>Coordination State</h2>
   <span class="phase-toggle">&#x25BC;</span>
 </div>
 <div class="phase-body">
-<p class="phase-desc">Check for errors (coordination residues). ECCA treats errors as economic objects — other agents earn tokens by proving resolution. Debugging becomes a paid incentive.</p><div class="service-tag"><span class="svc-name">siyana-api</span><span class="svc-desc">Queries desync and residue state</span></div><p class="info">Checking for desynced sleeves (drift &gt; 15).</p><p class="workflow"><span class="wf-icon">&#x2699;</span> Monitoring agents poll this to detect problems and compete to resolve them.</p><div class="request"><span class="method method-GET">GET</span> <span class="url">http://localhost:7070/v1/coordination/desync</span></div><details class="response"><summary>Response</summary><pre>[
-  {
-    &quot;id&quot;: &quot;sleeve:ai:5:177a55a5&quot;,
-    &quot;stackId&quot;: &quot;stack:human:1:326ab50ad219&quot;,
-    &quot;drift&quot;: 496
-  },
-  {
-    &quot;id&quot;: &quot;sleeve:human:1:04a8cbab&quot;,
-    &quot;stackId&quot;: &quot;stack:human:1:326ab50ad219&quot;,
-    &quot;drift&quot;: 497
-  },
-  {
-    &quot;id&quot;: &quot;sleeve:ai:2:8dae6c09&quot;,
-    &quot;stackId&quot;: &quot;stack:human:1:326ab50ad219&quot;,
-    &quot;drift&quot;: 497
-  }
-]</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> desync endpoint (HTTP 200)</div><div class="request"><span class="method method-GET">GET</span> <span class="url">http://localhost:7070/v1/coordination/residues</span></div><details class="response"><summary>Response</summary><pre>[]</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> residues endpoint (HTTP 200)</div></div></section><section class="phase" id="phase-11">
+<p class="phase-desc">Check for errors (coordination residues). ECCA treats errors as economic objects — other agents earn tokens by proving resolution. Debugging becomes a paid incentive.</p><div class="service-tag"><span class="svc-name">siyana-api</span><span class="svc-desc">Queries desync and residue state</span></div><p class="info">Checking for desynced sleeves (drift >gt; 15).</p><p class="workflow"><span class="wf-icon">&#x2699;</span> Monitoring agents poll this to detect problems and compete to resolve them.</p><div class="request"><span class="method method-GET">GET</span> <span class="url">http://localhost:7070/v1/coordination/desync</span></div><details class="response"><summary>Response</summary><pre>[]</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> desync endpoint (HTTP 200)</div><div class="request"><span class="method method-GET">GET</span> <span class="url">http://localhost:7070/v1/coordination/residues</span></div><details class="response"><summary>Response</summary><pre>[]</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> residues endpoint (HTTP 200)</div></div></section><section class="phase" id="phase-11">
 <div class="phase-header" onclick="this.parentElement.classList.toggle('collapsed')">
   <span class="phase-num">11</span>
   <h2>Final Stack State</h2>
   <span class="phase-toggle">&#x25BC;</span>
 </div>
 <div class="phase-body">
-<p class="phase-desc">Verify the Stack after the full lifecycle. episodicHead points to latest memory, tokens partially consumed, both sleeves present.</p><div class="service-tag"><span class="svc-name">siyana-api</span><span class="svc-desc">Full stack state with sleeves and balances</span></div><p class="info">Reading complete stack state — what an agent loads on restart.</p><div class="request"><span class="method method-GET">GET</span> <span class="url">http://localhost:7070/v1/stacks/stack:human:5:c11db171b9ea</span></div><details class="response"><summary>Response</summary><pre>{
-  &quot;id&quot;: &quot;stack:human:5:c11db171b9ea&quot;,
-  &quot;tokenId&quot;: 5,
-  &quot;name&quot;: &quot;ci-test-agent&quot;,
-  &quot;kind&quot;: &quot;human&quot;,
-  &quot;pubKey&quot;: &quot;6cc9746111ff2bfe84dc9c7e8ea223cb9fa7f4a0f92857c6c63287c5c095b31b&quot;,
-  &quot;epoch&quot;: 999,
-  &quot;cpv&quot;: {
-    &quot;syncCoeff&quot;: 1,
-    &quot;memoryCoeff&quot;: 1,
-    &quot;computeCoeff&quot;: 1,
-    &quot;residueCoeff&quot;: 1,
-    &quot;routingCoeff&quot;: 1
+<p class="phase-desc">Verify the Stack after the full lifecycle. episodicHead points to latest memory, tokens partially consumed, both sleeves present.</p><div class="service-tag"><span class="svc-name">siyana-api</span><span class="svc-desc">Full stack state with sleeves and balances</span></div><p class="info">Reading complete stack state — what an agent loads on restart.</p><div class="request"><span class="method method-GET">GET</span> <span class="url">http://localhost:7070/v1/stacks/stack:human:1:fa1af98b9fe5</span></div><details class="response"><summary>Response</summary><pre>{
+  "quot;id"quot;: "quot;stack:human:1:fa1af98b9fe5"quot;,
+  "quot;tokenId"quot;: 1,
+  "quot;name"quot;: "quot;ci-test-agent"quot;,
+  "quot;kind"quot;: "quot;human"quot;,
+  "quot;pubKey"quot;: "quot;85f96e3cbc96e8f12958a8ef8aca5c39a8fd8823d0410e5ed9e19e8f15bf6ea0"quot;,
+  "quot;epoch"quot;: 0,
+  "quot;cpv"quot;: {
+    "quot;syncCoeff"quot;: 1,
+    "quot;memoryCoeff"quot;: 1,
+    "quot;computeCoeff"quot;: 1,
+    "quot;residueCoeff"quot;: 1,
+    "quot;routingCoeff"quot;: 1
   },
-  &quot;binding&quot;: {
-    &quot;floor&quot;: 0.25,
-    &quot;decayRate&quot;: 0.05
+  "quot;binding"quot;: {
+    "quot;floor"quot;: 0.25,
+    "quot;decayRate"quot;: 0.05
   },
-  &quot;createdAt&quot;: &quot;2026-05-08T17:18:13.700Z&quot;,
-  &quot;episodicHead&quot;: &quot;ecca://f0e376585e2053572b8c0b774bef06802eced8f6f752266c863f7ebce36073fb@999&quot;,
-  &quot;sleeves&quot;: [
+  "quot;createdAt"quot;: "quot;2026-05-08T18:15:21.067Z"quot;,
+  "quot;episodicHead"quot;: "quot;ecca://4506bcf56bbb6341f13a586cd9ddb771e71fdd371f9752736229733b0d8038d4@0"quot;,
+  "quot;sleeves"quot;: [
     {
-      &quot;id&quot;: &quot;sleeve:ai:2:caafd6f3&quot;,
-      &quot;stackId&quot;: &quot;stack:human:5:c11db171b9ea&quot;,
-      &quot;embodimentType&quot;: &quot;ai&quot;,
-      &quot;alive&quot;: true,
-      &quot;drift&quot;: 0,
-      &quot;syncEpoch&quot;: 999,
-      &quot;lastSync&quot;: &quot;2026-05-08T17:18:13.884Z&quot;,
-      &quot;tokens&quot;: {
-        &quot;sync&quot;: 250,
-        &quot;memory&quot;: 250,
-        &quot;compute&quot;: 249.5,
-        &quot;residue&quot;: 0,
-        &quot;routing&quot;: 250
+      "quot;id"quot;: "quot;sleeve:ai:2:5c4c554b"quot;,
+      "quot;stackId"quot;: "quot;stack:human:1:fa1af98b9fe5"quot;,
+      "quot;embodimentType"quot;: "quot;ai"quot;,
+      "quot;alive"quot;: true,
+      "quot;drift"quot;: 0,
+      "quot;syncEpoch"quot;: 0,
+      "quot;lastSync"quot;: "quot;2026-05-08T18:15:21.187Z"quot;,
+      "quot;tokens"quot;: {
+        "quot;sync"quot;: 250,
+        "quot;memory"quot;: 250,
+        "quot;compute"quot;: 249.5,
+        "quot;residue"quot;: 0,
+        "quot;routing"quot;: 250
       },
-      &quot;hostname&quot;: null,
-      &quot;createdAt&quot;: &quot;2026-05-08T17:18:13.884Z&quot;
+      "quot;hostname"quot;: null,
+      "quot;createdAt"quot;: "quot;2026-05-08T18:15:21.187Z"quot;
     },
     {
-      &quot;id&quot;: &quot;sleeve:human:1:be0fdc90&quot;,
-      &quot;stackId&quot;: &quot;stack:human:5:c11db171b9ea&quot;,
-      &quot;embodimentType&quot;: &quot;human&quot;,
-      &quot;alive&quot;: true,
-      &quot;drift&quot;: 0,
-      &quot;syncEpoch&quot;: 999,
-      &quot;lastSync&quot;: &quot;2026-05-08T17:18:14.330Z&quot;,
-      &quot;tokens&quot;: {
-        &quot;sync&quot;: 249,
-        &quot;memory&quot;: 250,
-        &quot;compute&quot;: 249,
-        &quot;residue&quot;: 0,
-        &quot;routing&quot;: 245
+      "quot;id"quot;: "quot;sleeve:human:1:6ed01aad"quot;,
+      "quot;stackId"quot;: "quot;stack:human:1:fa1af98b9fe5"quot;,
+      "quot;embodimentType"quot;: "quot;human"quot;,
+      "quot;alive"quot;: true,
+      "quot;drift"quot;: 0,
+      "quot;syncEpoch"quot;: 0,
+      "quot;lastSync"quot;: "quot;2026-05-08T18:15:21.526Z"quot;,
+      "quot;tokens"quot;: {
+        "quot;sync"quot;: 249,
+        "quot;memory"quot;: 250,
+        "quot;compute"quot;: 249,
+        "quot;residue"quot;: 0,
+        "quot;routing"quot;: 245
       },
-      &quot;hostname&quot;: null,
-      &quot;createdAt&quot;: &quot;2026-05-08T17:18:13.816Z&quot;
+      "quot;hostname"quot;: null,
+      "quot;createdAt"quot;: "quot;2026-05-08T18:15:21.144Z"quot;
     }
   ],
-  &quot;anchors&quot;: []
-}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> episodicHead set</div><div class="test pass"><span class="indicator">&#x2713;</span> stack has sleeves</div><div class="test pass"><span class="indicator">&#x2713;</span> compute tokens consumed (498.5 &lt; 500)</div><div class="test pass"><span class="indicator">&#x2713;</span> routing tokens consumed by needlecast (495 &lt; 500)</div></div></section><section class="phase" id="phase-12">
+  "quot;anchors"quot;: []
+}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> episodicHead set</div><div class="test pass"><span class="indicator">&#x2713;</span> stack has sleeves</div><div class="test pass"><span class="indicator">&#x2713;</span> compute tokens consumed (498.5 <lt; 500)</div><div class="test pass"><span class="indicator">&#x2713;</span> routing tokens consumed by needlecast (495 <lt; 500)</div></div></section><section class="phase" id="phase-12">
 <div class="phase-header" onclick="this.parentElement.classList.toggle('collapsed')">
   <span class="phase-num">12</span>
   <h2>Cleanup (Decommission)</h2>
   <span class="phase-toggle">&#x25BC;</span>
 </div>
 <div class="phase-body">
-<p class="phase-desc">Decommission sleeves. Tokens return to the Stack pool. The Stack identity persists on-chain and can spawn new sleeves at any time.</p><div class="service-tag"><span class="svc-name">siyana-api</span><span class="svc-desc">Sets alive=false, returns tokens to pool</span></div><div class="request"><span class="method method-DELETE">DELETE</span> <span class="url">http://localhost:7070/v1/sleeves/sleeve:human:1:be0fdc90</span></div><details class="response"><summary>Response</summary><pre>{
-  &quot;ok&quot;: true
-}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> decommission human sleeve</div><div class="request"><span class="method method-DELETE">DELETE</span> <span class="url">http://localhost:7070/v1/sleeves/sleeve:ai:2:caafd6f3</span></div><details class="response"><summary>Response</summary><pre>{
-  &quot;ok&quot;: true
+<p class="phase-desc">Decommission sleeves. Tokens return to the Stack pool. The Stack identity persists on-chain and can spawn new sleeves at any time.</p><div class="service-tag"><span class="svc-name">siyana-api</span><span class="svc-desc">Sets alive=false, returns tokens to pool</span></div><div class="request"><span class="method method-DELETE">DELETE</span> <span class="url">http://localhost:7070/v1/sleeves/sleeve:human:1:6ed01aad</span></div><details class="response"><summary>Response</summary><pre>{
+  "quot;ok"quot;: true
+}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> decommission human sleeve</div><div class="request"><span class="method method-DELETE">DELETE</span> <span class="url">http://localhost:7070/v1/sleeves/sleeve:ai:2:5c4c554b</span></div><details class="response"><summary>Response</summary><pre>{
+  "quot;ok"quot;: true
 }</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> decommission ai sleeve</div><div class="request"><span class="method method-GET">GET</span> <span class="url">http://localhost:7070/v1/sleeves</span></div><div class="test pass"><span class="indicator">&#x2713;</span> no alive sleeves for stack after cleanup</div></div></section><section class="phase" id="phase-13">
 <div class="phase-header" onclick="this.parentElement.classList.toggle('collapsed')">
   <span class="phase-num">13</span>
@@ -832,27 +827,27 @@ body::after {
   <span class="phase-toggle">&#x25BC;</span>
 </div>
 <div class="phase-body">
-<p class="phase-desc">Verify all three chains recorded cryptographic evidence. Cortex EVM (contracts), Medulla PoW (coherence roots), Hippocampus (encrypted memory nodes).</p><div class="service-tag"><span class="svc-name">cortex-evm</span><span class="svc-desc">port 8545 — Clique PoA, chain ID 1337</span></div><p class="info">Querying Cortex block height. Stores StackIdentity NFTs, BandwidthToken, all registries.</p><div class="request"><span class="method method-POST">POST</span> <span class="url">http://localhost:8545</span><pre class="req-body">{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1,&quot;method&quot;:&quot;eth_blockNumber&quot;,&quot;params&quot;:[]}</pre></div><details class="response"><summary>Response</summary><pre>{
-  &quot;jsonrpc&quot;: &quot;2.0&quot;,
-  &quot;id&quot;: 1,
-  &quot;result&quot;: &quot;0x3e2&quot;
-}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> cortex-evm block height: 0x3e2</div><div class="service-tag"><span class="svc-name">medulla-pow</span><span class="svc-desc">port 8332 — Go PoW, ~4s blocks</span></div><p class="info">Height = epochs passed. Block headers contain the coherence root.</p><div class="request"><span class="method method-POST">POST</span> <span class="url">http://localhost:8332/rpc</span><pre class="req-body">{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1,&quot;method&quot;:&quot;getinfo&quot;,&quot;params&quot;:{}}</pre></div><details class="response"><summary>Response</summary><pre>{
-  &quot;jsonrpc&quot;: &quot;2.0&quot;,
-  &quot;id&quot;: 1,
-  &quot;result&quot;: {
-    &quot;difficulty&quot;: 4,
-    &quot;epoch&quot;: 1000,
-    &quot;height&quot;: 1000,
-    &quot;tip&quot;: &quot;00008e06265b784cf259473734027af41206f7633215633c4d61b8d3d42aee5d&quot;
+<p class="phase-desc">Verify all three chains recorded cryptographic evidence. Cortex EVM (contracts), Medulla PoW (coherence roots), Hippocampus (encrypted memory nodes).</p><div class="service-tag"><span class="svc-name">cortex-evm</span><span class="svc-desc">port 8545 — Clique PoA, chain ID 1337</span></div><p class="info">Querying Cortex block height. Stores StackIdentity NFTs, BandwidthToken, all registries.</p><div class="request"><span class="method method-POST">POST</span> <span class="url">http://localhost:8545</span><pre class="req-body">{"quot;jsonrpc"quot;:"quot;2.0"quot;,"quot;id"quot;:1,"quot;method"quot;:"quot;eth_blockNumber"quot;,"quot;params"quot;:[]}</pre></div><details class="response"><summary>Response</summary><pre>{
+  "quot;jsonrpc"quot;: "quot;2.0"quot;,
+  "quot;id"quot;: 1,
+  "quot;result"quot;: "quot;0x1b"quot;
+}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> cortex-evm block height: 0x1b</div><div class="service-tag"><span class="svc-name">medulla-pow</span><span class="svc-desc">port 8332 — Go PoW, ~4s blocks</span></div><p class="info">Height = epochs passed. Block headers contain the coherence root.</p><div class="request"><span class="method method-POST">POST</span> <span class="url">http://localhost:8332/rpc</span><pre class="req-body">{"quot;jsonrpc"quot;:"quot;2.0"quot;,"quot;id"quot;:1,"quot;method"quot;:"quot;getinfo"quot;,"quot;params"quot;:{}}</pre></div><details class="response"><summary>Response</summary><pre>{
+  "quot;jsonrpc"quot;: "quot;2.0"quot;,
+  "quot;id"quot;: 1,
+  "quot;result"quot;: {
+    "quot;difficulty"quot;: 4,
+    "quot;epoch"quot;: 3,
+    "quot;height"quot;: 3,
+    "quot;tip"quot;: "quot;00005fe85094d9f595682ac39ca6c4fc18d0b8e49bc1951c998b709842a6f701"quot;
   }
-}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> medulla-pow height: 1000</div><div class="service-tag"><span class="svc-name">hippocampus-dag</span><span class="svc-desc">port 15001 — Merkle-DAG</span></div><p class="info">We created 4 memories, expect at least 4 nodes stored.</p><div class="request"><span class="method method-GET">GET</span> <span class="url">http://localhost:15001/stat</span></div><details class="response"><summary>Response</summary><pre>{
-  &quot;nodes&quot;: 1506,
-  &quot;peers&quot;: 0,
-  &quot;pinned&quot;: 15
-}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> hippocampus-dag stored 1506 nodes</div></div></section>
-<div class="result-banner has-fails">
-  <h2>COHERENCE BREACH DETECTED</h2>
-  <p>2 assertion(s) failed &mdash; coordination residue generated</p>
+}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> medulla-pow height: 3</div><div class="service-tag"><span class="svc-name">hippocampus-dag</span><span class="svc-desc">port 15001 — Merkle-DAG</span></div><p class="info">We created 4 memories, expect at least 4 nodes stored.</p><div class="request"><span class="method method-GET">GET</span> <span class="url">http://localhost:15001/stat</span></div><details class="response"><summary>Response</summary><pre>{
+  "quot;nodes"quot;: 4,
+  "quot;peers"quot;: 0,
+  "quot;pinned"quot;: 4
+}</pre></details><div class="test pass"><span class="indicator">&#x2713;</span> hippocampus-dag stored 4 nodes</div></div></section>
+<div class="result-banner all-pass">
+  <h2>ALL SYSTEMS NOMINAL</h2>
+  <p>Full autonomous agent lifecycle verified &mdash; coherence maintained across all chains</p>
 </div>
 <div class="lifecycle-grid">
   <div class="lifecycle-item lc-pass"><span class="lc-label">&#x26A1; Identity</span><span class="lc-desc">Stack + NFT + ed25519 keypair</span></div>
