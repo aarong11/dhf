@@ -118,7 +118,25 @@ jobs:
           sleep 5
 
       - name: Run E2E test suite
-        run: bash .github/tests/e2e.sh
+        run: |
+          export REPORT_FILE=$(pwd)/docs/e2e-report.html
+          bash .github/tests/e2e.sh
+
+      - name: Upload E2E report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-report
+          path: docs/e2e-report.html
+
+      - name: Commit report to docs (main only)
+        if: github.ref == 'refs/heads/main' && success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/e2e-report.html
+          git diff --cached --quiet || git commit -m "chore: update e2e test report [skip ci]"
+          git push
 
       - name: Collect logs on failure
         if: failure()
