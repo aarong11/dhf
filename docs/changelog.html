@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Changelog — ECCA Stack</title>
+  <meta name="description" content="ECCA Stack changelog — version history, feature additions, and release notes.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
+  <style>
+    .changelog-entry {
+      border-left: 3px solid var(--accent, #00ffaa);
+      padding: 1.5rem 1.5rem 1.5rem 2rem;
+      margin-bottom: 2rem;
+      background: rgba(0, 255, 170, 0.02);
+      border-radius: 0 8px 8px 0;
+      position: relative;
+    }
+    .changelog-entry::before {
+      content: '';
+      position: absolute;
+      left: -7px;
+      top: 2rem;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--accent, #00ffaa);
+      border: 2px solid var(--bg-primary, #0a0a14);
+      box-shadow: 0 0 8px rgba(0, 255, 170, 0.4);
+    }
+    .changelog-entry.major { border-left-color: var(--accent, #00ffaa); }
+    .changelog-entry.major::before { background: var(--accent, #00ffaa); box-shadow: 0 0 12px rgba(0, 255, 170, 0.6); }
+    .changelog-entry.feature { border-left-color: #00f0ff; }
+    .changelog-entry.feature::before { background: #00f0ff; box-shadow: 0 0 8px rgba(0, 240, 255, 0.4); }
+    .changelog-entry.fix { border-left-color: #ff00e6; }
+    .changelog-entry.fix::before { background: #ff00e6; box-shadow: 0 0 8px rgba(255, 0, 230, 0.4); }
+    .changelog-entry.infra { border-left-color: #b347ff; }
+    .changelog-entry.infra::before { background: #b347ff; box-shadow: 0 0 8px rgba(179, 71, 255, 0.4); }
+    .changelog-date {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-muted, #666);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+    }
+    .changelog-hash {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--text-muted, #555);
+      opacity: 0.6;
+      margin-left: 0.5rem;
+    }
+    .changelog-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary, #eee);
+    }
+    .changelog-body {
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: var(--text-secondary, #aaa);
+    }
+    .changelog-body ul { margin: 0.5rem 0 0 1.2rem; }
+    .changelog-body li { margin-bottom: 0.3rem; }
+    .changelog-body code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      background: rgba(0, 240, 255, 0.06);
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+      color: #00f0ff;
+    }
+    .changelog-tag {
+      display: inline-block;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 3px;
+      margin-right: 0.4rem;
+      margin-bottom: 0.3rem;
+    }
+    .tag-major { color: #00ffaa; background: rgba(0, 255, 170, 0.1); border: 1px solid rgba(0, 255, 170, 0.25); }
+    .tag-feature { color: #00f0ff; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.25); }
+    .tag-fix { color: #ff00e6; background: rgba(255, 0, 230, 0.1); border: 1px solid rgba(255, 0, 230, 0.25); }
+    .tag-test { color: #ffcc00; background: rgba(255, 204, 0, 0.1); border: 1px solid rgba(255, 204, 0, 0.25); }
+    .tag-docs { color: #4488ff; background: rgba(68, 136, 255, 0.1); border: 1px solid rgba(68, 136, 255, 0.25); }
+    .tag-infra { color: #b347ff; background: rgba(179, 71, 255, 0.1); border: 1px solid rgba(179, 71, 255, 0.25); }
+    .tag-contracts { color: #ff8844; background: rgba(255, 136, 68, 0.1); border: 1px solid rgba(255, 136, 68, 0.25); }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+    }
+    .stats-row {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .stat-card {
+      flex: 1;
+      min-width: 120px;
+      text-align: center;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+    }
+    .stat-card .stat-num {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--accent, #00ffaa);
+    }
+    .stat-card .stat-lbl {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--text-muted, #666);
+      margin-top: 0.3rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-gradient-top"></div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <span class="logo-icon">◈</span>
+      ECCA
+    </a>
+    <ul class="nav-links">
+      <li><a href="https://discord.gg/GXBS3dUT" target="_blank">Discord</a></li>
+      <li><a href="paper.pdf" target="_blank">Paper</a></li>
+      <li><a href="architecture.html">Architecture</a></li>
+      <li><a href="docs.html">Docs</a></li>
+      <li><a href="tokenomics.html">Tokens</a></li>
+      <li><a href="developer.html">Developers</a></li>
+      <li><a href="e2e-report.html">E2E Report</a></li>
+      <li><a href="unit-test-report.html">Unit Tests</a></li>
+      <li><a href="changelog.html" class="active">Changelog</a></li>
+      <li><a href="https://www.paypal.com/donate?business=rng%40infrasim.org&currency_code=USD" target="_blank" class="nav-cta" style="background:var(--accent,#00ffaa);color:#000;">♥ Donate</a></li>
+    </ul>
+    <button class="nav-mobile-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="content-wrapper">
+  <div class="container" style="max-width: 860px; margin: 0 auto;">
+
+    <h1 style="font-family:'Orbitron',sans-serif; font-size:2rem; margin-bottom:0.3rem;">Changelog</h1>
+    <p style="color:var(--text-muted,#666); font-size:0.8rem; margin-bottom:2rem;">Version history and release notes for the ECCA Stack v3 monorepo.</p>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num">275</div><div class="stat-lbl">Unit Tests</div></div>
+      <div class="stat-card"><div class="stat-num">7</div><div class="stat-lbl">Contracts</div></div>
+      <div class="stat-card"><div class="stat-num">7</div><div class="stat-lbl">Packages</div></div>
+      <div class="stat-card"><div class="stat-num">10</div><div class="stat-lbl">Services</div></div>
+      <div class="stat-card"><div class="stat-num">3</div><div class="stat-lbl">Chains</div></div>
+    </div>
+
+    <div class="legend">
+      <span class="changelog-tag tag-major">Major</span>
+      <span class="changelog-tag tag-feature">Feature</span>
+      <span class="changelog-tag tag-fix">Fix</span>
+      <span class="changelog-tag tag-test">Tests</span>
+      <span class="changelog-tag tag-docs">Docs</span>
+      <span class="changelog-tag tag-infra">Infra</span>
+      <span class="changelog-tag tag-contracts">Contracts</span>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 2026-05-09 -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+
+    <div class="changelog-entry major">
+      <div class="changelog-date">2026-05-09 <span class="changelog-hash">ed71a6a</span></div>
+      <div class="changelog-title">Playfair — TripartiteGame, Unit Tests, HTML Reports</div>
+      <div>
+        <span class="changelog-tag tag-major">Major</span>
+        <span class="changelog-tag tag-feature">Feature</span>
+        <span class="changelog-tag tag-test">Tests</span>
+        <span class="changelog-tag tag-contracts">Contracts</span>
+      </div>
+      <div class="changelog-body">
+        <p>Major milestone: full unit test coverage across all packages and contracts, with cyberpunk-themed HTML reporting.</p>
+        <ul>
+          <li><strong>TripartiteGame contract</strong> — new Solidity contract implementing tripartite resource games (Compute, Storage, Bandwidth) with open/register/consume/audit lifecycle, Nash equilibrium verification, and EpochAnchor integration</li>
+          <li><strong>EpochAnchor enhancements</strong> — added <code>verifyContinuity()</code> for sequential epoch validation and <code>verifyShardInclusion()</code> for Merkle shard proofs; integrated pin lease system</li>
+          <li><strong>Unit test suites</strong> — 275 tests across 6 suites:
+            <ul>
+              <li><code>@ecca/proto</code> — 35 tests: token taxonomy, event schemas, zod validators, ECCA constants</li>
+              <li><code>@ecca/crypto</code> — 53 tests: SHA-256, HKDF, AES-GCM, Ed25519, Merkle trees, MMR, coherence roots</li>
+              <li><code>@ecca/chain</code> — 25 tests: cortex chain config, 7 contract ABIs, client wrappers</li>
+              <li><code>@ecca/service-base</code> — 10 tests: Fastify bootstrap, health probes, CORS, shutdown</li>
+              <li><code>@ecca/semantic-address</code> — 17 tests: 5-facet grammar, prefix queries, address book</li>
+              <li>Contracts — 135 tests: all 7 Solidity contracts including TripartiteGame</li>
+            </ul>
+          </li>
+          <li><strong>HTML report system</strong> — <code>run-unit-tests.sh</code> master runner with <code>--packages</code>/<code>--contracts</code> flags; <code>scripts/generate-test-report.js</code> produces <a href="unit-test-report.html">unit-test-report.html</a> in the cyberpunk neon theme with per-suite WHAT/HOW/WHY/WHEN/WHERE detail boxes, service dependency tags, individual test results, and lifecycle grid</li>
+          <li><strong>Hippocampus DAG</strong> — added pin lease support with epoch-gated automatic expiry</li>
+          <li><strong>Docs nav</strong> — unit test report linked across all doc pages; cross-link from e2e-report</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 2026-05-08 -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+
+    <div class="changelog-entry feature">
+      <div class="changelog-date">2026-05-08 <span class="changelog-hash">1571ad9 — f0c6105</span></div>
+      <div class="changelog-title">E2E Test Runner & Documentation Overhaul</div>
+      <div>
+        <span class="changelog-tag tag-test">Tests</span>
+        <span class="changelog-tag tag-docs">Docs</span>
+      </div>
+      <div class="changelog-body">
+        <ul>
+          <li><strong>E2E test suite</strong> — comprehensive end-to-end tests covering the full coherence cycle: stack creation → sleeve spawning → perceive → recall → needlecast → epoch → residue → cleanup</li>
+          <li><strong>E2E HTML report</strong> — <a href="e2e-report.html">e2e-report.html</a> with cyberpunk neon theme, collapsible phases, stats bar, lifecycle grid</li>
+          <li>Test runner improvements: better descriptions, verbose outputs, macOS compatibility fixes</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="changelog-entry fix">
+      <div class="changelog-date">2026-05-08 <span class="changelog-hash">0e4171a — 3572ea2</span></div>
+      <div class="changelog-title">Service Renames & Build Fixes</div>
+      <div>
+        <span class="changelog-tag tag-fix">Fix</span>
+        <span class="changelog-tag tag-docs">Docs</span>
+      </div>
+      <div class="changelog-body">
+        <ul>
+          <li>Renamed <code>synapse-api</code> → <code>siyana-api</code> across all services, imports, and documentation</li>
+          <li>Fixed character encoding corruption in source files</li>
+          <li>Expanded documentation: architecture, coherence root, token economy, security model, and 15+ additional doc pages</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 2026-05-07 -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+
+    <div class="changelog-entry feature">
+      <div class="changelog-date">2026-05-07 <span class="changelog-hash">0c7bb83 — d39cca9</span></div>
+      <div class="changelog-title">Discord Bot, Marketing Site & Paper</div>
+      <div>
+        <span class="changelog-tag tag-feature">Feature</span>
+        <span class="changelog-tag tag-docs">Docs</span>
+        <span class="changelog-tag tag-infra">Infra</span>
+      </div>
+      <div class="changelog-body">
+        <ul>
+          <li><strong>ECCA Discord bot</strong> — automated channel/thread creation for community coordination</li>
+          <li><strong>Marketing site</strong> — <a href="index.html">docs/index.html</a> with full responsive design, architecture diagrams, feature showcases</li>
+          <li><strong>Academic paper</strong> — LaTeX paper with SSML audio description for accessibility</li>
+          <li><strong>Tokenomics page</strong> — <a href="tokenomics.html">interactive token economy visualization</a></li>
+          <li>Added Discord and donate links to site navigation</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 2026-05-06 -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+
+    <div class="changelog-entry feature">
+      <div class="changelog-date">2026-05-06 <span class="changelog-hash">91d9d0c</span></div>
+      <div class="changelog-title">Semantic Addressing Package</div>
+      <div>
+        <span class="changelog-tag tag-feature">Feature</span>
+      </div>
+      <div class="changelog-body">
+        <ul>
+          <li><strong><code>@ecca/semantic-address</code></strong> — new package implementing hierarchical content-derived addressing with a 5-facet grammar (domain › entity › relation › temporal › qualifier)</li>
+          <li>Deterministic normalization and 32-byte address derivation for DAG routing</li>
+          <li>Partial prefix matching, address book with prefix queries, NLP description parser</li>
+          <li>17 unit tests covering all grammar facets, derivation invariants, and book operations</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 2026-05-05 -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+
+    <div class="changelog-entry major">
+      <div class="changelog-date">2026-05-05 <span class="changelog-hash">51adf1a — 1cf8d16</span></div>
+      <div class="changelog-title">Services, Contract Tests & Full Build</div>
+      <div>
+        <span class="changelog-tag tag-major">Major</span>
+        <span class="changelog-tag tag-contracts">Contracts</span>
+        <span class="changelog-tag tag-test">Tests</span>
+      </div>
+      <div class="changelog-body">
+        <ul>
+          <li><strong>All 10 TypeScript services</strong> — siyana-api, thalamus-router, dhf-compositor, needlecast-router-svc, quellist-treasury-svc, bandwidth-faucet, sleeve-runtime, agent-runtime, ecca-bot, workers/runner</li>
+          <li><strong>7 Solidity contract test suites</strong> — StackIdentity, BandwidthToken, EpochAnchor, ResidueRegistry, NeedlecastRouter, QuellistTreasury, SleeveRegistry (135 tests)</li>
+          <li>Full pnpm build passing across all packages and services via turborepo</li>
+          <li>Added MIT license</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="changelog-entry infra">
+      <div class="changelog-date">2026-05-05 <span class="changelog-hash">791e5f5 — 394d3c4</span></div>
+      <div class="changelog-title">Build Error Resolution & Monorepo Setup</div>
+      <div>
+        <span class="changelog-tag tag-fix">Fix</span>
+        <span class="changelog-tag tag-infra">Infra</span>
+      </div>
+      <div class="changelog-body">
+        <ul>
+          <li><strong>Resolved all build errors</strong> across TypeScript packages, services, workers, and Go forks</li>
+          <li>Fixed Prisma schema field mismatches (Anchor, Residue, Epoch, AuditLog models)</li>
+          <li>Fixed <code>@ecca/proto</code> export mismatches — added standalone re-exports for <code>EPOCH_INTERVAL_MS</code>, <code>DRIFT_MAX_DEFAULT</code>, etc.</li>
+          <li>Fixed <code>@ecca/crypto</code> type mismatches — hex encoding for <code>coherenceRoot()</code> callers</li>
+          <li>Monorepo structure: pnpm workspace, turborepo, Docker Compose (24 services), Helm chart stubs</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 2026-05-04 -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+
+    <div class="changelog-entry major">
+      <div class="changelog-date">2026-05-04 <span class="changelog-hash">aa27a46</span></div>
+      <div class="changelog-title">Initial Monorepo — ECCA Stack v3</div>
+      <div>
+        <span class="changelog-tag tag-major">Major</span>
+        <span class="changelog-tag tag-infra">Infra</span>
+        <span class="changelog-tag tag-contracts">Contracts</span>
+      </div>
+      <div class="changelog-body">
+        <ul>
+          <li><strong>Initial commit</strong> — full monorepo structure with 7 TypeScript packages, 10 services, 3 Go chain forks, 7 Solidity contracts</li>
+          <li>Packages: <code>@ecca/proto</code>, <code>@ecca/crypto</code>, <code>@ecca/bus</code>, <code>@ecca/db</code>, <code>@ecca/chain</code>, <code>@ecca/service-base</code></li>
+          <li>Chains: medulla-pow-go (PoW), hippocampus-dag-go (DAG storage), cortex-evm-go (geth PoA)</li>
+          <li>Contracts: StackIdentity, BandwidthToken, EpochAnchor, ResidueRegistry, NeedlecastRouter, QuellistTreasury, SleeveRegistry</li>
+          <li>Docker Compose with 24 services, YAML anchors, networking, volume mounts</li>
+          <li>Deploy: Prometheus, Loki, Grafana observability stack; Helm chart stubs</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p style="opacity:0.5; font-size:0.7rem; letter-spacing:0.1em;">ECCA STACK v3 — DISTRIBUTED HUMAN FRAMEWORK — ALL MEMORY IS SACRED</p>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
