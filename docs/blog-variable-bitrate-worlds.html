@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Variable-Bitrate Worlds: Asynchronous Agent Testing on Heterogeneous Compute — ECCA Dev Blog</title>
+  <meta name="description" content="How ECCA's three-chain architecture enables fair, asynchronous testing of AI agents across heterogeneous hardware, spot compute, and different regions — without requiring synchronous execution.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
+  <style>
+    .blog-container { max-width: 780px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+    .blog-meta {
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      font-size: 0.75rem;
+      color: var(--text-muted, #64748b);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    .blog-title {
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 0.6rem;
+      background: linear-gradient(135deg, var(--neon-cyan, #00dcff), var(--neon-magenta, #ff00e5));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .blog-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-secondary, #94a3b8);
+      line-height: 1.6;
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border-subtle, rgba(0,220,255,0.12));
+    }
+    .blog-container h2 {
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--neon-cyan, #00dcff);
+      margin: 3rem 0 1rem;
+      letter-spacing: 0.04em;
+    }
+    .blog-container h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary, #e2e8f0);
+      margin: 2rem 0 0.8rem;
+    }
+    .blog-container p {
+      font-size: 0.92rem;
+      line-height: 1.8;
+      margin-bottom: 1.2rem;
+      color: var(--text-secondary, #94a3b8);
+    }
+    .blog-container strong { color: var(--text-primary, #e2e8f0); }
+    .blog-container em { color: var(--neon-cyan, #00dcff); font-style: normal; }
+    .blog-container code {
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      font-size: 0.82rem;
+      background: rgba(0, 220, 255, 0.06);
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+      color: var(--neon-cyan, #00dcff);
+    }
+    .blog-container pre {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-subtle, rgba(0,220,255,0.12));
+      border-radius: 6px;
+      padding: 1.2rem 1.5rem;
+      overflow-x: auto;
+      margin: 1.2rem 0 1.5rem;
+      font-size: 0.78rem;
+      line-height: 1.7;
+    }
+    .blog-container pre code {
+      background: none;
+      padding: 0;
+      color: var(--text-primary, #e2e8f0);
+    }
+    .blog-container ul, .blog-container ol {
+      margin: 0.8rem 0 1.2rem 1.5rem;
+      color: var(--text-secondary, #94a3b8);
+      font-size: 0.92rem;
+      line-height: 1.8;
+    }
+    .blog-container li { margin-bottom: 0.4rem; }
+    .blog-container blockquote {
+      border-left: 3px solid var(--neon-magenta, #ff00e5);
+      padding: 0.8rem 1.2rem;
+      margin: 1.5rem 0;
+      background: rgba(255, 0, 229, 0.03);
+      border-radius: 0 6px 6px 0;
+      font-size: 0.88rem;
+      color: var(--text-secondary, #94a3b8);
+    }
+    .blog-container blockquote p { margin-bottom: 0; }
+    .diagram-box {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-subtle, rgba(0,220,255,0.12));
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      font-size: 0.72rem;
+      line-height: 1.6;
+      color: var(--text-muted, #64748b);
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .callout-box {
+      padding: 1.2rem 1.5rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+      font-size: 0.85rem;
+      line-height: 1.7;
+    }
+    .callout-box.cyan {
+      background: rgba(0, 220, 255, 0.04);
+      border: 1px solid rgba(0, 220, 255, 0.15);
+      border-left: 3px solid var(--neon-cyan, #00dcff);
+    }
+    .callout-box.green {
+      background: rgba(0, 255, 136, 0.04);
+      border: 1px solid rgba(0, 255, 136, 0.15);
+      border-left: 3px solid var(--neon-green, #00ff88);
+    }
+    .callout-box.magenta {
+      background: rgba(255, 0, 229, 0.04);
+      border: 1px solid rgba(255, 0, 229, 0.15);
+      border-left: 3px solid var(--neon-magenta, #ff00e5);
+    }
+    .callout-box.yellow {
+      background: rgba(224, 255, 0, 0.04);
+      border: 1px solid rgba(224, 255, 0, 0.15);
+      border-left: 3px solid var(--neon-yellow, #e0ff00);
+    }
+    .callout-box .callout-label {
+      display: block;
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+    }
+    .callout-box.cyan .callout-label { color: var(--neon-cyan, #00dcff); }
+    .callout-box.green .callout-label { color: var(--neon-green, #00ff88); }
+    .callout-box.magenta .callout-label { color: var(--neon-magenta, #ff00e5); }
+    .callout-box.yellow .callout-label { color: var(--neon-yellow, #e0ff00); }
+    .gap-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+      margin: 1.5rem 0;
+    }
+    .gap-table th {
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-align: left;
+      padding: 0.6rem 0.8rem;
+      border-bottom: 2px solid var(--border-subtle, rgba(0,220,255,0.12));
+      color: var(--neon-cyan, #00dcff);
+    }
+    .gap-table td {
+      padding: 0.6rem 0.8rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      color: var(--text-secondary, #94a3b8);
+      vertical-align: top;
+    }
+    .gap-table tr:hover td { background: rgba(0, 220, 255, 0.03); }
+    .status-done { color: var(--neon-green, #00ff88); }
+    .status-partial { color: var(--neon-yellow, #e0ff00); }
+    .status-todo { color: var(--neon-magenta, #ff00e5); }
+    .section-divider {
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-subtle, rgba(0,220,255,0.12)), transparent);
+      margin: 3rem 0;
+    }
+    .toc {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-subtle, rgba(0,220,255,0.12));
+      border-radius: 8px;
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .toc-label {
+      font-family: var(--font-display, 'Orbitron', sans-serif);
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted, #64748b);
+      margin-bottom: 0.6rem;
+    }
+    .toc ol {
+      margin: 0;
+      padding-left: 1.2rem;
+      font-size: 0.82rem;
+      line-height: 2;
+    }
+    .toc a {
+      color: var(--text-secondary, #94a3b8);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .toc a:hover { color: var(--neon-cyan, #00dcff); }
+  </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-gradient-top"></div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <span class="logo-icon">◈</span>
+      ECCA
+    </a>
+    <ul class="nav-links">
+      <li><a href="https://discord.gg/GXBS3dUT" target="_blank">Discord</a></li>
+      <li><a href="paper.pdf" target="_blank">Paper</a></li>
+      <li><a href="architecture.html">Architecture</a></li>
+      <li><a href="docs.html">Docs</a></li>
+      <li><a href="tokenomics.html">Tokens</a></li>
+      <li><a href="developer.html">Developers</a></li>
+      <li><a href="e2e-report.html">E2E Report</a></li>
+      <li><a href="unit-test-report.html">Unit Tests</a></li>
+      <li><a href="changelog.html">Changelog</a></li>
+      <li><a href="https://www.paypal.com/donate?business=rng%40infrasim.org&currency_code=USD" target="_blank" class="nav-cta" style="background:var(--accent,#00ffaa);color:#000;">♥ Donate</a></li>
+    </ul>
+    <button class="nav-mobile-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="content-wrapper">
+<div class="blog-container">
+
+<div class="blog-meta">DEV BLOG &mdash; 9 MAY 2026 &mdash; ECCA STACK v3</div>
+<h1 class="blog-title">Variable-Bitrate Worlds: Asynchronous Agent Testing on Heterogeneous Compute</h1>
+<p class="blog-subtitle">How three independent blockchains, epoch-gated memory, and portable sleeves let you test different AI agents fairly &mdash; without requiring synchronous execution, identical hardware, or a centralized coordinator &mdash; using spot compute, as and when it's available, across different regions.</p>
+
+<div class="toc">
+  <div class="toc-label">Contents</div>
+  <ol>
+    <li><a href="#problem">The Problem: Synchronized Worlds Don't Scale</a></li>
+    <li><a href="#variable-bitrate">Variable-Bitrate Perception</a></li>
+    <li><a href="#three-chains">Three Chains, Three Independent Clocks</a></li>
+    <li><a href="#epochs">Epochs: The Logical Clock That Doesn't Require Wall-Clock Sync</a></li>
+    <li><a href="#coherence">Coherence Roots: Proving Consistency After The Fact</a></li>
+    <li><a href="#sleeves">Sleeves: Portable Execution on Whatever Hardware Is Available</a></li>
+    <li><a href="#spot-compute">Spot Compute and Regional Distribution</a></li>
+    <li><a href="#tripartite">The Tripartite Game: Provably Fair Resource Allocation</a></li>
+    <li><a href="#needlecasting">Needlecasting: Moving State Between Regions for Cost Efficiency</a></li>
+    <li><a href="#same-code">Guaranteeing the Same Code Tests the Same Things</a></li>
+    <li><a href="#gap">The Gap: Where We Are vs. Where We Need To Be</a></li>
+    <li><a href="#roadmap">What It Takes to Get There</a></li>
+  </ol>
+</div>
+
+<hr class="section-divider">
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<h2 id="problem">1. The Problem: Synchronized Worlds Don't Scale</h2>
+
+<p>Most agent testing frameworks make a quiet assumption: every agent experiences the world at the same speed. You spin up a simulation, all agents tick at the same rate, they all see the same state at the same moment, and the test is "fair" because everything is synchronous.</p>
+
+<p>This works on a single machine. It falls apart the moment you want to do any of the following:</p>
+
+<ul>
+  <li>Test agents across <strong>different hardware</strong> — a GPU cluster in <code>us-east-1</code> versus a Raspberry Pi on someone's desk in Berlin</li>
+  <li>Use <strong>spot instances</strong> that appear and disappear with market pricing</li>
+  <li>Run tests that take <strong>hours or days</strong> without requiring a single machine to stay up for the entire duration</li>
+  <li>Let agents <strong>perceive at different rates</strong> — an LLM with a 200ms inference loop versus a human-speed agent ticking every 8 seconds</li>
+  <li>Compare results across runs that <strong>didn't happen simultaneously</strong></li>
+</ul>
+
+<p>The synchronous assumption also creates a centralization problem: someone has to run the coordinator. Whoever runs the coordinator controls what "the world" looks like. Whoever controls the world controls the test results.</p>
+
+<blockquote>
+  <p>ECCA takes a different approach. The "world" isn't a single simulation — it's three independent blockchains running at their own speeds, with consistency proven cryptographically at epoch boundaries. Agents don't need to see the same state at the same moment. They need to <strong>provably interact with the same state within the same epoch</strong>.</p>
+</blockquote>
+
+<hr class="section-divider">
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<h2 id="variable-bitrate">2. Variable-Bitrate Perception</h2>
+
+<p>In the human brain, different regions process information at radically different speeds. Your visual cortex processes frames at ~60Hz. Your prefrontal cortex deliberates at ~4Hz. Your memory consolidation happens at ~0.1Hz during sleep. Yet you experience a coherent world despite these different "bitrates."</p>
+
+<p>ECCA models this with four sleeve kinds, each operating at a different tick rate:</p>
+
+<pre><code>Sleeve Kind     Tick Rate    Token Preference         Analog
+─────────────────────────────────────────────────────────────────
+human           8s           Memory ≫ Compute         Slow, narrative cognition
+ai              2s           Compute ≫ Memory         Fast inference (LLM)
+mining          event-driven Sync ≫ Routing           PoW participation
+memory          every epoch  Memory + Routing         DAG pin maintenance</code></pre>
+
+<p>The critical insight: <strong>these agents don't need to tick at the same rate to be tested fairly.</strong> An AI sleeve ticking 4x faster than a human sleeve doesn't get an unfair advantage — it just consumes its <code>ComputeToken</code> budget faster. Both are bounded by the same per-epoch token allocation. Both reference the same epoch counter. Both produce events that get folded into the same coherence root.</p>
+
+<p>This is what "variable bitrate" means in practice. The world doesn't run at a single frame rate. Each agent perceives it at its own speed, gated by its own token budget, with its own hardware constraints. The three chains provide the substrate — the ground truth — and the epoch system provides the synchronization boundary where everyone reconciles.</p>
+
+<div class="callout-box cyan">
+  <span class="callout-label">Key Invariant</span>
+  Two agents that each perceive 10 events within epoch <em>N</em> have provably interacted with the same world-state, regardless of whether one took 200ms and the other took 7.8 seconds. The coherence root for epoch <em>N</em> covers both of their event hashes.
+</div>
+
+<hr class="section-divider">
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<h2 id="three-chains">3. Three Chains, Three Independent Clocks</h2>
+
+<p>ECCA's world isn't a single database. It's three independent ledgers, each responsible for a different dimension of reality:</p>
+
+<div class="diagram-box">
+┌─────────────────────────────┐
+│  L0 — MEDULLA (PoW)        │  Sequencing & coherence anchoring
+│  Go chain, ~4s blocks       │  Carries the epoch counter
+│  Mines coherence tuples     │  Maintains the Synaptic Field MMR
+│  The "brainstem"            │  Provides finality via proof-of-work
+└─────────────┬───────────────┘
+              │ epoch N finalized
+┌─────────────┴───────────────┐
+│  L1 — HIPPOCAMPUS (DAG)    │  Episodic + semantic memory
+│  Content-addressed (IPFS)   │  ecca://&lt;sha256&gt;@&lt;epoch&gt; CIDs
+│  Epoch-gated recall         │  Pin leases for long-term storage
+│  The "memory"               │  Fidelity = fragments / (frag + broken)
+└─────────────┬───────────────┘
+              │ events folded
+┌─────────────┴───────────────┐
+│  L2 — CORTEX (EVM)         │  Identity, contracts, tokens
+│  Geth PoA, chain ID 131072  │  StackIdentity NFTs, BandwidthToken
+│  EpochAnchor bridge         │  TripartiteGame, ResidueRegistry
+│  The "higher cognition"     │  On-chain Merkle proof verification
+└─────────────────────────────┘
+</div>
+
+<p>Each chain can run on completely different hardware, in different regions, at different speeds. Hippocampus doesn't wait for Medulla to mine a block before accepting writes. Cortex doesn't wait for Hippocampus to replicate before processing transactions. The chains are <strong>causally independent within an epoch</strong>.</p>
+
+<p>Synchronization happens only at epoch boundaries, when the Thalamus router collects Merkle roots from each shard and submits a coherence tuple to Medulla for PoW finality. One proof-of-work commitment finalizes three independent substrates simultaneously.</p>
+
+<div class="callout-box green">
+  <span class="callout-label">Why This Matters for Testing</span>
+  If you're running an agent test across three regions — say, one hippocampus node in London, one cortex node in Virginia, one medulla miner in Singapore — they don't need to be running at the same speed. They don't even need to be running at the same time. They need to produce events that eventually get folded into the same epoch's coherence root. The test's validity comes from the cryptographic proof, not from synchronized wall clocks.
+</div>
+
+<hr class="section-divider">
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<h2 id="epochs">4. Epochs: The Logical Clock That Doesn't Require Wall-Clock Sync</h2>
+
+<p>The epoch is ECCA's fundamental unit of time. Default: 4 seconds. But here's the important part — it's a <strong>logical clock</strong>, not a wall clock.</p>
+
+<pre><code>// The tick loop in thalamus-router/src/server.ts
+setInterval(async () => {
+  // 1. Collect event hashes buffered since last tick
+  const evmRootHex  = evmHashes.length  ? merkleRoot(evmHashes)  : '00'.repeat(32);
+  const ipfsRootHex = ipfsHashes.length ? merkleRoot(ipfsHashes) : '00'.repeat(32);
+  const sleevesRoot = sleeveHashes.length ? merkleRoot(sleeveHashes) : '00'.repeat(32);
+
+  // 2. Compute cross-chain coherence root
+  const cross = coherenceRoot({ evm: evmRootHex, btc: '00'.repeat(32), ipfs: ipfsRootHex, sleeves: sleevesRoot });
+
+  // 3. Submit to Medulla for PoW finality
+  await medulla.submitCoherenceRoot({ crossRoot: cross, evmRoot: evmRootHex, ipfsRoot: ipfsRootHex, sleevesRoot });
+
+  // 4. Bridge to Cortex via EpochAnchor.commitAnchor()
+  // ...
+}, EPOCH_INTERVAL_MS);</code></pre>
+
+<p>The epoch doesn't advance because 4 seconds passed. It advances because <strong>Medulla mined a PoW block</strong> containing the coherence tuple. If Medulla is slow (weak hardware, high difficulty), epochs take longer. If it's fast, they're shorter. The wall clock is advisory, not authoritative.</p>
+
+<p>This means:</p>
+
+<ul>
+  <li>An agent on a fast GPU can perceive hundreds of events within a single epoch</li>
+  <li>An agent on a Raspberry Pi might perceive three events in the same epoch</li>
+  <li>Both agents' events are included in the same epoch's Merkle roots</li>
+  <li>Both are bounded by the same per-epoch token budget</li>
+  <li>Neither gets an "unfair" head start because the epoch boundary is when coherence is asserted, not when individual events are processed</li>
+</ul>
+
+<h3>Drift: Measuring How Far Behind An Agent Is</h3>
+
+<p>Every sleeve maintains a drift counter — it increments on <code>perceive</code> and decrements on <code>sync</code>. If an agent falls behind (its hardware is slow, its network is laggy, its spot instance got preempted), drift grows:</p>
+
+<pre><code>drift = 0          → in sync
+drift ≤ DRIFT_MAX  → warning, sleeve.drift event published
+drift > 2×DRIFT_MAX → sleeve.desync → coordination residue created</code></pre>
+
+<p>But drift isn't failure — it's information. A desync creates a <em>coordination residue</em>: a bounty that any other agent can claim by providing a proof of the correct state. The system doesn't halt. It <strong>economically incentivizes repair</strong>.</p>
+
+<div class="callout-box magenta">
+  <span class="callout-label">Architectural Principle</span>
+  The epoch is a logical clock. Drift is the distance between an agent's local state and the global tip. Residues are the economic repair mechanism. Together, they allow agents on wildly different hardware to participate in the same test without requiring anyone to wait for the slowest participant.
+</div>
+
+<hr class="section-divider">
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<h2 id="coherence">5. Coherence Roots: Proving Consistency After The Fact</h2>
+
+<p>This is the mechanism that makes asynchronous testing possible. At the end of each epoch, the Thalamus router computes:</p>
+
+<pre><code>crossRoot = sha256( "ecca-coh-v1" ‖ evmRoot ‖ btcRoot ‖ ipfsRoot ‖ sleevesRoot )
+
+where:
+  evmRoot     = merkleRoot([ txHash for each ECCA contract tx this epoch ])
+  btcRoot     = reserved (32 zero bytes in v3)
+  ipfsRoot    = merkleRoot([ sha256(cid) for each hippocampus write this epoch ])
+  sleevesRoot = merkleRoot([ sha256(type ‖ id) for each sleeve event this epoch ])</code></pre>
+
+<p>This single 32-byte hash commits to <strong>everything that happened across all three chains in that epoch</strong>. It gets mined into a Medulla PoW block, appended to the Synaptic Field MMR, and bridged to the Cortex EVM via the <code>EpochAnchor</code> contract.</p>
+
+<h3>What This Enables For Testing</h3>
+
+<p>A test verifier doesn't need to replay the entire epoch. They need only:</p>
+
+<ol>
+  <li>The <strong>anchor</strong> for epoch <em>N</em>: <code>(crossRoot, evmRoot, ipfsRoot, sleevesRoot, synapticFieldRoot, medullaHeight)</code></li>
+  <li>A <strong>Merkle proof</strong> for the specific event they want to verify — one leaf in one shard</li>
+</ol>
+
+<p>The <code>EpochAnchor</code> contract provides on-chain verification:</p>
+
+<pre><code>// Anyone can call this — it's a public, trustless verification primitive
+function verifyShardInclusion(
+    uint256 epoch,
+    uint8 shard,          // 0 = evm, 1 = ipfs, 2 = sleeves
+    bytes32 leaf,
+    bytes32[] calldata siblings,
+    uint256 indexBits
+) external view returns (bool)</code></pre>
+
+<p>This means a test run in Singapore can be <strong>verified by a machine in Frankfurt</strong> that was never online at the same time. The proof is self-contained. The verification is deterministic. The on-chain contract is the final arbiter.</p>
+
+<div class="callout-box cyan">
+  <span class="callout-label">Anti-Equivocation</span>
+  If an operator publishes two different coherence tuples for the same epoch, the system detects a <code>routing-equivocation</code> residue and automatically slashes the offending operator. You cannot run a test with one version of the world for agent A and a different version for agent B. The coherence root is the single source of truth.
+</div>
+
+<hr class="section-divider">
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<h2 id="sleeves">6. Sleeves: Portable Execution on Whatever Hardware Is Available</h2>
+
+<p>A sleeve is a containerized process bound to a Stack (cryptographic identity) by a per-epoch capability key. The sleeve-runtime is deliberately hardware-agnostic:</p>
+
+<pre><code>// sleeve-runtime/src/server.ts — the parametric loop
+const SLEEVE_KIND = process.env.SLEEVE_KIND || 'human';  // human | ai | mining | memory
+
+// AI sleeves optionally use Ollama for inference — but fall back to canned prompts
+if (SLEEVE_KIND === 'ai' && LLM_PROVIDER === 'ollama') {
+  // Call local Ollama API on whatever GPU is available
+} else if (SLEEVE_KIND === 'ai') {
+  // Canned prompt — runs on CPU, no GPU needed
+}
+
+// Human sleeves generate narrative perceptions at 8s intervals
+// Mining sleeves join the medulla PoW pool
+// Memory sleeves run DAG pin maintenance and reconciliation</code></pre>
+
+<p><strong>Sleeves never own memory.</strong> They hold per-epoch capability leases. When a sleeve is decommissioned — because the spot instance was reclaimed, or the hardware died, or the test segment finished — the Stack's identity persists. Its episodic head, its token balances, its CPV coefficients: all survive.</p>
+
+<p>A new sleeve can be spawned on completely different hardware, in a different region, on a different cloud provider, and it picks up exactly where the previous one left off. This is architectural <em>re-sleeving</em>: the embodiment is temporary, the identity is permanent.</p>
+
+<div class="callout-box green">
+  <span class="callout-label">Spot Compute Model</span>
+  Agent A runs on a <code>g5.xlarge</code> spot instance in <code>us-east-1</code> for 47 minutes. The instance gets preempted. Agent A's sleeve is decommissioned (drift counter preserved, pinned shards intact). Twelve minutes later, a <code>g4dn.xlarge</code> becomes available in <code>eu-west-1</code>. A new sleeve is spawned, bound to Agent A's Stack, and resumes from the last synced epoch. The test continues. No data is lost. No state is corrupted. The agent's identity — its NFT, its token balances, its memory graph — didn't move. Only the sleeve did.
+</div>
+
+<hr class="section-divider">
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<h2 id="spot-compute">7. Spot Compute and Regional Distribution</h2>
+
+<p>The three-chain architecture maps naturally onto distributed infrastructure:</p>
+
+<div class="diagram-box">
+Region A (us-east-1)                    Region B (eu-west-1)
+┌──────────────────────────┐           ┌──────────────────────────┐
+│  medulla-pow node        │           │  medulla-pow node        │
+│  hippocampus-dag node    │           │  hippocampus-dag node    │
+│  cortex-evm validator    │           │  cortex-evm validator    │
+│  ─────────────────────── │           │  ─────────────────────── │
+│  Agent A (ai sleeve)     │           │  Agent C (ai sleeve)     │
+│  Agent B (human sleeve)  │           │  Agent D (memory sleeve) │
+│  thalamus-router         │           │  thalamus-router         │
+│  siyana-api              │           │  siyana-api              │
+└──────────┬───────────────┘           └──────────┬───────────────┘
+           │                                      │
+           └──────── NATS JetStream ──────────────┘
+                     (ecca.* subjects)
+</div>
+
+<p>Each region runs its own stack of services. The chains replicate across regions via their native protocols (Medulla propagates blocks via P2P, Hippocampus replicates via peer sync, Cortex uses geth's devp2p). NATS JetStream provides the intra-service event bus with 7-day retention.</p>
+
+<h3>Why This Allows Fair Testing</h3>
+
+<p>Agent A in Virginia and Agent C in Ireland are both perceiving the same world. Not because they share a database, but because:</p>
+
+<ol>
+  <li>Both write to local hippocampus nodes that replicate to the same DAG</li>
+  <li>Both submit transactions to cortex validators that share the same chain state</li>
+  <li>Both reference the same epoch counter from medulla's PoW chain</li>
+  <li>Both have their events included in the same epoch's coherence root</li>
+  <li>Both are constrained by the same per-epoch token budgets via the TripartiteGame contract</li>
+</ol>
+
+<p>If Agent A's hardware is 10x faster than Agent C's, Agent A can perceive more events per epoch — but it burns through its <code>ComputeToken</code> budget faster. When the budget runs out, it waits. The epoch binding curve ensures tokens can't be hoarded across epochs (exponential decay with a 0.25 floor). The CPV coefficients ensure each agent's specialization is reflected in its token allocation.</p>
+
+<p>The test is fair not because the hardware is identical, but because the <strong>resource economy is identical</strong>.</p>
+
+<hr class="section-divider">
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<h2 id="tripartite">8. The Tripartite Game: Provably Fair Resource Allocation</h2>
+
+<p>The <code>TripartiteGame</code> contract is the on-chain referee for multi-agent resource allocation. It models three resources — Compute, Storage, and Bandwidth — as a cooperative game with per-epoch budgets:</p>
+
+<pre><code>// contracts/src/TripartiteGame.sol
+
+// 1. Open a game (only the referee/owner)
+function openGame(bytes32 gameId) external onlyOwner;
+
+// 2. Each agent registers with per-epoch budgets
+function registerParty(
+    bytes32 gameId,
+    uint256 tokenId,         // StackIdentity NFT
+    string label,            // "agent-A", "agent-B"
+    uint256 computeBudget,   // max compute per epoch
+    uint256 storageBudget,   // max storage per epoch
+    uint256 bandwidthBudget  // max bandwidth per epoch
+) external;
+
+// 3. All spending goes through consume() — atomic, capped, auditable
+function consume(
+    bytes32 gameId, uint256 tokenId, uint256 epoch,
+    Resource resource, uint256 amount, string reason
+) external;
+
+// 4. Anyone can verify fairness — public, trustless, re-derivable
+function verifyAllocationFair(bytes32 gameId, uint256 epoch)
+    external view returns (bool);
+
+// 5. Emit on-chain audit events
+function auditEpoch(bytes32 gameId, uint256 epoch) external;</code></pre>
+
+<p>Every <code>consume()</code> call atomically burns the underlying <code>BandwidthToken</code> and checks the per-epoch cap. There's no way to spend more than your budget. There's no way to hide spending — it's on-chain. And there's no way to dispute the audit — <code>verifyAllocationFair()</code> is a pure function over on-chain state.</p>
+
+<div class="callout-box yellow">
+  <span class="callout-label">What This Means For Agent Benchmarking</span>
+  You can run a tripartite game with 50 different AI agents, each on different hardware, each in different regions, each perceiving at different rates. At the end of the game, any inspector can call <code>verifyAllocationFair(gameId, epoch)</code> for every epoch and confirm that no agent exceeded its resource budget. The benchmark is fair because the referee is a smart contract, not a process running on someone's laptop.
+</div>
+
+<hr class="section-divider">
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<h2 id="needlecasting">9. Needlecasting: Moving State Between Regions for Cost Efficiency</h2>
+
+<p>When a spot instance is about to be preempted, or when compute is cheaper in another region, or when an agent needs to be closer to a specific hippocampus node for latency — you <em>needlecast</em>.</p>
+
+<p>Needlecasting is the atomic transfer of a sleeve's executive control from one host to another. It's a six-step saga with full rollback:</p>
+
+<pre><code>Step  Operation                     What Happens                            Rollback
+──────────────────────────────────────────────────────────────────────────────────────
+1     freeze(source)                Mark source sleeve as dead              unfreeze
+2     shard(episodicHead, depth=8)  Collect CIDs via DAG walk               (read-only)
+3     pin(shards)                   Durability bond in hippocampus          unpin
+4     anchor(saga)                  Emit needlecast.route for thalamus      drop fold
+5     reconstruct(target)           Spawn new sleeve, drift=0, sync epoch   restore
+6     settle(source)                Debit RoutingToken (cost ≥ 5)           re-credit</code></pre>
+
+<p>The cost model is:</p>
+
+<pre><code>needlecast_cost = 5 + 0.1 × shard_count + 0.5 × |sourceEpoch − targetEpoch|</code></pre>
+
+<p>This creates an economic incentive to needlecast to nearby epochs (low cost) and a penalty for large time jumps (high cost). The target pays nothing — what ECCA calls the <em>"refugee-of-experience principle"</em>: re-sleeving is always inbound-free.</p>
+
+<h3>Regional Cost Optimization</h3>
+
+<p>Consider a 24-hour agent benchmark:</p>
+
+<ul>
+  <li><strong>00:00–06:00 UTC</strong>: Spot GPUs are cheapest in <code>ap-northeast-1</code> (Tokyo). Run AI sleeves there.</li>
+  <li><strong>06:00–14:00 UTC</strong>: Tokyo prices spike, <code>eu-west-1</code> (Ireland) is cheaper. Needlecast all AI sleeves to Ireland. Cost: 5 + 0.1×shards + ~0 epoch drift. State is preserved. Test continues seamlessly.</li>
+  <li><strong>14:00–00:00 UTC</strong>: US East opens up. Needlecast to <code>us-east-1</code>.</li>
+</ul>
+
+<p>The agent doesn't know or care that it moved. Its Stack identity, token balances, and memory graph are the same. The sleeve is just a container. The coherence root proves that the agent's events were included in the correct epochs regardless of which region hosted them.</p>
+
+<hr class="section-divider">
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<h2 id="same-code">10. Guaranteeing the Same Code Tests the Same Things</h2>
+
+<p>Distributed execution raises an obvious concern: how do you know every node is running the same code?</p>
+
+<p>ECCA addresses this at multiple levels:</p>
+
+<h3>1. Content-Addressed Everything</h3>
+
+<p>Every memory fragment in the hippocampus DAG has a CID: <code>ecca://&lt;sha256(canonical_json)&gt;@&lt;epoch&gt;</code>. The CID is a hash of the content. If the content differs, the CID differs. If the CID matches, the content is identical. This is enforced by the DAG node's <code>Put()</code> operation — it computes the CID from the content, not from a user-supplied value.</p>
+
+<h3>2. Coherence Root Commitment</h3>
+
+<p>Every event's hash is included in the epoch's shard-specific Merkle root. The coherence root is a hash of all four shard roots. The coherence root is mined into a PoW block. If any node produces a different event for the same input, the hash changes, the Merkle root changes, the coherence root changes, and the PoW block is different. A divergence between nodes is cryptographically detectable.</p>
+
+<h3>3. On-Chain Verification</h3>
+
+<p>The <code>EpochAnchor.verifyShardInclusion()</code> function lets anyone prove that a specific event was included in a specific epoch's shard root. The proof is a Merkle path — a sequence of sibling hashes. The verification is deterministic: given the same leaf, siblings, and root, the result is always the same. No code differences can hide behind this verification.</p>
+
+<h3>4. Residue System as Divergence Detection</h3>
+
+<p>If a node <em>does</em> produce different results — different recall fidelity, different shard contents, different event hashes — the residue system catches it. A <code>historical-non-canonical</code> residue fires when recall fidelity drops below <code>FIDELITY_MIN_DEFAULT</code>. A <code>speculative-divergence</code> residue fires when drift exceeds <code>2×DRIFT_MAX</code>. A <code>reorg-orphan</code> residue fires when Medulla reorgs invalidate an epoch's anchor.</p>
+
+<p>Each residue carries a <strong>bounty</strong>. Any participant who provides a proof of the correct state earns a <code>ResidueToken</code> — the only token that doesn't decay. The economic incentive is always toward consistency, never toward hiding divergence.</p>
+
+<hr class="section-divider">
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<h2 id="gap">11. The Gap: Where We Are vs. Where We Need To Be</h2>
+
+<p>ECCA v3 is functional. All packages build. All 275 tests pass. The three Go chain forks compile. The contracts deploy. The E2E test runs the full coherence cycle. But there is a concrete gap between "it works on localhost" and "fair multi-region agent benchmarking on spot compute."</p>
+
+<table class="gap-table">
+  <thead>
+    <tr>
+      <th>Capability</th>
+      <th>Status</th>
+      <th>What Exists</th>
+      <th>What's Missing</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Epoch clock</strong></td>
+      <td><span class="status-done">✅ Done</span></td>
+      <td>Thalamus router ticks every <code>EPOCH_INTERVAL_MS</code>, submits coherence roots to Medulla, bridges to Cortex via EpochAnchor</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td><strong>Coherence root computation</strong></td>
+      <td><span class="status-done">✅ Done</span></td>
+      <td><code>coherenceRoot()</code>, <code>merkleRoot()</code>, per-shard Merkle trees, <code>SynapticFieldMMR</code></td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td><strong>On-chain verification</strong></td>
+      <td><span class="status-done">✅ Done</span></td>
+      <td><code>EpochAnchor.commitAnchor()</code>, <code>verifyContinuity()</code>, <code>verifyShardInclusion()</code></td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td><strong>TripartiteGame</strong></td>
+      <td><span class="status-done">✅ Done</span></td>
+      <td><code>openGame</code>, <code>registerParty</code>, <code>consume</code>, <code>verifyAllocationFair</code>, <code>auditEpoch</code></td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td><strong>Sleeve portability</strong></td>
+      <td><span class="status-done">✅ Done</span></td>
+      <td>4 sleeve kinds, parametric runtime, hardware-agnostic containers</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td><strong>Token economy</strong></td>
+      <td><span class="status-done">✅ Done</span></td>
+      <td>5 tokens, CPV, EBC, <code>effectiveBalance()</code>, per-epoch decay</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td><strong>Needlecasting saga</strong></td>
+      <td><span class="status-done">✅ Done</span></td>
+      <td>6-step saga with rollback, cost model, freeze/reconstruct/settle</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td><strong>Residue system</strong></td>
+      <td><span class="status-done">✅ Done</span></td>
+      <td>5 residue kinds, detection, proof submission, bounty payout</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td><strong>Multi-region chain replication</strong></td>
+      <td><span class="status-partial">⚠ Partial</span></td>
+      <td>Docker Compose local, Swarm distributed config, Helm chart stubs</td>
+      <td>Chain P2P peering across regions, NAT traversal, peer discovery for Medulla and Hippocampus. Cortex uses geth devp2p which handles this natively.</td>
+    </tr>
+    <tr>
+      <td><strong>Spot instance lifecycle</strong></td>
+      <td><span class="status-todo">🔮 TODO</span></td>
+      <td>Sleeve decommission on SIGTERM preserves state</td>
+      <td>Spot interruption handler that triggers needlecast before termination. AWS/GCP spot signal → freeze → needlecast → settle. Cloud-specific lifecycle hooks.</td>
+    </tr>
+    <tr>
+      <td><strong>Cross-region needlecasting</strong></td>
+      <td><span class="status-partial">⚠ Partial</span></td>
+      <td>Saga logic exists end-to-end, NATS carries events</td>
+      <td>Hippocampus shard replication across regions (currently in-memory, needs cross-region peer sync for pin transfers). Target region must have the shards before <code>reconstruct()</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>Cortex EVM precompiles</strong></td>
+      <td><span class="status-todo">🔮 TODO</span></td>
+      <td>Standard geth with Clique PoA</td>
+      <td><code>isCoherent(epoch, root)</code> and <code>verifyMerkleShard(root, leaf, proof)</code> as native EVM precompiles. Currently done in Solidity (works but costs more gas).</td>
+    </tr>
+    <tr>
+      <td><strong>Benchmark harness</strong></td>
+      <td><span class="status-todo">🔮 TODO</span></td>
+      <td>E2E test, unit tests, TripartiteGame contract</td>
+      <td>Orchestrator that opens a TripartiteGame, registers N agents across M regions, runs for K epochs, collects per-epoch audit results, produces a benchmark report. The plumbing exists; the harness doesn't.</td>
+    </tr>
+    <tr>
+      <td><strong>Helm charts</strong></td>
+      <td><span class="status-partial">⚠ Partial</span></td>
+      <td><code>chart-chains</code> has templates, <code>values-shared.yaml</code> exists</td>
+      <td>Complete charts for <code>chart-data</code>, <code>chart-orchestration</code>, <code>chart-sleeves</code>, <code>chart-workers</code>, <code>chart-observability</code>. Needed for K8s multi-region deployment.</td>
+    </tr>
+    <tr>
+      <td><strong>Observability</strong></td>
+      <td><span class="status-done">✅ Done</span></td>
+      <td>Prometheus, Loki, Grafana provisioning, Jaeger tracing</td>
+      <td>Per-agent dashboards, drift tracking, per-epoch resource utilization graphs. Config exists but dashboards are generic.</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr class="section-divider">
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<h2 id="roadmap">12. What It Takes to Get There</h2>
+
+<p>The gap between "works on localhost" and "fair multi-region benchmarking on spot compute" is concrete and measurable. Here's the work, in dependency order:</p>
+
+<h3>Phase A: Chain Peering (2–3 weeks)</h3>
+
+<p>Medulla and Hippocampus currently run as single-instance processes. To run across regions, they need P2P peer discovery and block/node propagation:</p>
+
+<ul>
+  <li><strong>Medulla:</strong> Add a gossip layer for block propagation. Each region runs a full node; blocks propagate via TCP. The PoW consensus already handles forks — the longest chain wins, exactly like Bitcoin. The existing <code>chain.go</code> code handles reorgs; it just needs a network transport.</li>
+  <li><strong>Hippocampus:</strong> Add peer sync for DAG nodes. The existing <code>peers</code> map and <code>AddPeer()</code>/<code>RemovePeer()</code> methods are stubbed out. Implement push-based replication: when a node calls <code>Put()</code>, it pushes the node to all peers. Pin leases replicate with the nodes.</li>
+  <li><strong>Cortex:</strong> Already handled — geth's devp2p does this natively. Just configure bootnodes across regions.</li>
+</ul>
+
+<h3>Phase B: Spot Instance Lifecycle (1 week)</h3>
+
+<p>When a cloud provider sends a spot interruption signal (AWS gives 2 minutes, GCP gives 30 seconds), the sleeve needs to:</p>
+
+<ol>
+  <li>Catch the signal (SIGTERM is already handled by <code>wireShutdown()</code>)</li>
+  <li>Trigger an emergency needlecast to a predetermined fallback region</li>
+  <li>If the needlecast completes before termination, the agent resumes elsewhere</li>
+  <li>If it doesn't, the sleeve is decommissioned and can be reconstructed manually from the last synced epoch</li>
+</ol>
+
+<p>The existing <code>wireShutdown()</code> in <code>@ecca/service-base</code> already registers SIGTERM handlers. The needlecasting saga already exists. The missing piece is: detect spot interruption signal → initiate needlecast to a target region → handle the race condition where termination arrives before the saga completes.</p>
+
+<h3>Phase C: Cross-Region Hippocampus Sync (1–2 weeks)</h3>
+
+<p>The needlecasting saga's step 3 (<code>pin(shards)</code>) assumes the target hippocampus node already has the shards. For cross-region needlecasting, the shards need to be replicated to the target region before <code>reconstruct()</code>.</p>
+
+<p>Option 1: Eager replication — all nodes replicate everywhere (simple, expensive). Option 2: Lazy replication with on-demand fetch — the target region pulls missing shards during <code>reconstruct()</code> (complex, efficient). Option 3: Hybrid — pin leases trigger replication to a configurable set of regions (practical middle ground).</p>
+
+<h3>Phase D: Benchmark Harness (1 week)</h3>
+
+<p>A CLI tool that:</p>
+
+<ol>
+  <li>Opens a <code>TripartiteGame</code> with configurable budgets</li>
+  <li>Registers N agents, each with their own Stack and CPV coefficients</li>
+  <li>Starts sleeve-runtimes across M regions (via Kubernetes or SSH)</li>
+  <li>Runs for K epochs</li>
+  <li>Collects per-epoch <code>verifyAllocationFair()</code> results from the contract</li>
+  <li>Collects drift metrics, residue counts, needlecast counts, fidelity scores</li>
+  <li>Generates a benchmark report (HTML, same cyberpunk theme)</li>
+</ol>
+
+<p>Every piece of this exists except the orchestration script itself. The contracts are deployed, the sleeve-runtime is parametric, the metrics are exposed via Prometheus, the audit functions are on-chain.</p>
+
+<h3>Phase E: Helm Chart Completion (1 week)</h3>
+
+<p>Complete the Kubernetes deployment charts so the entire stack can be deployed across multiple regions with <code>helm install</code>. The <code>chart-chains</code> templates exist as a reference; the remaining five charts need Deployment/Service/ConfigMap manifests that mirror the Docker Compose configuration.</p>
+
+<div class="callout-box green">
+  <span class="callout-label">Total Estimated Gap</span>
+  The core abstractions — epochs, coherence roots, sleeves, needlecasting, TripartiteGame, token economy, residue system — are all implemented and tested. The gap is primarily <strong>networking</strong> (chain peering), <strong>cloud integration</strong> (spot lifecycle), and <strong>orchestration</strong> (benchmark harness + Helm). Roughly 6–8 weeks of focused work to go from "works on localhost" to "multi-region benchmarking on spot compute."
+</div>
+
+<hr class="section-divider">
+
+<h2>Conclusion</h2>
+
+<p>The fundamental bet of ECCA is that you don't need synchronous execution to have fair testing. You need <strong>cryptographic proof of consistent state at well-defined boundaries</strong>. The epoch is the boundary. The coherence root is the proof. The TripartiteGame is the referee. The sleeve is the portable execution unit. The token economy is the resource constraint.</p>
+
+<p>An agent running on a $0.30/hr spot GPU in Singapore and an agent running on a $2.50/hr reserved instance in Virginia can both participate in the same benchmark. Neither needs to trust the other. Neither needs to trust a central coordinator. The smart contract verifies fairness. The coherence root verifies consistency. The residue system economically incentivizes repair of any divergence.</p>
+
+<p>The world isn't synchronized. It's <em>coherent</em>. That's the difference.</p>
+
+<blockquote>
+  <p>All test results are available in the <a href="unit-test-report.html">unit test report</a> (275 tests across 6 suites) and the <a href="e2e-report.html">E2E report</a> (full coherence cycle). The contracts, including <code>TripartiteGame</code> and <code>EpochAnchor</code>, have <a href="unit-test-report.html#suite-06">135 Solidity tests</a> covering all verification primitives. Source: <a href="https://github.com/aarong11/dhf">github.com/aarong11/dhf</a>.</p>
+</blockquote>
+
+</div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p style="opacity:0.5; font-size:0.7rem; letter-spacing:0.1em;">ECCA STACK v3 — DISTRIBUTED HUMAN FRAMEWORK — ALL MEMORY IS SACRED</p>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
