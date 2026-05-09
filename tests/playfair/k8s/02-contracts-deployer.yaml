@@ -1,0 +1,48 @@
+# ═══════════════════════════════════════════════════════════════════════
+#  Contracts Deployer — One-shot job to deploy all ECCA contracts
+#  Runs in region-compute (the compute-rich region)
+# ═══════════════════════════════════════════════════════════════════════
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: contracts-deployer
+  namespace: region-compute
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: OnFailure
+      nodeSelector:
+        ecca.io/region: region-compute
+      tolerations:
+        - operator: Exists
+      containers:
+        - name: deployer
+          image: ecca-builder:local
+          imagePullPolicy: Never
+          workingDir: /app/contracts
+          command: ["sh", "-c"]
+          args:
+            - |
+              echo "[contracts] Waiting for cortex-evm RPC..."
+              for i in $(seq 1 60); do
+                if wget -q -O- http://cortex-evm.region-compute:8545 2>/dev/null | grep -q jsonrpc; then
+                  break
+                fi
+                sleep 2
+              done
+              echo "[contracts] Deploying to cortex-evm..."
+              npx hardhat run scripts/deploy.ts --network cortex
+              echo "[contracts] Deployment complete"
+              cat deployments/cortex.json 2>/dev/null || echo "No deployment file found"
+          env:
+            - name: CORTEX_RPC
+              value: "http://cortex-evm.region-compute:8545"
+            - name: CORTEX_CHAIN_ID
+              value: "131072"
+            - name: OPERATOR_PRIVATE_KEY
+              value: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+          resources:
+            requests: { cpu: 500m, memory: 512Mi }
+            limits:   { cpu: 1000m, memory: 1Gi }

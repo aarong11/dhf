@@ -1,0 +1,41 @@
+# ═══════════════════════════════════════════════════════════════════════
+#  Playfair Orchestrator — Runs the tripartite game test
+# ═══════════════════════════════════════════════════════════════════════
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: playfair-orchestrator
+  namespace: ecca-shared
+spec:
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: orchestrator
+          image: ecca-playfair-orchestrator:local
+          imagePullPolicy: Never
+          env:
+            - name: REGION_STORAGE_API
+              value: "http://siyana-api.region-storage:7070"
+            - name: REGION_COMPUTE_API
+              value: "http://siyana-api.region-compute:7070"
+            - name: REGION_BANDWIDTH_API
+              value: "http://siyana-api.region-bandwidth:7070"
+            - name: EPOCHS
+              value: "50"
+            - name: ECCA_EPOCH_INTERVAL_MS
+              value: "4000"
+            - name: RESULTS_DIR
+              value: "/results"
+          volumeMounts:
+            - name: results
+              mountPath: /results
+          resources:
+            requests: { cpu: 200m, memory: 256Mi }
+            limits:   { cpu: 500m, memory: 512Mi }
+      volumes:
+        - name: results
+          emptyDir: {}

@@ -1,0 +1,293 @@
+# ═══════════════════════════════════════════════════════════════════════
+#  Services — Siyana API + Thalamus Router per region
+#  Each region gets its own API and epoch router, sharing the same
+#  Postgres/Redis/NATS from ecca-shared.
+# ═══════════════════════════════════════════════════════════════════════
+
+# ═════════════════════ REGION-STORAGE ════════════════════════════════
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: siyana-api
+  namespace: region-storage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: siyana-api
+  template:
+    metadata:
+      labels:
+        app: siyana-api
+        ecca.io/region: storage
+    spec:
+      tolerations:
+        - operator: Exists
+      containers:
+        - name: siyana
+          image: ecca-siyana-api:local
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 7070
+          env: &ts-env-storage
+            - name: DATABASE_URL
+              value: "postgresql://ecca:quellcrist@postgres.ecca-shared:5432/ecca_registry"
+            - name: REDIS_URL
+              value: "redis://redis.ecca-shared:6379"
+            - name: NATS_URL
+              value: "nats://nats.ecca-shared:4222"
+            - name: CORTEX_RPC
+              value: "http://cortex-evm.region-storage:8545"
+            - name: CORTEX_WS
+              value: "ws://cortex-evm.region-storage:8546"
+            - name: CORTEX_CHAIN_ID
+              value: "131072"
+            - name: MEDULLA_RPC
+              value: "http://medulla-pow.region-storage:8332"
+            - name: HIPPOCAMPUS_API
+              value: "http://hippocampus-dag.region-storage:5001"
+            - name: ECCA_EPOCH_INTERVAL_MS
+              value: "4000"
+            - name: OPERATOR_PRIVATE_KEY
+              value: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+            - name: ECCA_REGION
+              value: "region-storage"
+          resources:
+            requests: { cpu: 200m, memory: 256Mi }
+            limits:   { cpu: 500m, memory: 512Mi }
+          readinessProbe:
+            httpGet: { path: /healthz, port: 7070 }
+            initialDelaySeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: siyana-api
+  namespace: region-storage
+spec:
+  selector: { app: siyana-api }
+  ports:
+    - port: 7070
+      targetPort: 7070
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thalamus-router
+  namespace: region-storage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: thalamus-router
+  template:
+    metadata:
+      labels:
+        app: thalamus-router
+        ecca.io/region: storage
+    spec:
+      tolerations:
+        - operator: Exists
+      containers:
+        - name: thalamus
+          image: ecca-thalamus-router:local
+          imagePullPolicy: Never
+          env: *ts-env-storage
+          resources:
+            requests: { cpu: 200m, memory: 256Mi }
+            limits:   { cpu: 500m, memory: 512Mi }
+
+# ═════════════════════ REGION-COMPUTE ════════════════════════════════
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: siyana-api
+  namespace: region-compute
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: siyana-api
+  template:
+    metadata:
+      labels:
+        app: siyana-api
+        ecca.io/region: compute
+    spec:
+      tolerations:
+        - operator: Exists
+      containers:
+        - name: siyana
+          image: ecca-siyana-api:local
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 7070
+          env: &ts-env-compute
+            - name: DATABASE_URL
+              value: "postgresql://ecca:quellcrist@postgres.ecca-shared:5432/ecca_registry"
+            - name: REDIS_URL
+              value: "redis://redis.ecca-shared:6379"
+            - name: NATS_URL
+              value: "nats://nats.ecca-shared:4222"
+            - name: CORTEX_RPC
+              value: "http://cortex-evm.region-compute:8545"
+            - name: CORTEX_WS
+              value: "ws://cortex-evm.region-compute:8546"
+            - name: CORTEX_CHAIN_ID
+              value: "131072"
+            - name: MEDULLA_RPC
+              value: "http://medulla-pow.region-compute:8332"
+            - name: HIPPOCAMPUS_API
+              value: "http://hippocampus-dag.region-compute:5001"
+            - name: ECCA_EPOCH_INTERVAL_MS
+              value: "4000"
+            - name: OPERATOR_PRIVATE_KEY
+              value: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+            - name: ECCA_REGION
+              value: "region-compute"
+          resources:
+            requests: { cpu: 500m, memory: 512Mi }
+            limits:   { cpu: 1000m, memory: 1Gi }
+          readinessProbe:
+            httpGet: { path: /healthz, port: 7070 }
+            initialDelaySeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: siyana-api
+  namespace: region-compute
+spec:
+  selector: { app: siyana-api }
+  ports:
+    - port: 7070
+      targetPort: 7070
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thalamus-router
+  namespace: region-compute
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: thalamus-router
+  template:
+    metadata:
+      labels:
+        app: thalamus-router
+        ecca.io/region: compute
+    spec:
+      tolerations:
+        - operator: Exists
+      containers:
+        - name: thalamus
+          image: ecca-thalamus-router:local
+          imagePullPolicy: Never
+          env: *ts-env-compute
+          resources:
+            requests: { cpu: 500m, memory: 512Mi }
+            limits:   { cpu: 1000m, memory: 1Gi }
+
+# ═════════════════════ REGION-BANDWIDTH ══════════════════════════════
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: siyana-api
+  namespace: region-bandwidth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: siyana-api
+  template:
+    metadata:
+      labels:
+        app: siyana-api
+        ecca.io/region: bandwidth
+    spec:
+      tolerations:
+        - operator: Exists
+      containers:
+        - name: siyana
+          image: ecca-siyana-api:local
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 7070
+          env: &ts-env-bandwidth
+            - name: DATABASE_URL
+              value: "postgresql://ecca:quellcrist@postgres.ecca-shared:5432/ecca_registry"
+            - name: REDIS_URL
+              value: "redis://redis.ecca-shared:6379"
+            - name: NATS_URL
+              value: "nats://nats.ecca-shared:4222"
+            - name: CORTEX_RPC
+              value: "http://cortex-evm.region-bandwidth:8545"
+            - name: CORTEX_WS
+              value: "ws://cortex-evm.region-bandwidth:8546"
+            - name: CORTEX_CHAIN_ID
+              value: "131072"
+            - name: MEDULLA_RPC
+              value: "http://medulla-pow.region-bandwidth:8332"
+            - name: HIPPOCAMPUS_API
+              value: "http://hippocampus-dag.region-bandwidth:5001"
+            - name: ECCA_EPOCH_INTERVAL_MS
+              value: "4000"
+            - name: OPERATOR_PRIVATE_KEY
+              value: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+            - name: ECCA_REGION
+              value: "region-bandwidth"
+          resources:
+            requests: { cpu: 200m, memory: 256Mi }
+            limits:   { cpu: 500m, memory: 512Mi }
+          readinessProbe:
+            httpGet: { path: /healthz, port: 7070 }
+            initialDelaySeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: siyana-api
+  namespace: region-bandwidth
+spec:
+  selector: { app: siyana-api }
+  ports:
+    - port: 7070
+      targetPort: 7070
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thalamus-router
+  namespace: region-bandwidth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: thalamus-router
+  template:
+    metadata:
+      labels:
+        app: thalamus-router
+        ecca.io/region: bandwidth
+    spec:
+      tolerations:
+        - operator: Exists
+      containers:
+        - name: thalamus
+          image: ecca-thalamus-router:local
+          imagePullPolicy: Never
+          env: *ts-env-bandwidth
+          resources:
+            requests: { cpu: 200m, memory: 256Mi }
+            limits:   { cpu: 500m, memory: 512Mi }
