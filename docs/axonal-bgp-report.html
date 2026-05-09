@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Axonal-BGP — Routing Security Test Report</title>
+  <style>
+    :root { --bg: #0a0a1a; --card: #12122a; --border: #1e1e3a; --accent: #00d4ff; --text: #e0e0e0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font: 14px/1.6 'SF Mono', 'Fira Code', monospace; padding: 24px; }
+    h1 { font-size: 22px; color: var(--accent); margin-bottom: 4px; }
+    h2 { font-size: 16px; color: var(--accent); margin: 24px 0 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+    .meta { color: #888; font-size: 12px; margin-bottom: 16px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin: 8px 0; }
+    table { width: 100%; border-collapse: collapse; margin: 8px 0; }
+    th, td { padding: 6px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { color: var(--accent); font-size: 12px; text-transform: uppercase; }
+    .charts { display: flex; flex-wrap: wrap; gap: 16px; }
+    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 12px 0; }
+    .summary-box { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
+    .summary-box .val { font-size: 28px; color: var(--accent); font-weight: bold; }
+    .summary-box .label { font-size: 11px; color: #888; }
+  </style>
+</head>
+<body>
+  <h1>Axonal-BGP — Routing Security Test Report</h1>
+  <p class="meta">
+    2026-05-09T15:49:04.492Z · 25.2s ·
+    commit 9e04aa9b748d72cfa4873c637cf118e91d731189 · branch main · runner github-actions/Linux
+  </p>
+
+  <div class="summary-grid">
+    <div class="summary-box"><div class="val">50</div><div class="label">Epochs</div></div>
+    <div class="summary-box"><div class="val">6</div><div class="label">Scenarios</div></div>
+    <div class="summary-box"><div class="val">9</div><div class="label">Residues Detected</div></div>
+    <div class="summary-box"><div class="val">4</div><div class="label">Autonomous Systems</div></div>
+    <div class="summary-box"><div class="val">25.2s</div><div class="label">Duration</div></div>
+  </div>
+
+  <h2>Scenario Timeline</h2>
+  <div class="card"><svg width="700" height="120" xmlns="http://www.w3.org/2000/svg" style="background:#1a1a2e;border-radius:8px;margin:8px 0">
+    <text x="350" y="20" text-anchor="middle" fill="#00d4ff" font-size="13" font-weight="bold">Scenario Timeline</text>
+    <line x1="40" y1="60" x2="660" y2="60" stroke="#333" stroke-width="2"/>
+    <text x="40" y="45" fill="#666" font-size="10">Epoch 1</text>
+    <text x="660" y="45" fill="#666" font-size="10" text-anchor="end">Epoch 50</text>
+    <circle cx="164" cy="60" r="8" fill="#ff4444" stroke="#fff" stroke-width="1.5"/>
+      <text x="164" y="90" text-anchor="middle" fill="#ccc" font-size="9">E10</text>
+      <text x="164" y="102" text-anchor="middle" fill="#ff4444" font-size="8">Origin Hijack</text>
+<circle cx="288" cy="60" r="8" fill="#ff8800" stroke="#fff" stroke-width="1.5"/>
+      <text x="288" y="90" text-anchor="middle" fill="#ccc" font-size="9">E20</text>
+      <text x="288" y="102" text-anchor="middle" fill="#ff8800" font-size="8">M O A S Conflict</text>
+<circle cx="412" cy="60" r="8" fill="#ffcc00" stroke="#fff" stroke-width="1.5"/>
+      <text x="412" y="90" text-anchor="middle" fill="#ccc" font-size="9">E30</text>
+      <text x="412" y="102" text-anchor="middle" fill="#ffcc00" font-size="8">Bad Signature</text>
+<circle cx="474" cy="60" r="8" fill="#ff00ff" stroke="#fff" stroke-width="1.5"/>
+      <text x="474" y="90" text-anchor="middle" fill="#ccc" font-size="9">E35</text>
+      <text x="474" y="102" text-anchor="middle" fill="#ff00ff" font-size="8">Auto Pause</text>
+<circle cx="536" cy="60" r="8" fill="#00ffcc" stroke="#fff" stroke-width="1.5"/>
+      <text x="536" y="90" text-anchor="middle" fill="#ccc" font-size="9">E40</text>
+      <text x="536" y="102" text-anchor="middle" fill="#00ffcc" font-size="8">Guardian Confirm</text>
+<circle cx="598" cy="60" r="8" fill="#00ff66" stroke="#fff" stroke-width="1.5"/>
+      <text x="598" y="90" text-anchor="middle" fill="#ccc" font-size="9">E45</text>
+      <text x="598" y="102" text-anchor="middle" fill="#00ff66" font-size="8">Resume</text>
+  </svg></div>
+
+  <h2>Scenarios</h2>
+  <div class="card">
+    <table>
+      <tr><th>Epoch</th><th>Type</th><th>Target</th><th>Detail</th></tr>
+      <tr>
+  <td style="color:#00d4ff">Epoch 10</td>
+  <td><span style="padding:2px 8px;border-radius:4px;background:#220000">OriginHijack</span></td>
+  <td>AS-100</td>
+  <td style="color:#999">-</td>
+</tr>
+<tr>
+  <td style="color:#00d4ff">Epoch 20</td>
+  <td><span style="padding:2px 8px;border-radius:4px;background:#220000">MOASConflict</span></td>
+  <td>AS-200, AS-400</td>
+  <td style="color:#999">-</td>
+</tr>
+<tr>
+  <td style="color:#00d4ff">Epoch 30</td>
+  <td><span style="padding:2px 8px;border-radius:4px;background:#220000">BadSignature</span></td>
+  <td>AS-100</td>
+  <td style="color:#999">-</td>
+</tr>
+<tr>
+  <td style="color:#00d4ff">Epoch 35</td>
+  <td><span style="padding:2px 8px;border-radius:4px;background:#220000">AutoPause</span></td>
+  <td>AS-300</td>
+  <td style="color:#999">residue-rate-spike</td>
+</tr>
+<tr>
+  <td style="color:#00d4ff">Epoch 40</td>
+  <td><span style="padding:2px 8px;border-radius:4px;background:#002222">GuardianConfirm</span></td>
+  <td>AS-300</td>
+  <td style="color:#999">-</td>
+</tr>
+<tr>
+  <td style="color:#00d4ff">Epoch 45</td>
+  <td><span style="padding:2px 8px;border-radius:4px;background:#002200">Resume</span></td>
+  <td>AS-300</td>
+  <td style="color:#999">-</td>
+</tr>
+    </table>
+  </div>
+
+  <h2>Agent Summary</h2>
+  <div class="card">
+    <table>
+      <tr><th>AS</th><th>Role</th><th>Routes</th><th>Residues</th><th>Status</th></tr>
+      <tr>
+  <td style="color:#00d4ff">AS-100</td>
+  <td>-</td>
+  <td>1</td>
+  <td>8</td>
+  <td><span style="color:#00ff66">ACTIVE</span></td>
+</tr>
+<tr>
+  <td style="color:#00d4ff">AS-200</td>
+  <td>-</td>
+  <td>2</td>
+  <td>3</td>
+  <td><span style="color:#00ff66">ACTIVE</span></td>
+</tr>
+<tr>
+  <td style="color:#00d4ff">AS-300</td>
+  <td>-</td>
+  <td>1</td>
+  <td>6</td>
+  <td><span style="color:#00ff66">ACTIVE</span></td>
+</tr>
+<tr>
+  <td style="color:#00d4ff">AS-400</td>
+  <td>-</td>
+  <td>1</td>
+  <td>4</td>
+  <td><span style="color:#00ff66">ACTIVE</span></td>
+</tr>
+    </table>
+  </div>
+
+  <h2>Charts</h2>
+  <div class="charts">
+    <svg id="residue-chart" width="600" height="200" xmlns="http://www.w3.org/2000/svg" style="background:#1a1a2e;border-radius:8px;margin:8px 0">
+    <text x="300" y="20" text-anchor="middle" fill="#00d4ff" font-size="13" font-weight="bold">Residues by Kind</text>
+    <rect x="40" y="136" width="60" height="24" fill="#ff4444" rx="2"/>
+      <text x="70" y="174" text-anchor="middle" fill="#999" font-size="10">MOASConflict</text>
+      <text x="70" y="132" text-anchor="middle" fill="#ddd" font-size="11">1</text>
+<rect x="213.33333333333334" y="40" width="60" height="120" fill="#ff4444" rx="2"/>
+      <text x="243.33333333333334" y="174" text-anchor="middle" fill="#999" font-size="10">BadSignature</text>
+      <text x="243.33333333333334" y="36" text-anchor="middle" fill="#ddd" font-size="11">5</text>
+<rect x="386.6666666666667" y="88" width="60" height="72" fill="#ff4444" rx="2"/>
+      <text x="416.6666666666667" y="174" text-anchor="middle" fill="#999" font-size="10">PathLeak</text>
+      <text x="416.6666666666667" y="84" text-anchor="middle" fill="#ddd" font-size="11">3</text>
+  </svg>
+    <svg id="agent-residues" width="600" height="200" xmlns="http://www.w3.org/2000/svg" style="background:#1a1a2e;border-radius:8px;margin:8px 0">
+    <text x="300" y="20" text-anchor="middle" fill="#00d4ff" font-size="13" font-weight="bold">Residues per Agent</text>
+    <rect x="40" y="40" width="60" height="120" fill="#ff8800" rx="2"/>
+      <text x="70" y="174" text-anchor="middle" fill="#999" font-size="10">AS-100</text>
+      <text x="70" y="36" text-anchor="middle" fill="#ddd" font-size="11">8</text>
+<rect x="170" y="115" width="60" height="45" fill="#ff8800" rx="2"/>
+      <text x="200" y="174" text-anchor="middle" fill="#999" font-size="10">AS-200</text>
+      <text x="200" y="111" text-anchor="middle" fill="#ddd" font-size="11">3</text>
+<rect x="300" y="70" width="60" height="90" fill="#ff8800" rx="2"/>
+      <text x="330" y="174" text-anchor="middle" fill="#999" font-size="10">AS-300</text>
+      <text x="330" y="66" text-anchor="middle" fill="#ddd" font-size="11">6</text>
+<rect x="430" y="100" width="60" height="60" fill="#ff8800" rx="2"/>
+      <text x="460" y="174" text-anchor="middle" fill="#999" font-size="10">AS-400</text>
+      <text x="460" y="96" text-anchor="middle" fill="#ddd" font-size="11">4</text>
+  </svg>
+    <svg id="agent-routes" width="600" height="200" xmlns="http://www.w3.org/2000/svg" style="background:#1a1a2e;border-radius:8px;margin:8px 0">
+    <text x="300" y="20" text-anchor="middle" fill="#00d4ff" font-size="13" font-weight="bold">Routes per Agent</text>
+    <rect x="40" y="100" width="60" height="60" fill="#00d4ff" rx="2"/>
+      <text x="70" y="174" text-anchor="middle" fill="#999" font-size="10">AS-100</text>
+      <text x="70" y="96" text-anchor="middle" fill="#ddd" font-size="11">1</text>
+<rect x="170" y="40" width="60" height="120" fill="#00d4ff" rx="2"/>
+      <text x="200" y="174" text-anchor="middle" fill="#999" font-size="10">AS-200</text>
+      <text x="200" y="36" text-anchor="middle" fill="#ddd" font-size="11">2</text>
+<rect x="300" y="100" width="60" height="60" fill="#00d4ff" rx="2"/>
+      <text x="330" y="174" text-anchor="middle" fill="#999" font-size="10">AS-300</text>
+      <text x="330" y="96" text-anchor="middle" fill="#ddd" font-size="11">1</text>
+<rect x="430" y="100" width="60" height="60" fill="#00d4ff" rx="2"/>
+      <text x="460" y="174" text-anchor="middle" fill="#999" font-size="10">AS-400</text>
+      <text x="460" y="96" text-anchor="middle" fill="#ddd" font-size="11">1</text>
+  </svg>
+  </div>
+
+  <h2>Protocol Highlights</h2>
+  <div class="card">
+    <table>
+      <tr><th>Feature</th><th>Status</th><th>Detail</th></tr>
+      <tr><td>Ed25519 Route Signing</td><td style="color:#00ff66">✓ Active</td><td>All route advertisements signed per-epoch</td></tr>
+      <tr><td>Per-Epoch RouteTableRoot</td><td style="color:#00ff66">✓ Committed</td><td>SHA-256 Merkle root committed each epoch</td></tr>
+      <tr><td>ResidueToRoutingSwap</td><td style="color:#00ff66">✓ Deployed</td><td>EBC decay pricing, per-agent + global caps</td></tr>
+      <tr><td>RouteOracle</td><td style="color:#00ff66">✓ Active</td><td>Auto-pause on residue spike, guardian multisig</td></tr>
+      <tr><td>Origin Hijack Detection</td><td style="color:#ff4444">✗ Not triggered</td><td>0 detected</td></tr>
+      <tr><td>Bad-Signature Detection</td><td style="color:#00ff66">✓ Detected</td><td>5 detected</td></tr>
+      <tr><td>Auto-Pause</td><td style="color:#00ff66">✓ Triggered</td><td>Oracle paused AS-300 at epoch 35</td></tr>
+      <tr><td>Guardian Resume</td><td style="color:#00ff66">✓ Executed</td><td>2-of-3 guardian vote resumed AS-300 at epoch 45</td></tr>
+    </table>
+  </div>
+
+  <h2>About This Test</h2>
+  <div class="card" style="color:#999;font-size:12px">
+    <p>This report was generated by the Axonal-BGP routing security simulation.
+    It demonstrates the ECCA Axonal-BGP protocol — extending cognitive identity infrastructure
+    to secure inter-domain routing. Four simulated autonomous systems (AS-100 through AS-400)
+    exchange BGP advertisements with ed25519 signatures and per-epoch route-table commitments.</p>
+    <p style="margin-top:8px">See: <a href="axonal-bgp.html" style="color:var(--accent)">Axonal-BGP Documentation</a>
+    · <a href="axonal-bgp.pdf" style="color:var(--accent)">Research Paper (PDF)</a></p>
+  </div>
+</body>
+</html>
