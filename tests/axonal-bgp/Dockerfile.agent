@@ -1,0 +1,5 @@
+FROM node:20-alpine
+WORKDIR /app
+COPY agent-bgp-router.js ./
+EXPOSE 9090
+ENTRYPOINT ["node", "agent-bgp-router.js"]

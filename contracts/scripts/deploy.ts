@@ -121,6 +121,30 @@ async function main() {
     compute.address, memT.address, routing.address, stackIdentity.address,
   ]);
 
+  // 6. Axonal-BGP — ResidueToRoutingSwap + RouteOracle
+  const resToRouting = await deploy('ResidueToRoutingSwap', [
+    residue.address, routing.address,
+  ]);
+  // Swap contract needs minter rights on RoutingToken
+  {
+    const hash = await (routing as any).write.setMinter([resToRouting.address]);
+    await publicClient.waitForTransactionReceipt({ hash });
+  }
+  // Swap contract needs spender rights on ResidueToken (authorized as a "sleeve")
+  // This is done per-stack at runtime, not globally.
+
+  // Deploy RouteOracle with deployer as initial 1-of-1 guardian
+  const routeOracle = await deploy('RouteOracle', [
+    resToRouting.address,
+    [account.address],  // guardians
+    1n,                 // threshold (1-of-1 for dev)
+  ]);
+  // Wire oracle into swap
+  {
+    const hash = await (resToRouting as any).write.setRouteOracle([routeOracle.address]);
+    await publicClient.waitForTransactionReceipt({ hash });
+  }
+
   // Persist for off-chain services
   mkdirSync(DEPLOY_DIR, { recursive: true });
   const out = {
@@ -138,6 +162,8 @@ async function main() {
     ResidueRegistry: residueReg.address,
     EpochAnchor: epochAnchor.address,
     TripartiteGame: tripartite.address,
+    ResidueToRoutingSwap: resToRouting.address,
+    RouteOracle: routeOracle.address,
   };
   writeFileSync(join(DEPLOY_DIR, 'cortex.json'), JSON.stringify(out, null, 2));
   console.log(`\nWrote ${join(DEPLOY_DIR, 'cortex.json')}`);

@@ -1,0 +1,46 @@
+# ═══════════════════════════════════════════════════════════════════════
+#  Contracts Deployer — Deploys all ECCA contracts including
+#  ResidueToRoutingSwap + RouteOracle to the dev Cortex EVM chain
+# ═══════════════════════════════════════════════════════════════════════
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: contracts-deployer
+  namespace: bgp-sim
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: OnFailure
+      tolerations:
+        - operator: Exists
+      containers:
+        - name: deployer
+          image: ecca-ts-builder:local
+          imagePullPolicy: Never
+          workingDir: /app/contracts
+          command: ["sh", "-c"]
+          args:
+            - |
+              echo "[contracts] Waiting for cortex-evm RPC..."
+              for i in $(seq 1 60); do
+                if wget -q -O- http://cortex-evm.bgp-sim:8545 2>/dev/null | grep -q jsonrpc; then
+                  break
+                fi
+                sleep 2
+              done
+              echo "[contracts] Deploying full suite (incl. ResidueToRoutingSwap + RouteOracle)..."
+              npx hardhat run scripts/deploy.ts --network cortex
+              echo "[contracts] Deployment complete"
+              cat deployments/cortex.json 2>/dev/null || echo "No deployment file found"
+          env:
+            - name: CORTEX_RPC
+              value: "http://cortex-evm.bgp-sim:8545"
+            - name: CORTEX_CHAIN_ID
+              value: "131072"
+            - name: OPERATOR_PRIVATE_KEY
+              value: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+          resources:
+            requests: { cpu: 500m, memory: 512Mi }
+            limits:   { cpu: 1000m, memory: 1Gi }

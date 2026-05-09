@@ -1,0 +1,55 @@
+# ═══════════════════════════════════════════════════════════════════════
+#  Axonal-BGP Orchestrator — Runs the 4-AS routing security simulation
+# ═══════════════════════════════════════════════════════════════════════
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bgp-orchestrator
+  namespace: bgp-sim
+spec:
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: Never
+      tolerations:
+        - operator: Exists
+      containers:
+        - name: orchestrator
+          image: ecca-bgp-orchestrator:local
+          imagePullPolicy: Never
+          env:
+            - name: AS_100_API
+              value: "http://agent-bgp-100.bgp-sim:9090"
+            - name: AS_200_API
+              value: "http://agent-bgp-200.bgp-sim:9090"
+            - name: AS_300_API
+              value: "http://agent-bgp-300.bgp-sim:9090"
+            - name: AS_400_API
+              value: "http://agent-bgp-400.bgp-sim:9090"
+            - name: EPOCHS
+              value: "EPOCHS_PLACEHOLDER"
+            - name: ECCA_EPOCH_INTERVAL_MS
+              value: "2000"
+            - name: RESULTS_DIR
+              value: "/results"
+            - name: BGP_CLUSTER
+              value: "BGP_CLUSTER_PLACEHOLDER"
+            - name: BGP_LATENCY_PROFILE
+              value: "BGP_LATENCY_PLACEHOLDER"
+            - name: GIT_COMMIT
+              value: "GIT_COMMIT_PLACEHOLDER"
+            - name: BGP_RUNNER
+              value: "BGP_RUNNER_PLACEHOLDER"
+            - name: GITHUB_REF_NAME
+              value: "GIT_BRANCH_PLACEHOLDER"
+          volumeMounts:
+            - name: results
+              mountPath: /results
+          resources:
+            requests: { cpu: 200m, memory: 256Mi }
+            limits:   { cpu: 500m, memory: 512Mi }
+      volumes:
+        - name: results
+          emptyDir: {}

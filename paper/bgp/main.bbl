@@ -1,0 +1,75 @@
+\begin{thebibliography}{10}
+
+\bibitem{aspa2024}
+A.~Azimov, E.~Bogomazov, R.~Bush, K.~Patel, J.~Snijders, and K.~Sriram.
+\newblock {A Profile for Autonomous System Provider Authorization}.
+\newblock Internet-Draft draft-ietf-sidrops-aspa-profile, 2024.
+\newblock Work in progress.
+
+\bibitem{rfc6810}
+R.~Bush and R.~Austein.
+\newblock {The Resource Public Key Infrastructure (RPKI) to Router Protocol}.
+\newblock RFC 6810, 2013.
+\newblock \url{https://www.rfc-editor.org/rfc/rfc6810}.
+
+\bibitem{cohen18}
+Avichai Cohen, Yossi Gilad, Amir Herzberg, and Michael Schapira.
+\newblock Jumpstarting {BGP} security with path-end validation.
+\newblock In {\em Proceedings of the 2016 ACM SIGCOMM Conference}, pages
+  342--355. ACM, 2016.
+
+\bibitem{compound19}
+{Compound Labs}.
+\newblock {The Compound Protocol Pause Guardian}, 2019.
+\newblock \url{https://compound.finance/governance}.
+
+\bibitem{hari18}
+Adiseshu Hari and T.~V. Lakshman.
+\newblock The internet blockchain: A distributed, tamper-resistant transaction
+  framework for the internet.
+\newblock In {\em Proceedings of the 15th ACM Workshop on Hot Topics in
+  Networks (HotNets-XV)}, pages 204--210. ACM, 2016.
+
+\bibitem{rfc8205}
+M.~Lepinski and K.~Sriram (eds).
+\newblock {BGPsec Protocol Specification}.
+\newblock RFC 8205, 2017.
+\newblock \url{https://www.rfc-editor.org/rfc/rfc8205}.
+
+\bibitem{rfc6480}
+M.~Lepinski and S.~Kent.
+\newblock {An Infrastructure to Support Secure Internet Routing}.
+\newblock RFC 6480, 2012.
+\newblock \url{https://www.rfc-editor.org/rfc/rfc6480}.
+
+\bibitem{makerdao20}
+{MakerDAO}.
+\newblock {The Maker Protocol: Emergency Shutdown}, 2020.
+\newblock \url{https://docs.makerdao.com/smart-contract-modules/shutdown}.
+
+\bibitem{rfc4271}
+Y.~Rekhter, T.~Li, and S.~Hares (eds).
+\newblock {A Border Gateway Protocol 4 (BGP-4)}.
+\newblock RFC 4271, 2006.
+\newblock \url{https://www.rfc-editor.org/rfc/rfc4271}.
+
+\bibitem{ecca2026}
+RNG.
+\newblock {ECCA: Eternal Coherence over Cryptographic Anchors -- A
+  Neuroscience-Inspired Architecture for Distributed Cognitive Systems with
+  Persistent Memory and Cross-Chain Coordination}, 2026.
+\newblock Working paper, Draft v3.0.
+
+\bibitem{sermpezis20}
+Pavlos Sermpezis, Vasileios Kotronis, Petros Gigis, Xenofontas Dimitropoulos,
+  Danilo Cicalese, Alistair King, and Alberto Dainotti.
+\newblock {ARTEMIS}: Neutralizing {BGP} hijacking within a minute.
+\newblock volume~26, pages 2471--2486, 2018.
+
+\bibitem{snijders24}
+J.~Snijders, B.~Maddison, et~al.
+\newblock {AS-Cones: A Lightweight Path Validation Mechanism}.
+\newblock Internet-Draft, 2024.
+\newblock Work in progress.
+
+\end{thebibliography}

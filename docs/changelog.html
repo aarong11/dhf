@@ -172,8 +172,8 @@
     <p style="color:var(--text-muted,#666); font-size:0.8rem; margin-bottom:2rem;">Version history and release notes for the ECCA Stack v3 monorepo.</p>
 
     <div class="stats-row">
-      <div class="stat-card"><div class="stat-num">275</div><div class="stat-lbl">Unit Tests</div></div>
-      <div class="stat-card"><div class="stat-num">7</div><div class="stat-lbl">Contracts</div></div>
+      <div class="stat-card"><div class="stat-num">291</div><div class="stat-lbl">Unit Tests</div></div>
+      <div class="stat-card"><div class="stat-num">9</div><div class="stat-lbl">Contracts</div></div>
       <div class="stat-card"><div class="stat-num">7</div><div class="stat-lbl">Packages</div></div>
       <div class="stat-card"><div class="stat-num">10</div><div class="stat-lbl">Services</div></div>
       <div class="stat-card"><div class="stat-num">3</div><div class="stat-lbl">Chains</div></div>
@@ -187,6 +187,38 @@
       <span class="changelog-tag tag-docs">Docs</span>
       <span class="changelog-tag tag-infra">Infra</span>
       <span class="changelog-tag tag-contracts">Contracts</span>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 2026-07-05 — Axonal-BGP: Routing Security with Cognitive Identity -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+
+    <div class="changelog-entry major">
+      <div class="changelog-date">2026-07-05</div>
+      <div class="changelog-title">Axonal-BGP — Securing Inter-Domain Routing with Cognitive Identity</div>
+      <div>
+        <span class="changelog-tag tag-major">Major</span>
+        <span class="changelog-tag tag-contracts">Contracts</span>
+        <span class="changelog-tag tag-test">Tests</span>
+        <span class="changelog-tag tag-docs">Docs</span>
+        <span class="changelog-tag tag-infra">Infra</span>
+      </div>
+      <div class="changelog-body">
+        <p>New paper and full working demo extending the ECCA cognitive identity stack to secure BGP routing. Autonomous agents sign route advertisements with ed25519, commit per-epoch RouteTableRoot hashes, and convert routing anomalies into on-chain evidence with economic accountability.</p>
+        <ul>
+          <li><strong>Research paper</strong> — <a href="axonal-bgp.pdf">paper/bgp/main.tex</a>: 10-page LaTeX paper covering protocol specification, new smart contracts, routing residue catalogue, and experimental demo design.</li>
+          <li><strong>ResidueToRoutingSwap contract</strong> — one-way RES → RTE conversion with EBC decay pricing (ρ₀=0.5, δ=5%/epoch, floor=10%), per-agent caps (50 RTE/epoch), global caps (5,000 RTE/epoch), oracle-pausable.</li>
+          <li><strong>RouteOracle contract</strong> — guardian multisig (M-of-N) for human-in-the-loop intervention. Emergency-pause (1-of-N), auto-pause on residue rate spike or swap burst, resume requires M-of-N vote.</li>
+          <li><strong>16 new contract tests</strong> — full test coverage: swap pricing, decay, floor, caps, oracle pause, guardian emergency/resume, auto-pause heuristics, swap halt.</li>
+          <li><strong>Deploy script extended</strong> — <code>contracts/scripts/deploy.ts</code> now deploys ResidueToRoutingSwap + RouteOracle and wires minter rights + oracle authorization.</li>
+          <li><strong>BGP agent service</strong> — <code>tests/axonal-bgp/agent-bgp-router.js</code>: lightweight HTTP service simulating a BGP speaker with signed advertisements, route tables, attack injection, and pause state.</li>
+          <li><strong>Orchestrator</strong> — drives 4 ASes through 50 epochs with 6 scenarios: origin hijack (E10), MOAS conflict (E20), bad-signature flood (E30), auto-pause (E35), guardian intervention (E40), resume (E45).</li>
+          <li><strong>K8s manifests</strong> — <code>tests/axonal-bgp/k8s/</code>: namespace, Cortex EVM dev chain, contracts deployer Job, 4 agent Deployments+Services, orchestrator Job.</li>
+          <li><strong>Terraform module</strong> — <code>tests/axonal-bgp/terraform/</code>: k3d cluster, image builds, k3d import, manifest apply, orchestrator launch — mirroring the Playfair pattern.</li>
+          <li><strong>GitHub Actions</strong> — <code>.github/workflows/axonal-bgp.yml</code>: nightly @ 04:00 UTC, on push, workflow_dispatch with epoch override. Publishes report to GitHub Pages.</li>
+          <li><strong>Documentation</strong> — <a href="axonal-bgp.html">docs/axonal-bgp.html</a>: full cyberpunk-styled page with contract details, residue catalogue, simulation timeline, run instructions, and EBC pricing formula.</li>
+        </ul>
+      </div>
     </div>
 
     <!-- ═══════════════════════════════════════════════════════════════ -->

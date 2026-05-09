@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Axonal-BGP — Securing Inter-Domain Routing with Cognitive Identity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-gradient-top"></div>
+
+<!-- Navigation -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <span class="logo-icon">◈</span>
+      ECCA
+    </a>
+    <ul class="nav-links">
+      <li><a href="https://discord.gg/GXBS3dUT" target="_blank">Discord</a></li>
+      <li><a href="paper.pdf" target="_blank">Paper</a></li>
+      <li><a href="architecture.html">Architecture</a></li>
+      <li><a href="docs.html">Docs</a></li>
+      <li><a href="tokenomics.html">Tokens</a></li>
+      <li><a href="developer.html">Developers</a></li>
+      <li><a href="playfair.html">Playfair</a></li>
+      <li><a href="axonal-bgp.html" class="active">Axonal-BGP</a></li>
+      <li><a href="changelog.html">Changelog</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Hero -->
+<header class="hero" style="padding:100px 24px 60px">
+  <div style="max-width:900px;margin:0 auto">
+    <h1 style="font-family:'Orbitron',monospace;font-size:clamp(28px,5vw,48px);color:#00d4ff;margin-bottom:12px">
+      AXONAL-BGP
+    </h1>
+    <p style="font-size:18px;color:#aaa;max-width:700px;line-height:1.7">
+      Extending the ECCA cognitive identity stack to secure inter-domain routing.
+      Autonomous agents sign BGP advertisements, commit per-epoch route-table roots,
+      and convert routing residues into on-chain evidence — with a human-in-the-loop
+      oracle as a fail-safe against misbehaving participants.
+    </p>
+    <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap">
+      <a href="axonal-bgp.pdf" class="nav-cta" style="display:inline-block;padding:10px 24px;background:#00d4ff;color:#000;border-radius:6px;text-decoration:none;font-weight:600">📄 Read the Paper</a>
+      <a href="axonal-bgp-report.html" class="nav-cta" style="display:inline-block;padding:10px 24px;background:#1a1a2e;color:#00d4ff;border:1px solid #00d4ff;border-radius:6px;text-decoration:none;font-weight:600">📊 Latest Test Report</a>
+      <a href="https://github.com/quellcrist-falconer/ECCA/tree/main/tests/axonal-bgp" class="nav-cta" style="display:inline-block;padding:10px 24px;background:#1a1a2e;color:#aaa;border:1px solid #333;border-radius:6px;text-decoration:none">⌘ Source</a>
+    </div>
+  </div>
+</header>
+
+<!-- Content -->
+<main style="max-width:900px;margin:0 auto;padding:0 24px 80px">
+
+  <section class="card" style="background:#12122a;border:1px solid #1e1e3a;border-radius:12px;padding:32px;margin-bottom:32px">
+    <h2 style="color:#00d4ff;font-family:'Orbitron',monospace;font-size:20px;margin-bottom:16px">What is Axonal-BGP?</h2>
+    <p style="color:#ccc;line-height:1.8">
+      The Border Gateway Protocol (BGP) routes traffic across the internet's 80,000+ autonomous systems,
+      yet remains vulnerable to prefix hijacking, route leaks, and origin spoofing.
+      Existing mitigations — RPKI, BGPsec, ASPA — provide cryptographic attestation but lack
+      <em>economic accountability</em> and <em>adaptive response</em>.
+    </p>
+    <p style="color:#ccc;line-height:1.8;margin-top:12px">
+      Axonal-BGP bridges this gap by treating each BGP speaker as an ECCA agent with a
+      <strong>StackIdentity</strong> NFT, per-epoch <strong>RouteTableRoot</strong> commitments,
+      and a <strong>ResidueToRoutingSwap</strong> contract that prices routing anomalies as
+      economic tokens with epoch-binding decay.
+    </p>
+  </section>
+
+  <section class="card" style="background:#12122a;border:1px solid #1e1e3a;border-radius:12px;padding:32px;margin-bottom:32px">
+    <h2 style="color:#00d4ff;font-family:'Orbitron',monospace;font-size:20px;margin-bottom:16px">New Smart Contracts</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:14px">
+      <tr style="border-bottom:1px solid #1e1e3a">
+        <th style="text-align:left;padding:8px;color:#00d4ff">Contract</th>
+        <th style="text-align:left;padding:8px;color:#00d4ff">Purpose</th>
+      </tr>
+      <tr style="border-bottom:1px solid #1e1e3a">
+        <td style="padding:8px"><code style="color:#00ffaa">ResidueToRoutingSwap</code></td>
+        <td style="padding:8px;color:#ccc">One-way RES → RTE conversion with EBC decay pricing, per-agent + global epoch caps, pausable by oracle</td>
+      </tr>
+      <tr>
+        <td style="padding:8px"><code style="color:#00ffaa">RouteOracle</code></td>
+        <td style="padding:8px;color:#ccc">Guardian multisig (M-of-N), emergency-pause (1-of-N), auto-pause on residue rate spike or swap burst, human-in-the-loop resume</td>
+      </tr>
+    </table>
+  </section>
+
+  <section class="card" style="background:#12122a;border:1px solid #1e1e3a;border-radius:12px;padding:32px;margin-bottom:32px">
+    <h2 style="color:#00d4ff;font-family:'Orbitron',monospace;font-size:20px;margin-bottom:16px">Routing Residue Catalogue</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:14px">
+      <tr style="border-bottom:1px solid #1e1e3a">
+        <th style="text-align:left;padding:8px;color:#00d4ff">Kind</th>
+        <th style="text-align:left;padding:8px;color:#00d4ff">Description</th>
+      </tr>
+      <tr style="border-bottom:1px solid #1e1e3a"><td style="padding:8px;color:#ff4444"><code>BadSignature</code></td><td style="padding:8px;color:#ccc">ed25519 signature verification failed on route advertisement</td></tr>
+      <tr style="border-bottom:1px solid #1e1e3a"><td style="padding:8px;color:#ff8800"><code>OriginHijack</code></td><td style="padding:8px;color:#ccc">Route claims a prefix owned by a different AS</td></tr>
+      <tr style="border-bottom:1px solid #1e1e3a"><td style="padding:8px;color:#ffcc00"><code>MOASConflict</code></td><td style="padding:8px;color:#ccc">Multiple origins for the same prefix without authorization</td></tr>
+      <tr style="border-bottom:1px solid #1e1e3a"><td style="padding:8px;color:#ff00ff"><code>PathLeak</code></td><td style="padding:8px;color:#ccc">AS path indicates route leak to unauthorized peer</td></tr>
+      <tr style="border-bottom:1px solid #1e1e3a"><td style="padding:8px;color:#8888ff"><code>RouteFlap</code></td><td style="padding:8px;color:#ccc">Excessive route oscillation within observation window</td></tr>
+      <tr><td style="padding:8px;color:#00ffcc"><code>EpochCommitMiss</code></td><td style="padding:8px;color:#ccc">Agent failed to commit RouteTableRoot for an epoch</td></tr>
+    </table>
+  </section>
+
+  <section class="card" style="background:#12122a;border:1px solid #1e1e3a;border-radius:12px;padding:32px;margin-bottom:32px">
+    <h2 style="color:#00d4ff;font-family:'Orbitron',monospace;font-size:20px;margin-bottom:16px">Demo Simulation</h2>
+    <p style="color:#ccc;line-height:1.8;margin-bottom:16px">
+      The automated test runs <strong>4 simulated autonomous systems</strong> through <strong>50 epochs</strong>
+      with <strong>6 scripted attack/response scenarios</strong> on a k3d Kubernetes cluster:
+    </p>
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
+      <tr style="border-bottom:1px solid #1e1e3a">
+        <th style="text-align:left;padding:6px;color:#00d4ff">Epoch</th>
+        <th style="text-align:left;padding:6px;color:#00d4ff">Scenario</th>
+        <th style="text-align:left;padding:6px;color:#00d4ff">Description</th>
+      </tr>
+      <tr style="border-bottom:1px solid #1e1e3a"><td style="padding:6px;color:#888">10</td><td style="padding:6px;color:#ff4444">Origin Hijack</td><td style="padding:6px;color:#ccc">AS-300 claims AS-100's prefix</td></tr>
+      <tr style="border-bottom:1px solid #1e1e3a"><td style="padding:6px;color:#888">20</td><td style="padding:6px;color:#ffcc00">MOAS Conflict</td><td style="padding:6px;color:#ccc">AS-200 and AS-400 both announce the same prefix</td></tr>
+      <tr style="border-bottom:1px solid #1e1e3a"><td style="padding:6px;color:#888">30</td><td style="padding:6px;color:#ff8800">Bad-Signature Flood</td><td style="padding:6px;color:#ccc">5 forged advertisements targeting AS-100</td></tr>
+      <tr style="border-bottom:1px solid #1e1e3a"><td style="padding:6px;color:#888">35</td><td style="padding:6px;color:#ff00ff">Auto-Pause</td><td style="padding:6px;color:#ccc">Oracle detects residue rate spike → pauses AS-300</td></tr>
+      <tr style="border-bottom:1px solid #1e1e3a"><td style="padding:6px;color:#888">40</td><td style="padding:6px;color:#00ffcc">Guardian Intervention</td><td style="padding:6px;color:#ccc">Human guardian reviews and confirms pause</td></tr>
+      <tr><td style="padding:6px;color:#888">45</td><td style="padding:6px;color:#00ff66">Resume</td><td style="padding:6px;color:#ccc">2-of-3 guardians vote to resume AS-300</td></tr>
+    </table>
+  </section>
+
+  <section class="card" style="background:#12122a;border:1px solid #1e1e3a;border-radius:12px;padding:32px;margin-bottom:32px">
+    <h2 style="color:#00d4ff;font-family:'Orbitron',monospace;font-size:20px;margin-bottom:16px">Run it yourself</h2>
+    <pre style="background:#0a0a1a;padding:16px;border-radius:8px;overflow-x:auto;color:#ccc;font-size:13px"><code># Prerequisites: Docker, k3d, kubectl, terraform, node 20+
+
+# Clone the repo
+git clone https://github.com/quellcrist-falconer/ECCA.git
+cd ECCA
+
+# Full run (builds images, creates cluster, runs simulation)
+./tests/axonal-bgp/run.sh
+
+# Or with options:
+./tests/axonal-bgp/run.sh --epochs 100
+./tests/axonal-bgp/run.sh --skip-images    # reuse existing images
+./tests/axonal-bgp/run.sh --destroy        # tear down
+
+# Report appears at tests/axonal-bgp/axonal-bgp-report.html</code></pre>
+  </section>
+
+  <section class="card" style="background:#12122a;border:1px solid #1e1e3a;border-radius:12px;padding:32px;margin-bottom:32px">
+    <h2 style="color:#00d4ff;font-family:'Orbitron',monospace;font-size:20px;margin-bottom:16px">EBC Swap Pricing</h2>
+    <p style="color:#ccc;line-height:1.8">
+      The ResidueToRoutingSwap contract prices RES → RTE conversion with an Epoch-Binding Curve:
+    </p>
+    <div style="background:#0a0a1a;padding:16px;border-radius:8px;margin:12px 0;text-align:center;color:#00d4ff;font-size:16px;font-family:'JetBrains Mono',monospace">
+      ρ(Δ) = max(ρ₀ · (1 − δ)<sup>Δ</sup>, ρ<sub>min</sub>)
+    </div>
+    <p style="color:#888;font-size:13px;margin-top:8px">
+      Where ρ₀ = 0.5 (base rate), δ = 0.05/epoch (decay), ρ<sub>min</sub> = 0.1 (floor).
+      Freshly resolved residues convert at 50% value; stale ones decay to 10%.
+      Per-agent cap: 50 RTE/epoch. Global cap: 5,000 RTE/epoch.
+    </p>
+  </section>
+
+  <section style="text-align:center;padding:40px 0">
+    <a href="axonal-bgp.pdf" style="display:inline-block;padding:12px 32px;background:#00d4ff;color:#000;border-radius:8px;text-decoration:none;font-weight:700;font-size:16px;margin:0 8px">📄 Read the Full Paper</a>
+    <a href="axonal-bgp-report.html" style="display:inline-block;padding:12px 32px;background:#1a1a2e;color:#00d4ff;border:1px solid #00d4ff;border-radius:8px;text-decoration:none;font-weight:700;font-size:16px;margin:0 8px">📊 View Test Report</a>
+  </section>
+
+</main>
+
+<script src="js/main.js"></script>
+</body>
+</html>
