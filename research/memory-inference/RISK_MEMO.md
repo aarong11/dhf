@@ -66,14 +66,45 @@ automated profiling of many agents simultaneously.
 
 ## Responsible Disclosure Process
 
-1. **Internal disclosure**: New attack vectors identified during research must be
-   disclosed to the security team within 48 hours.
-2. **Coordinated disclosure**: If a vulnerability is found in a third-party system
-   (e.g., a vector database), follow their vulnerability disclosure policy.
-3. **Publication**: Research findings may not be published without a 90-day embargo
-   to allow mitigation by affected parties.
-4. **No proof-of-concept weaponization**: Published papers must not include
-   ready-to-deploy attack tooling.
+### Internal Disclosure
+New attack vectors or privacy risks identified during research must be disclosed
+to the security team within **48 hours** of discovery.
+
+### Coordinated Disclosure (Third-Party Systems)
+If a vulnerability is found in a third-party system (e.g., a vector database or
+embedding API), follow that system's published vulnerability disclosure policy.
+If none exists, allow **90 days** before public disclosure.
+
+### Public-Channel Research Disclosure Obligations
+When research is conducted in or shared into a public channel, the following
+steps are **mandatory** before, during, and after the study:
+
+**Before the study:**
+1. Post a plain-language advance notice ≥ 72 hours before collection begins
+   (see ETHICS.md §Public-Channel Research Disclosure Guidelines, D-1)
+2. Distribute the `INFORMED_CONSENT.md` form to the channel and log all responses
+3. Confirm opt-out monitoring is active
+
+**During the study:**
+4. Keep the notice pinned and repost if significant membership change occurs
+5. Process opt-out requests within 1 hour; purge opted-out data immediately
+6. Do not disclose preliminary results publicly until the study concludes
+
+**After the study:**
+7. Post a plain-language results summary to the channel before wider publication
+8. Observe a 48-hour objection window before submitting to preprint / conference
+9. Credit participant communities in any resulting publication
+10. Confirm data deletion or archival per the agreed retention schedule
+
+### Academic / Conference Publication
+Research findings may not be submitted for publication without:
+- A 90-day embargo from the date the affected parties were notified
+- Removal or anonymization of any channel-specific identifying details
+- A "Research Ethics" section in the paper citing this memo and ETHICS.md
+
+### No Proof-of-Concept Weaponization
+Published papers and public talks must not include ready-to-deploy attack tooling.
+Demonstration code must be restricted to synthetic benchmark data only.
 
 ---
 

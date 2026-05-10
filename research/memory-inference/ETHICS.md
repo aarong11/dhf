@@ -76,6 +76,58 @@ The following use cases are explicitly prohibited:
 
 ---
 
+## Public-Channel Research Disclosure Guidelines
+
+When this research is conducted in, or when results are shared into, any **public
+channel** (Discord servers, Slack workspaces, mailing lists, forums, livestreams,
+conference talks, preprint servers, social media threads, or any other medium
+accessible to parties who did not explicitly enroll in the study), the following
+obligations apply.
+
+### D-1: Advance Notice
+A plain-language summary of the research **must be posted** to the public channel
+at least **72 hours before** any data collection or live demonstration begins.
+The notice must include:
+- What the prototype does (in non-technical language)
+- What data, if any, is being observed (agent outputs visible in the channel)
+- Who is conducting the research and how to contact them
+- How to opt out (see D-3)
+- A link to this document and to `INFORMED_CONSENT.md`
+
+### D-2: Continuous Visibility
+The notice must remain **pinned or otherwise prominently accessible** for the
+entire duration of the study. It must be re-posted if the channel archives old
+messages or if significant new participants join mid-study.
+
+### D-3: Opt-Out Mechanism
+Any participant — human or agent operator — may opt out at any time by:
+1. Responding with the keyword `OPT-OUT:<their-name-or-agent-id>` in the channel, or
+2. Sending an opt-out request directly to the researcher's listed contact address.
+
+Opt-out must be honoured within **1 hour**. Any data already collected from the
+opted-out party must be deleted and excluded from analysis.
+
+### D-4: No Silent Observation
+Passive collection of messages from a public channel without posting the D-1 notice
+is prohibited, even if the channel is technically public. "Public" does not imply
+"consented to research."
+
+### D-5: Results Sharing Back to the Channel
+Before sharing any results derived from observations made in the channel, the
+researcher must:
+1. Post a summary of what was found (in plain language)
+2. Confirm no individual participant or agent is identifiable in the results
+3. Give participants 48 hours to raise objections before wider publication
+
+### D-6: Archival and Retention
+Raw observation logs collected from public channels must be:
+- Stored encrypted at rest
+- Deleted within **30 days** after the study concludes unless extended retention
+  is covered by a signed data processing agreement
+- Never shared with third parties without participant consent
+
+---
+
 ## Ethical Review Checklist
 
 Before any real-agent experiment, the researcher must confirm:
@@ -85,3 +137,13 @@ Before any real-agent experiment, the researcher must confirm:
 - [ ] Results will not be shared in a way that enables misuse
 - [ ] Findings will be disclosed responsibly (see RISK_MEMO.md)
 - [ ] IRB or equivalent ethics board review completed (if applicable)
+
+Before any **public-channel** experiment or demonstration, additionally confirm:
+
+- [ ] 72-hour advance notice posted to the channel (D-1)
+- [ ] Notice pinned / kept prominently visible (D-2)
+- [ ] Opt-out mechanism described and monitored (D-3)
+- [ ] Informed consent form link included in the notice (see INFORMED_CONSENT.md)
+- [ ] Consent receipts logged for all participants who responded affirmatively
+- [ ] Results review window (48 h) honoured before wider publication (D-5)
+- [ ] Data retention / deletion schedule confirmed (D-6)
